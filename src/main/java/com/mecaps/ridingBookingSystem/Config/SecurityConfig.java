@@ -18,7 +18,7 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 @EnableMethodSecurity(prePostEnabled = true)
 public class SecurityConfig {
     private final UserDetailsService userDetailsService;
-   //   private final JwtAuthFilter jwtFilter;
+     private final JwtAuthFilter jwtFilter;
     public SecurityConfig(UserDetailsService userDetailsService,JwtAuthFilter jwtFilter) {
         this.userDetailsService = userDetailsService;
         this.jwtFilter = jwtFilter;
