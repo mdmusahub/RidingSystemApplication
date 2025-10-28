@@ -1,0 +1,45 @@
+package com.mecaps.ridingBookingSystem.controller;
+
+import com.mecaps.ridingBookingSystem.request.DriverRequest;
+import com.mecaps.ridingBookingSystem.serviceImpl.DriverServiceImpl;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
+
+@RestController
+@RequestMapping("/driver")
+public class DriverController {
+
+    final private DriverServiceImpl driverService;
+
+    @Autowired
+
+    public DriverController(DriverServiceImpl driverService) {
+        this.driverService = driverService;
+    }
+
+    @PostMapping("/create")
+    public ResponseEntity<?> createDriver(@RequestBody DriverRequest request) {
+        return driverService.createDriver(request);
+    }
+
+    @GetMapping("/get/{id}")
+    public ResponseEntity<?> getDriverById(@PathVariable Long id) {
+        return driverService.getDriverById(id);
+    }
+
+    @GetMapping("/getAll")
+    public ResponseEntity<?> getAllDrivers() {
+        return driverService.getAllDrivers();
+    }
+
+    @PutMapping("/update/{id}")
+    public ResponseEntity<?> updateDriver(@PathVariable Long id, @RequestBody DriverRequest request) {
+        return driverService.updateDriver(id, request);
+    }
+
+    @DeleteMapping("/delete/{id}")
+    public ResponseEntity<?> deleteDriver(@PathVariable Long id) {
+        return driverService.deleteDriver(id);
+    }
+}
