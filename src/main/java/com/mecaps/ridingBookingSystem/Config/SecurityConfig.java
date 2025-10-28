@@ -1,5 +1,6 @@
-package com.mecaps.ridingBookingSystem.Config;
+package com.mecaps.ridingBookingSystem.config;
 
+import com.mecaps.ridingBookingSystem.security.JwtAuthFilter;
 import org.springframework.boot.autoconfigure.graphql.GraphQlProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
