@@ -3,13 +3,13 @@ package com.mecaps.ridingBookingSystem.serviceImpl;
 import com.mecaps.ridingBookingSystem.request.UserRequest;
 import com.mecaps.ridingBookingSystem.response.UserResponse;
 import com.mecaps.ridingBookingSystem.entity.User;
-import com.mecaps.ridingBookingSystem.exception.UserAlreadyExistsExseption;
+import com.mecaps.ridingBookingSystem.exception.UserAlreadyExistsException;
 import com.mecaps.ridingBookingSystem.exception.UserNotFoundException;
 import com.mecaps.ridingBookingSystem.repository.UserRepository;
 import com.mecaps.ridingBookingSystem.service.UserService;
-import jakarta.persistence.EntityManager;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -19,31 +19,31 @@ import java.util.Optional;
 @Service
 public class UserServiceImpl implements UserService {
     private final UserRepository userRepository;
-    private final EntityManager entityManager;
+    private final PasswordEncoder passwordEncoder;
 
 
-    public UserServiceImpl(UserRepository userRepository, EntityManager entityManager) {
+    public UserServiceImpl(UserRepository userRepository,PasswordEncoder passwordEncoder) {
         this.userRepository = userRepository;
-        this.entityManager = entityManager;
+        this.passwordEncoder = passwordEncoder;
     }
 
     @Override
     public ResponseEntity<?> createUser(UserRequest request) {
-        Optional<User> existingEmail = userRepository.finddByEmail(request.getEmail());
+        Optional<User> existingEmail = userRepository.findByEmail(request.getEmail());
         if (existingEmail.isPresent()) {
-            throw new UserAlreadyExistsExseption("User with this email is already exists");
+            throw new UserAlreadyExistsException("User with this email is already exists");
         }
 
         Optional<User> existingPhone = userRepository.findByPhone(request.getPhone());
         if (existingPhone.isPresent()){
-            throw new UserAlreadyExistsExseption("User with this phone number is already exists");
+            throw new UserAlreadyExistsException("User with this phone number is already exists");
         }
 
         User user = new User();
         user.setFullName(request.getFullName());
         user.setEmail(request.getEmail());
         user.setPhone(request.getPhone());
-        user.setPassword(request.getPassword());
+        user.setPassword(passwordEncoder.encode(request.getPassword()));
         user.setRole(request.getRole());
 
         User save = userRepository.save(user);

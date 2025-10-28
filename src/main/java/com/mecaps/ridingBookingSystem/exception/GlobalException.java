@@ -1,6 +1,5 @@
 package com.mecaps.ridingBookingSystem.exception;
 
-import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.HttpStatusCode;
@@ -9,14 +8,13 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
 import java.time.LocalDateTime;
-import java.util.Map;
 
 @RestControllerAdvice
 public class GlobalException {
 
-    @ExceptionHandler (UserAlreadyExistsExseption.class)
+    @ExceptionHandler (UserAlreadyExistsException.class)
     public ResponseEntity<ErrorResponse> handleAlreadyExistsException
-            (UserAlreadyExistsExseption excepion, HttpServletRequest request){
+            (UserAlreadyExistsException excepion, HttpServletRequest request){
         ErrorResponse errorResponse =new ErrorResponse(LocalDateTime.now(),
                 HttpStatus.CONFLICT.value(),
                 excepion.getMessage(),
@@ -27,7 +25,7 @@ public class GlobalException {
     }
 
     @ExceptionHandler (UserNotFoundException.class)
-    public ResponseEntity<ErrorResponse> handleUserNotFound
+    public ResponseEntity<ErrorResponse> handleUserNotFoundException
             (UserNotFoundException exception, HttpServletRequest request){
         ErrorResponse errorResponse = new ErrorResponse(LocalDateTime.now(), HttpStatus.NOT_FOUND.value(),
                 exception.getMessage(), request.getRequestURI()
@@ -36,4 +34,12 @@ public class GlobalException {
         return new ResponseEntity<>(errorResponse, HttpStatusCode.valueOf(404));
     }
 
+    @ExceptionHandler (InvalidCredentialsException.class)
+    public ResponseEntity<ErrorResponse> handleInvalidCredentialsException
+            (InvalidCredentialsException exception, HttpServletRequest request){
+        ErrorResponse errorResponse = new ErrorResponse(LocalDateTime.now(),HttpStatus.UNAUTHORIZED.value(),
+                exception.getMessage(),request.getRequestURI());
+
+        return new ResponseEntity<>(errorResponse,HttpStatusCode.valueOf(401));
+    }
 }
