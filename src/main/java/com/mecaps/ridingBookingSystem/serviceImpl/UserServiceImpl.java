@@ -1,7 +1,7 @@
 package com.mecaps.ridingBookingSystem.serviceImpl;
 
-import com.mecaps.ridingBookingSystem.Request.UserRequest;
-import com.mecaps.ridingBookingSystem.Response.UserResponse;
+import com.mecaps.ridingBookingSystem.request.UserRequest;
+import com.mecaps.ridingBookingSystem.response.UserResponse;
 import com.mecaps.ridingBookingSystem.entity.User;
 import com.mecaps.ridingBookingSystem.exception.UserAlreadyExistsExseption;
 import com.mecaps.ridingBookingSystem.exception.UserNotFoundException;

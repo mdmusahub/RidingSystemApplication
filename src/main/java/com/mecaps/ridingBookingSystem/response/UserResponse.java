@@ -1,10 +1,7 @@
-package com.mecaps.ridingBookingSystem.Response;
+package com.mecaps.ridingBookingSystem.response;
 
-import com.mecaps.ridingBookingSystem.entity.Role;
 import com.mecaps.ridingBookingSystem.entity.User;
 import lombok.Data;
-
-import java.util.Date;
 
 @Data
 public class UserResponse {

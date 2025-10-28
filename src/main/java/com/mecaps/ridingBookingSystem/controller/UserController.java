@@ -1,6 +1,6 @@
 package com.mecaps.ridingBookingSystem.controller;
 
-import com.mecaps.ridingBookingSystem.Request.UserRequest;
+import com.mecaps.ridingBookingSystem.request.UserRequest;
 import com.mecaps.ridingBookingSystem.serviceImpl.UserServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;

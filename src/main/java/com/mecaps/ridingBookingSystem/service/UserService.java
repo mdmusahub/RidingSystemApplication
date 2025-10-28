@@ -1,7 +1,7 @@
 package com.mecaps.ridingBookingSystem.service;
 
 
-import com.mecaps.ridingBookingSystem.Request.UserRequest;
+import com.mecaps.ridingBookingSystem.request.UserRequest;
 import org.springframework.http.ResponseEntity;
 
 public interface UserService {

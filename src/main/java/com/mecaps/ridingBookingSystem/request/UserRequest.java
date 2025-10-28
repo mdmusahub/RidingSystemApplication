@@ -1,4 +1,4 @@
-package com.mecaps.ridingBookingSystem.Request;
+package com.mecaps.ridingBookingSystem.request;
 
 import com.mecaps.ridingBookingSystem.entity.Role;
 
