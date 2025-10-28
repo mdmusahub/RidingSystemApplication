@@ -32,4 +32,8 @@ build/
 ### VS Code ###
 .vscode/
 
+<<<<<<< HEAD
+=======
+### Environment Variables file ###
+>>>>>>> 66c3b44bdadb575e2ecab3fc84acc325a79c8dd7
 .env
