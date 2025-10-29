@@ -1,5 +1,6 @@
-package com.mecaps.ridingBookingSystem.Config;
+package com.mecaps.ridingBookingSystem.config;
 
+import com.mecaps.ridingBookingSystem.security.JwtAuthFilter;
 import org.springframework.boot.autoconfigure.graphql.GraphQlProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -17,23 +18,25 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 @EnableWebSecurity
 @EnableMethodSecurity(prePostEnabled = true)
 public class SecurityConfig {
-    private final UserDetailsService userDetailsService;
-     private final JwtAuthFilter jwtFilter;
-    public SecurityConfig(UserDetailsService userDetailsService,JwtAuthFilter jwtFilter) {
-        this.userDetailsService = userDetailsService;
+    private final JwtAuthFilter jwtFilter;
+
+    public SecurityConfig(JwtAuthFilter jwtFilter) {
         this.jwtFilter = jwtFilter;
     }
-@Bean
-public PasswordEncoder passwordEncoder(){
+
+    @Bean
+    public PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
-}
-@Bean
-public SecurityFilterChain securityFilerChain(HttpSecurity httpSecurity) throws Exception{
-    httpSecurity.csrf(AbstractHttpConfigurer::disable).authorizeHttpRequests(auth->auth.
-            requestMatchers("/user/create").permitAll().anyRequest().authenticated());
+    }
 
-    httpSecurity.addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class);
-    return httpSecurity.build();
-}
+    @Bean
+    public SecurityFilterChain securityFilerChain(HttpSecurity httpSecurity) throws Exception {
+        httpSecurity.csrf(AbstractHttpConfigurer::disable).authorizeHttpRequests(auth -> auth.
+                requestMatchers("/user/create").permitAll()
+                .requestMatchers("/auth/login").permitAll()
+                .anyRequest().authenticated());
 
+        httpSecurity.addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class);
+        return httpSecurity.build();
+    }
 }
