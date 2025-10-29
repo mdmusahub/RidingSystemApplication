@@ -33,7 +33,7 @@ public class SecurityConfig {
     public SecurityFilterChain securityFilerChain(HttpSecurity httpSecurity) throws Exception {
         httpSecurity.csrf(AbstractHttpConfigurer::disable).authorizeHttpRequests(auth -> auth.
                 requestMatchers("/user/create").permitAll()
-                .requestMatchers("/auth/login").permitAll()
+                .requestMatchers("/auth/*").permitAll()
                 .anyRequest().authenticated());
 
         httpSecurity.addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class);
