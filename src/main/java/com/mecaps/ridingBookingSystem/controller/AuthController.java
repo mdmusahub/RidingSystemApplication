@@ -61,6 +61,7 @@ public class AuthController {
         String email = jwtService.extractEmail(refreshToken);
         String role = jwtService.extractRole(refreshToken);
         String newAccessToken = jwtService.generateAccessToken(email,role);
+        String newRefreshToken = jwtService.generateRefreshToken(email,role);
         return  ResponseEntity.ok(Map.of(
                 "AccessToken",newAccessToken,
                 "RefreshToken",refreshToken));

@@ -1,5 +1,6 @@
 package com.mecaps.ridingBookingSystem.serviceImpl;
 
+import com.mecaps.ridingBookingSystem.request.ChangePasswordRequest;
 import com.mecaps.ridingBookingSystem.request.UserRequest;
 import com.mecaps.ridingBookingSystem.response.UserResponse;
 import com.mecaps.ridingBookingSystem.entity.User;
@@ -88,7 +89,7 @@ public class UserServiceImpl implements UserService {
         user.setFullName(request.getFullName());
         user.setEmail(request.getEmail());
         user.setPhone(request.getPhone());
-        user.setPassword(request.getPassword());
+        user.setPassword(passwordEncoder.encode(request.getPassword()));
 
         User save = userRepository.save(user);
         return ResponseEntity.status(HttpStatus.OK)
@@ -96,6 +97,41 @@ public class UserServiceImpl implements UserService {
                         "body",save,
                         "success","true"));
     }
+
+    @Override
+    public ResponseEntity<?> changePassword(String email, ChangePasswordRequest request){
+
+        User user = userRepository.findByEmail(email)
+                .orElseThrow(()-> new UserNotFoundException("User not found with given email."));
+
+        if (!passwordEncoder.matches(request.getOldPassword(), user.getPassword())){
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                    .body(Map.of("success",false,
+                            "message", "Old password is incorrect"));
+        }
+
+        if (!request.getNewPassword().equals(request.getConfirmNewPassword())){
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                    .body(Map.of(
+                            "success", false,
+                            "message", "New password and confirm password do not match"
+                    ));
+        }
+
+        if (passwordEncoder.matches(request.getNewPassword(),user.getPassword())){
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                    .body(Map.of("success", true
+                    ,"message","New password cannot be the same as the old password"));
+        }
+
+        user.setPassword(passwordEncoder.encode(request.getNewPassword()));
+        userRepository.save(user);
+
+        return ResponseEntity.ok(Map.of("success","true"
+        ,"message", "Password updated successfully"));
+    }
+
+
 
     @Override
     public ResponseEntity<?> deleteUser(Long id){
