@@ -5,36 +5,24 @@ import lombok.Data;
 import org.hibernate.annotations.CreationTimestamp;
 import org.springframework.format.annotation.DateTimeFormat;
 
-import java.util.Date;
-
 @Data
 @Entity
-public class Ride {
+public class Location {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
-
-    @ManyToOne
-    private Rider riderId;
+    private Long Id;
 
     @ManyToOne
     private Driver driverId;
 
     @Column(nullable = false)
-    private String pickupLocation;
+    private Double latitude;
 
     @Column(nullable = false)
-    private String dropoffLocation;
-
-    private RideStatus status;
-
-    private Double fare;
+    private Double longitude;
 
     @DateTimeFormat
     @CreationTimestamp
-    private String requestedAt;
-
-    @DateTimeFormat
-    private String completedAt;
+    private String updatedAt;
 }

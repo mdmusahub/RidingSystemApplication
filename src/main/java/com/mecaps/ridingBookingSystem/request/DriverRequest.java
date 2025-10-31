@@ -6,7 +6,7 @@ import lombok.Data;
 @Data
 public class DriverRequest {
 
-    private User userId;
+    private Long userId;
     private String licenseNumber;
     private String vehicleNumber;
     private String vehicleModel;

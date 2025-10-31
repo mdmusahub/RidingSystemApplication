@@ -6,16 +6,18 @@ import com.mecaps.ridingBookingSystem.entity.User;
 public class DriverResponse {
 
     private Long id;
-    private String licenseNumber;
     private String vehicleNumber;
     private String vehicleModel;
-    private User userId;
+    private UserResponse userResponse;
+    private Float rating;
+    private Boolean isAvailable;
 
     public DriverResponse(Driver driver) {
         this.id = driver.getId();
-        this.licenseNumber = driver.getLicenseNumber();
         this.vehicleNumber = driver.getVehicleNumber();
         this.vehicleModel = driver.getVehicleModel();
-        this.userId = driver.getUserId();
+        this.userResponse = new UserResponse(driver.getUserId());
+        this.rating = driver.getRating();
+        this.isAvailable = driver.getIsAvailable();
     }
 }

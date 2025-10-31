@@ -64,9 +64,11 @@ public class UserServiceImpl implements UserService {
         User user = userRepository.findById(id)
                 .orElseThrow(()-> new UserNotFoundException("User not found"));
 
+        UserResponse userResponse = new UserResponse(user);
+
         return ResponseEntity.status(HttpStatus.OK)
                 .body(Map.of("message","User found successfully",
-                        "body", user,
+                        "body", userResponse,
                         "success", "true"));
     }
 

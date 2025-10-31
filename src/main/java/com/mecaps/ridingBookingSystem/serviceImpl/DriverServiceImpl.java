@@ -3,6 +3,7 @@ package com.mecaps.ridingBookingSystem.serviceImpl;
 import com.mecaps.ridingBookingSystem.entity.Driver;
 import com.mecaps.ridingBookingSystem.exception.DriverAlreadyExistsException;
 import com.mecaps.ridingBookingSystem.exception.DriverNotFoundException;
+import com.mecaps.ridingBookingSystem.exception.UserNotFoundException;
 import com.mecaps.ridingBookingSystem.repository.DriverRepository;
 import com.mecaps.ridingBookingSystem.repository.UserRepository;
 import com.mecaps.ridingBookingSystem.request.DriverRequest;
@@ -46,7 +47,8 @@ public class DriverServiceImpl implements DriverService {
         }
 
         Driver driver = new Driver();
-        driver.setUserId(request.getUserId());
+        driver.setUserId(userRepository.findById(request.getUserId())
+                .orElseThrow(() -> new UserNotFoundException("USER NOT FOUND")));
         driver.setLicenseNumber(request.getLicenseNumber());
         driver.setVehicleNumber(request.getVehicleNumber());
         driver.setVehicleModel(request.getVehicleModel());
@@ -96,7 +98,8 @@ public class DriverServiceImpl implements DriverService {
         Driver driver = driverRepository.findById(id)
                 .orElseThrow(()-> new DriverNotFoundException("Driver not found with given id"));
 
-        driver.setUserId(request.getUserId());
+        driver.setUserId(userRepository.findById(request.getUserId())
+                .orElseThrow(() -> new UserNotFoundException("USER NOT FOUND")));
         driver.setLicenseNumber(request.getLicenseNumber());
         driver.setVehicleNumber(request.getVehicleNumber());
         driver.setVehicleModel(request.getVehicleModel());
@@ -113,7 +116,7 @@ public class DriverServiceImpl implements DriverService {
 
     public ResponseEntity<?> deleteDriver(Long id){
         Driver driver = driverRepository.findById(id)
-                .orElseThrow(()-> new DriverNotFoundException("Driver not found given id"));
+                .orElseThrow(()-> new DriverNotFoundException("Driver not found with given id : " + id));
         driverRepository.delete(driver);
 
         return ResponseEntity.ok("DELETED");
