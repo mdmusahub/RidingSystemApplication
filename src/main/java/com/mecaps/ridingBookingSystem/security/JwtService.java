@@ -1,7 +1,11 @@
 package com.mecaps.ridingBookingSystem.security;
 
 import io.jsonwebtoken.Claims;
+<<<<<<< HEAD
 import io.jsonwebtoken.JwtBuilder;
+=======
+import io.jsonwebtoken.JwtException;
+>>>>>>> 69a85fe107ca7059f208390fd644ca470d085e3d
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
@@ -13,7 +17,7 @@ import java.util.Date;
 @Service
 public class JwtService {
 
-    private final static long ACCESS_TOKEN_EXP = 1000 * (60 * 60);
+    private final static long ACCESS_TOKEN_EXP = 2 * 60000;
     private final static String SECRET_KEY = "a4bf05ff532862e43eaee226f19619674f8d89a7d5442e426a6e2e170e731a66";
     private final static long REFRESH_TOKEN_EXP = 7 * 24 * 60 * 60 * 1000;
 
@@ -49,6 +53,7 @@ public class JwtService {
                 .getPayload();
     }
 
+<<<<<<< HEAD
     public String extractEmail(String token) {
         return extractAllClaims(token)
                 .getSubject();
@@ -62,5 +67,24 @@ public class JwtService {
     public boolean isTokenValid(String token) {
         return extractAllClaims(token)
                 .getExpiration().after(new Date());
+=======
+    public Boolean isAccesToken(String token) {
+        try {
+            return "access".equals(extractAllClaims(token).get("type", String.class));
+        } catch (JwtException e) {
+            return false;
+        }
+    }
+    public Boolean isRefreshToken(String token){
+        try{
+            return "refresh".equals(extractAllClaims(token).get("type",String.class));
+        }catch (JwtException e){
+            return false;
+        }
+
+>>>>>>> 69a85fe107ca7059f208390fd644ca470d085e3d
     }
 }
+
+
+

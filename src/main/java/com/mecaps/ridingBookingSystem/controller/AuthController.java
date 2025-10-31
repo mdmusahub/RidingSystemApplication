@@ -32,7 +32,7 @@ public class AuthController {
         this.passwordEncoder = passwordEncoder;
         this.jwtService = jwtService;
     }
-    @PreAuthorize("hasRole('USER')")
+
     @PostMapping("/login")
     public Map<String, String> login(@RequestBody AuthDTO request){
 
@@ -66,9 +66,9 @@ public class AuthController {
 
         TokenResponse tokenResponse = new TokenResponse(newAccessToken,newRefreshToken);
         return  ResponseEntity.ok(Map.of(
+
                 "NewAccessToken",newAccessToken,
                 "NewRefreshToken",newRefreshToken));
-
 
     }
 
