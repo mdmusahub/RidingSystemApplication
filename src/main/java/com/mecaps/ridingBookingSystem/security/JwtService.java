@@ -1,6 +1,7 @@
 package com.mecaps.ridingBookingSystem.security;
 
 import io.jsonwebtoken.Claims;
+import io.jsonwebtoken.JwtBuilder;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
@@ -16,7 +17,7 @@ public class JwtService {
     private final static String SECRET_KEY = "a4bf05ff532862e43eaee226f19619674f8d89a7d5442e426a6e2e170e731a66";
     private final static long REFRESH_TOKEN_EXP = 7 * 24 * 60 * 60 * 1000;
 
-    public SecretKey getSecretKey() {
+    public SecretKey getSecretKey(){
         return Keys.hmacShaKeyFor(Decoders.BASE64.decode(SECRET_KEY));
     }
 
@@ -40,23 +41,26 @@ public class JwtService {
     }
 
 
-    public String extractEmail(String token) {
-        return extractAllClaims(token).getSubject();
-    }
-
-    public String extractRole(String token) {
-        return extractAllClaims(token).get("role", String.class);
-    }
-
-    public boolean isTokenValid(String token) {
-        return extractAllClaims(token).getExpiration().after(new Date());
-    }
-
     public Claims extractAllClaims(String token) {
         return Jwts.parser()
                 .verifyWith(getSecretKey())
                 .build()
                 .parseSignedClaims(token)
                 .getPayload();
+    }
+
+    public String extractEmail(String token) {
+        return extractAllClaims(token)
+                .getSubject();
+    }
+
+    public String extractRole(String token) {
+        return extractAllClaims(token)
+                .get("role", String.class);
+    }
+
+    public boolean isTokenValid(String token) {
+        return extractAllClaims(token)
+                .getExpiration().after(new Date());
     }
 }

@@ -5,6 +5,8 @@ import com.mecaps.ridingBookingSystem.exception.InvalidCredentialsException;
 import com.mecaps.ridingBookingSystem.exception.UserNotFoundException;
 import com.mecaps.ridingBookingSystem.repository.UserRepository;
 import com.mecaps.ridingBookingSystem.request.AuthDTO;
+import com.mecaps.ridingBookingSystem.request.RefreshTokenRequest;
+import com.mecaps.ridingBookingSystem.response.TokenResponse;
 import com.mecaps.ridingBookingSystem.security.JwtService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -53,18 +55,19 @@ public class AuthController {
         return authResponse;
     }
     @PostMapping("/refresh")
-    public ResponseEntity<?> refresh(@RequestBody Map<String,String> request){
-        String refreshToken = request.get("refreshToken");
-        if (!jwtService.isTokenValid(refreshToken)){
-            return ResponseEntity.status(403).body("Invalid or Expired Refresh Token");
-        }
-        String email = jwtService.extractEmail(refreshToken);
-        String role = jwtService.extractRole(refreshToken);
+    public ResponseEntity<?> refresh(@RequestBody RefreshTokenRequest request){
+        String oldRefreshToken = request.getRefreshToken();
+
+        String email = jwtService.extractEmail(oldRefreshToken);
+        String role = jwtService.extractRole(oldRefreshToken);
+
         String newAccessToken = jwtService.generateAccessToken(email,role);
         String newRefreshToken = jwtService.generateRefreshToken(email,role);
+
+        TokenResponse tokenResponse = new TokenResponse(newAccessToken,newRefreshToken);
         return  ResponseEntity.ok(Map.of(
-                "AccessToken",newAccessToken,
-                "RefreshToken",refreshToken));
+                "NewAccessToken",newAccessToken,
+                "NewRefreshToken",newRefreshToken));
 
 
     }
