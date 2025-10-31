@@ -1,11 +1,7 @@
 package com.mecaps.ridingBookingSystem.security;
 
 import io.jsonwebtoken.Claims;
-<<<<<<< HEAD
-import io.jsonwebtoken.JwtBuilder;
-=======
 import io.jsonwebtoken.JwtException;
->>>>>>> 69a85fe107ca7059f208390fd644ca470d085e3d
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
@@ -53,7 +49,6 @@ public class JwtService {
                 .getPayload();
     }
 
-<<<<<<< HEAD
     public String extractEmail(String token) {
         return extractAllClaims(token)
                 .getSubject();
@@ -67,8 +62,9 @@ public class JwtService {
     public boolean isTokenValid(String token) {
         return extractAllClaims(token)
                 .getExpiration().after(new Date());
-=======
-    public Boolean isAccesToken(String token) {
+    }
+
+    public Boolean isAccessToken(String token) {
         try {
             return "access".equals(extractAllClaims(token).get("type", String.class));
         } catch (JwtException e) {
@@ -81,8 +77,6 @@ public class JwtService {
         }catch (JwtException e){
             return false;
         }
-
->>>>>>> 69a85fe107ca7059f208390fd644ca470d085e3d
     }
 }
 
