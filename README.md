@@ -1,58 +1,70 @@
-# 🚖 RidingBookingApplication  
+<h1 align="center">🚖 RidingBookingApplication</h1>
 
-A **Spring Boot-based Ride Booking System** inspired by platforms like Uber and Ola.  
-This backend service allows users to register as **Riders** or **Drivers**, manage ride requests, accept rides, and track their status in real time.  
-
----
-
-## ✨ Features  
-
-### 👤 Authentication & Roles  
-- JWT-based Authentication & Authorization  
-- User roles: **Admin**, **Driver**, **Rider**  
-- Secure Login, Signup, and Role Assignment  
-
-### 🚗 Ride Management  
-- Riders can **request rides** with pickup/drop coordinates  
-- Drivers can **accept or reject** available ride requests  
-- Automatic ride status flow → `REQUESTED ➜ ACCEPTED ➜ COMPLETED`
-
-### 📍 Location System  
-- Pickup & Drop stored as latitude and longitude  
-- Distance-based driver assignment logic (optional enhancement)
-
-### 📊 Admin Management  
-- Manage all users, drivers, and ride data  
-- View ride history and system analytics  
+<p align="center">
+A full-featured <b>Ride Booking Backend System</b> built with <b>Spring Boot</b> and <b>MySQL</b>.  
+Inspired by real-world ride-sharing apps like <b>Uber</b> and <b>Ola</b>, this project demonstrates  
+clean architecture, layered design, and secure JWT-based authentication.
+</p>
 
 ---
 
+## 🌟 Overview
 
+`RidingBookingApplication` is a backend project that allows:
+- 👤 Users to sign up as **Rider** or **Driver**
+- 🚗 Riders to request rides and Drivers to accept or complete them
+- 🔒 Secure access via JWT authentication
+- 🧠 Role-based access control (Admin, Driver, Rider)
 
+---
+
+## 🧩 Key Features
+
+| Category | Description |
+|-----------|-------------|
+| 🔐 **Authentication** | JWT-based login & role-based access |
+| 👨‍✈️ **User Roles** | Admin, Driver, Rider |
+| 🚕 **Ride Booking** | Request, Accept, and Complete rides |
+| 📍 **Location Tracking** | Store pickup/drop coordinates |
+| 🧾 **Ride History** | Fetch previous rides for users |
+| ⚙️ **Admin Management** | Manage drivers, riders, and rides |
+
+---
 
 
 
 ---
 
-## ⚙️ Tech Stack  
+
+---
+
+## 🛠️ Tech Stack
 
 | Layer | Technology |
-|-------|-------------|
-| **Backend** | Spring Boot, Spring Web, Spring Security |
+|--------|-------------|
+| **Backend Framework** | Spring Boot |
+| **Security** | Spring Security + JWT |
 | **Database** | MySQL |
-| **ORM** | Hibernate / JPA |
-| **Auth** | JWT Token |
+| **ORM** | JPA / Hibernate |
 | **Build Tool** | Maven |
 | **Language** | Java 17+ |
+| **IDE** | IntelliJ IDEA / VS Code / Eclipse |
+
+
+
+
+## ⚙️ Getting Started
+
+Follow these simple steps to set up and run the project locally 🚀
 
 ---
 
-## 🚀 Setup Instructions  
-
-### 🧩 1. Clone the Repository  
+### 🧾 Step 1: Clone the Repository
 ```bash
-git clone https://github.com/mdmusahub/RidingBookingApplication.git
-cd RidingBookingApplication
+git clone https://github.com/mdmusahub/RidingSystemApplication.git
+cd RidingSystemApplication
+
+
 
 if you're using .yml, Open src/main/resources/application.yml and update your credentials:
 spring:
@@ -73,15 +85,17 @@ mvn spring-boot:run
 
 
 
-🧠 Future Enhancements
+🚀 Future Enhancements
 
-📡 Real-time ride updates using WebSockets
+📡 Real-time tracking using WebSocket
 
-💳 Payment Gateway Integration
+💳 Payment Gateway integration
 
-⭐ Rating System for Drivers & Riders
+⭐ Ride rating & feedback system
 
-📍 Driver auto-matching algorithm based on nearest location
+📍 Nearest driver auto-assignment
+
+📱 Mobile app integration using REST APIs
 
 
 
