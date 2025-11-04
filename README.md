@@ -47,8 +47,8 @@ clean architecture, layered design, and secure JWT-based authentication.
 | **Database** | MySQL |
 | **ORM** | JPA / Hibernate |
 | **Build Tool** | Maven |
-| **Language** | Java 17+ |
-| **IDE** | IntelliJ IDEA / VS Code / Eclipse |
+| **Language** | Java 21 |
+| **IDE** | IntelliJ IDEA |
 
 
 
