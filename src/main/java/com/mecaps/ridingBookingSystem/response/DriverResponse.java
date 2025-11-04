@@ -2,7 +2,11 @@ package com.mecaps.ridingBookingSystem.response;
 
 import com.mecaps.ridingBookingSystem.entity.Driver;
 import com.mecaps.ridingBookingSystem.entity.User;
+import lombok.Getter;
+import lombok.Setter;
 
+@Getter
+@Setter
 public class DriverResponse {
 
     private Long id;

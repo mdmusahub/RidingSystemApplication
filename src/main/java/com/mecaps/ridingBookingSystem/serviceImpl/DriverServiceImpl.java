@@ -65,9 +65,11 @@ public class DriverServiceImpl implements DriverService {
     public ResponseEntity<?> getDriverById(Long id){
         Driver driver = driverRepository.findById(id)
                 .orElseThrow(()-> new DriverNotFoundException("Driver not found with given id"));
+
+        DriverResponse driverResponse = new DriverResponse(driver);
         return ResponseEntity.status(HttpStatus.OK)
                 .body(Map.of("message","Driver found successfully",
-                        "body",driver,
+                        "body",driverResponse,
                         "success", "true"));
     }
 

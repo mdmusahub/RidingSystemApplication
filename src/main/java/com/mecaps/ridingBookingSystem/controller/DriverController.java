@@ -18,12 +18,11 @@ public class DriverController {
     public DriverController(DriverServiceImpl driverService) {
         this.driverService = driverService;
     }
-    @PreAuthorize("hasRole('USER')")
     @PostMapping("/create")
     public ResponseEntity<?> createDriver(@RequestBody DriverRequest request) {
         return driverService.createDriver(request);
     }
-    @PreAuthorize("hasRole('USER')")
+
     @GetMapping("/get/{id}")
     public ResponseEntity<?> getDriverById(@PathVariable Long id) {
         return driverService.getDriverById(id);
@@ -35,12 +34,11 @@ public class DriverController {
         return driverService.getAllDrivers();
     }
 
-    @PreAuthorize("hasRole('USER')")
     @PutMapping("/update/{id}")
     public ResponseEntity<?> updateDriver(@PathVariable Long id, @RequestBody DriverRequest request) {
         return driverService.updateDriver(id, request);
     }
-    @PreAuthorize("hasRole('ADMIN') AND hasRole('USER')")
+    @PreAuthorize("hasRole('ADMIN') AND hasRole('DRIVER')")
     @DeleteMapping("/delete/{id}")
     public ResponseEntity<?> deleteDriver(@PathVariable Long id) {
         return driverService.deleteDriver(id);
