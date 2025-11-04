@@ -1,5 +1,9 @@
 package com.mecaps.ridingBookingSystem.serviceImpl;
 
+import com.mecaps.ridingBookingSystem.entity.Driver;
+import com.mecaps.ridingBookingSystem.entity.Rider;
+import com.mecaps.ridingBookingSystem.exception.DriverNotFoundException;
+import com.mecaps.ridingBookingSystem.repository.DriverRepository;
 import com.mecaps.ridingBookingSystem.request.ChangePasswordRequest;
 import com.mecaps.ridingBookingSystem.request.UserRequest;
 import com.mecaps.ridingBookingSystem.response.UserResponse;
@@ -22,8 +26,7 @@ public class UserServiceImpl implements UserService {
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
 
-
-    public UserServiceImpl(UserRepository userRepository,PasswordEncoder passwordEncoder) {
+    public UserServiceImpl(UserRepository userRepository, PasswordEncoder passwordEncoder) {
         this.userRepository = userRepository;
         this.passwordEncoder = passwordEncoder;
     }
@@ -41,11 +44,23 @@ public class UserServiceImpl implements UserService {
         }
 
         User user = new User();
+
         user.setFullName(request.getFullName());
         user.setEmail(request.getEmail());
         user.setPhone(request.getPhone());
         user.setPassword(passwordEncoder.encode(request.getPassword()));
         user.setRole(request.getRole());
+
+//        if(user.getRole().toString().equals("DRIVER")){
+//            user.setDriver(request.getDriverDetails()
+//                    .orElseThrow(() -> new DriverNotFoundException("No Driver Details found in the request.")));
+//        }
+
+        if(user.getRole().toString().equals("RIDER")){
+            Rider rider = new Rider();
+
+
+        }
 
         User save = userRepository.save(user);
 
@@ -139,6 +154,7 @@ public class UserServiceImpl implements UserService {
     public ResponseEntity<?> deleteUser(Long id){
         User user = userRepository.findById(id)
                 .orElseThrow(()-> new UserNotFoundException("User not found"));
+
         userRepository.delete(user);
 
         return ResponseEntity.ok("DELETED");

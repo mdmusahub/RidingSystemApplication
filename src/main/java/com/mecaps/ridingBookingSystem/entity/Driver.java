@@ -11,7 +11,8 @@ public class Driver {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @ManyToOne
+    @OneToOne
+    @JoinColumn(name = "user_id")
     private User userId;
 
     @Column(nullable = false)
