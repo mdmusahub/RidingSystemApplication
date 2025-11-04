@@ -32,4 +32,7 @@ public class RideRequests {
 
     @DateTimeFormat
     private String expiresAt;
+
+    @OneToOne(mappedBy = "requestsId", cascade = CascadeType.ALL, orphanRemoval = true)
+    private Rides requestId;
 }

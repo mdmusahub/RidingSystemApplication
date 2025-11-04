@@ -13,7 +13,8 @@ public class Location {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long Id;
 
-    @ManyToOne
+    @OneToOne
+    @JoinColumn( name = "driver_id", nullable = false)
     private Driver driverId;
 
     @Column(nullable = false)
