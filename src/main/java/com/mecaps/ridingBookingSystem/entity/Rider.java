@@ -3,6 +3,8 @@ package com.mecaps.ridingBookingSystem.entity;
 import jakarta.persistence.*;
 import lombok.Data;
 
+import java.util.List;
+
 @Entity
 @Data
 public class Rider {
@@ -11,8 +13,14 @@ public class Rider {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @ManyToOne
+    @OneToOne
+    @JoinColumn(name = "user_id", nullable = false)
     private User userId;
 
     private Float rating;
+
+    @OneToMany(mappedBy = "riderId", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Rides> rides;
+
+
 }

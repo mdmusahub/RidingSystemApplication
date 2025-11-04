@@ -5,7 +5,11 @@ import com.mecaps.ridingBookingSystem.exception.InvalidCredentialsException;
 import com.mecaps.ridingBookingSystem.exception.UserNotFoundException;
 import com.mecaps.ridingBookingSystem.repository.UserRepository;
 import com.mecaps.ridingBookingSystem.request.AuthDTO;
+import com.mecaps.ridingBookingSystem.request.RefreshTokenRequest;
+import com.mecaps.ridingBookingSystem.response.TokenResponse;
 import com.mecaps.ridingBookingSystem.security.JwtService;
+import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -40,14 +44,33 @@ public class AuthController {
             throw new InvalidCredentialsException("Invalid Credentials.");
         }
 
-        String token = jwtService.generateAccessToken(user.getEmail(),String.valueOf(user.getRole()));
+        String accessToken = jwtService.generateAccessToken(user.getEmail(),String.valueOf(user.getRole()));
+        String refreshToken = jwtService.generateRefreshToken(user.getEmail(),String.valueOf(user.getRole()));
 
         Map<String, String> authResponse = new HashMap<>();
-
-        authResponse.put("Token : ",token);
+        authResponse.put("AccessToken : ",accessToken);
+        authResponse.put("RefreshToken : ",refreshToken);
         authResponse.put("Role : ", String.valueOf(user.getRole()));
         authResponse.put("Email : ", user.getEmail());
-
         return authResponse;
     }
+    @PostMapping("/refresh")
+    public ResponseEntity<?> refresh(@RequestBody RefreshTokenRequest request){
+        String oldRefreshToken = request.getRefreshToken();
+
+        String email = jwtService.extractEmail(oldRefreshToken);
+        String role = jwtService.extractRole(oldRefreshToken);
+
+        String newAccessToken = jwtService.generateAccessToken(email,role);
+        String newRefreshToken = jwtService.generateRefreshToken(email,role);
+
+        TokenResponse tokenResponse = new TokenResponse(newAccessToken,newRefreshToken);
+        return  ResponseEntity.ok(Map.of(
+
+                "NewAccessToken",newAccessToken,
+                "NewRefreshToken",newRefreshToken));
+
+    }
+
+
 }

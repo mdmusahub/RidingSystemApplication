@@ -33,4 +33,11 @@ public class User {
     @DateTimeFormat
     @CreationTimestamp
     private Date createdAt;
+
+
+    @OneToOne(mappedBy = "userId", cascade = CascadeType.ALL, orphanRemoval = true)
+    private Rider rider;
+
+    @OneToOne(mappedBy = "userId", cascade = CascadeType.ALL, orphanRemoval = true)
+    private Driver driver;
 }
