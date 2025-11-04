@@ -1,8 +1,7 @@
 package com.mecaps.ridingBookingSystem.serviceImpl;
 
-//import com.mecaps.ridingBookingSystem.entity.rider;
+
 import com.mecaps.ridingBookingSystem.entity.Rider;
-//import com.mecaps.ridingBookingSystem.exception.riderNotFoundException;
 import com.mecaps.ridingBookingSystem.exception.RiderNotFoundException;
 import com.mecaps.ridingBookingSystem.exception.UserNotFoundException;
 import com.mecaps.ridingBookingSystem.repository.RiderRepository;
