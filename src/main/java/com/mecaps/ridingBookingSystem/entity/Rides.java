@@ -35,7 +35,8 @@ public class Rides {
     private Integer riderRating;
 
     @Column(length = 50)
-    private String status;
+    @Enumerated(EnumType.STRING)
+    private RideStatus status;
 
     @CreationTimestamp
     private LocalDateTime createdAt;
@@ -44,8 +45,7 @@ public class Rides {
 
     private LocalDateTime endTime;
 
-
-    @OneToOne(mappedBy = "rideId", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToOne(mappedBy = "rideId")
     private Review review;
 
 }

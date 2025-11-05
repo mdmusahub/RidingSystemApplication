@@ -8,13 +8,11 @@ import com.mecaps.ridingBookingSystem.request.AuthDTO;
 import com.mecaps.ridingBookingSystem.request.RefreshTokenRequest;
 import com.mecaps.ridingBookingSystem.response.TokenResponse;
 import com.mecaps.ridingBookingSystem.security.JwtService;
+import com.mecaps.ridingBookingSystem.security.TokenBlackListService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -23,14 +21,17 @@ import java.util.Map;
 @RequestMapping("/auth")
 public class AuthController {
 
-    private UserRepository userRepository;
-    private PasswordEncoder passwordEncoder;
-    private JwtService jwtService;
+    private final UserRepository userRepository;
+    private final PasswordEncoder passwordEncoder;
+    private final JwtService jwtService;
+    private final TokenBlackListService tokenBlackListService;
 
-    public AuthController(UserRepository userRepository, PasswordEncoder passwordEncoder, JwtService jwtService) {
+
+    public AuthController(UserRepository userRepository, PasswordEncoder passwordEncoder, JwtService jwtService, TokenBlackListService tokenBlackListService) {
         this.userRepository = userRepository;
         this.passwordEncoder = passwordEncoder;
         this.jwtService = jwtService;
+        this.tokenBlackListService = tokenBlackListService;
     }
 
     @PostMapping("/login")
@@ -72,5 +73,10 @@ public class AuthController {
 
     }
 
-
+    @PostMapping("/logout")
+    public ResponseEntity<?> logout(@RequestHeader("Authorization") String authHeader){
+        String token = authHeader.substring(7);
+        tokenBlackListService.blackListToken(token);
+        return ResponseEntity.ok("Logged out successfully");
+    }
 }

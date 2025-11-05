@@ -27,7 +27,7 @@ public class Review {
     @JoinColumn(name = "reviewee_id", nullable = false)
     private User revieweeId;
 
-
+    @Column(nullable = false)
     private Integer rating;
 
     private String comment;

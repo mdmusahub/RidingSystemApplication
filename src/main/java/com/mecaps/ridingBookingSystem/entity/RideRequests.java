@@ -24,6 +24,8 @@ public class RideRequests {
 
     private Double dropLng;
 
+    @Column(length = 50)
+    @Enumerated(EnumType.STRING)
     private RideStatus status;
 
     @DateTimeFormat
