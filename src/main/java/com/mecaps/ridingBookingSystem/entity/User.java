@@ -2,6 +2,7 @@ package com.mecaps.ridingBookingSystem.entity;
 
 import jakarta.persistence.*;
 import lombok.Data;
+import lombok.ToString;
 import org.hibernate.annotations.CreationTimestamp;
 import org.springframework.format.annotation.DateTimeFormat;
 
@@ -28,6 +29,7 @@ public class User {
     private String password;
 
     @Column(nullable = false)
+    @Enumerated(EnumType.STRING)
     private Role role;
 
     @DateTimeFormat
@@ -41,9 +43,11 @@ public class User {
     @OneToOne(mappedBy = "userId", cascade = CascadeType.ALL, orphanRemoval = true)
     private Driver driver;
 
-    @OneToOne(mappedBy = "revieweeId", cascade = CascadeType.ALL, orphanRemoval = true)
+
+    @OneToOne(mappedBy = "reviewerId")
+    private Review reviewerId;
+
+    @OneToOne(mappedBy = "revieweeId")
     private Review revieweeId;
 
-    @OneToOne(mappedBy = "reviewerId", cascade = CascadeType.ALL, orphanRemoval = true)
-    private Review reviewerId;
 }
