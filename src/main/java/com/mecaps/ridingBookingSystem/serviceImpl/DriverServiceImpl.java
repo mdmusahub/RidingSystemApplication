@@ -47,8 +47,8 @@ public class DriverServiceImpl implements DriverService {
         }
 
         Driver driver = new Driver();
-        driver.setUserId(userRepository.findById(request.getUserId())
-                .orElseThrow(() -> new UserNotFoundException("USER NOT FOUND")));
+//        driver.setUserId(userRepository.findById(request.getUserId())
+//                .orElseThrow(() -> new UserNotFoundException("USER NOT FOUND")));
         driver.setLicenseNumber(request.getLicenseNumber());
         driver.setVehicleNumber(request.getVehicleNumber());
         driver.setVehicleModel(request.getVehicleModel());
@@ -100,8 +100,8 @@ public class DriverServiceImpl implements DriverService {
         Driver driver = driverRepository.findById(id)
                 .orElseThrow(()-> new DriverNotFoundException("Driver not found with given id"));
 
-        driver.setUserId(userRepository.findById(request.getUserId())
-                .orElseThrow(() -> new UserNotFoundException("USER NOT FOUND")));
+//        driver.setUserId(userRepository.findById(request.getUserId())
+//                .orElseThrow(() -> new UserNotFoundException("USER NOT FOUND")));
         driver.setLicenseNumber(request.getLicenseNumber());
         driver.setVehicleNumber(request.getVehicleNumber());
         driver.setVehicleModel(request.getVehicleModel());
