@@ -3,7 +3,6 @@ package com.mecaps.ridingBookingSystem.entity;
 import jakarta.persistence.*;
 import lombok.Data;
 import org.hibernate.annotations.CreationTimestamp;
-import org.springframework.format.annotation.DateTimeFormat;
 
 import java.time.LocalDateTime;
 
@@ -44,5 +43,9 @@ public class Rides {
     private LocalDateTime startTime;
 
     private LocalDateTime endTime;
+
+
+    @OneToOne(mappedBy = "rideId", cascade = CascadeType.ALL, orphanRemoval = true)
+    private Review review;
 
 }
