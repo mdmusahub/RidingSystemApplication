@@ -14,6 +14,7 @@ public class RideRequests {
     private Long id;
 
     @ManyToOne
+    @JoinColumn(name = "rider_id", nullable = false)
     private Rider riderId;
 
     private Double pickupLat;
@@ -24,6 +25,8 @@ public class RideRequests {
 
     private Double dropLng;
 
+    @Column(length = 50)
+    @Enumerated(EnumType.STRING)
     private RideStatus status;
 
     @DateTimeFormat

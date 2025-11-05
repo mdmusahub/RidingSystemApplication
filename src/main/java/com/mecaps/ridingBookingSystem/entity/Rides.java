@@ -3,7 +3,6 @@ package com.mecaps.ridingBookingSystem.entity;
 import jakarta.persistence.*;
 import lombok.Data;
 import org.hibernate.annotations.CreationTimestamp;
-import org.springframework.format.annotation.DateTimeFormat;
 
 import java.time.LocalDateTime;
 
@@ -36,7 +35,8 @@ public class Rides {
     private Integer riderRating;
 
     @Column(length = 50)
-    private String status;
+    @Enumerated(EnumType.STRING)
+    private RideStatus status;
 
     @CreationTimestamp
     private LocalDateTime createdAt;
@@ -44,5 +44,8 @@ public class Rides {
     private LocalDateTime startTime;
 
     private LocalDateTime endTime;
+
+    @OneToOne(mappedBy = "rideId")
+    private Review review;
 
 }

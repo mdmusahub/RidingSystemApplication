@@ -14,6 +14,10 @@ public class RideCancellation {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+<<<<<<< HEAD
+=======
+
+>>>>>>> aea2ff395cbb328eddb5b786af2766e0c0962fc0
     @ManyToOne
     private Rides rideId;
 

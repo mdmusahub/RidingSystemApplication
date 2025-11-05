@@ -3,7 +3,6 @@ package com.mecaps.ridingBookingSystem.entity;
 import jakarta.persistence.*;
 import lombok.Data;
 
-import java.security.PrivateKey;
 import java.util.List;
 
 @Entity
@@ -38,4 +37,5 @@ public class Driver {
 
     @OneToOne(mappedBy = "driverId", cascade = CascadeType.ALL, orphanRemoval = true)
     private Location location;
+
 }

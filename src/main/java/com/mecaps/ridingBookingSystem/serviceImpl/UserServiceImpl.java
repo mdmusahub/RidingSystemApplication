@@ -2,8 +2,6 @@ package com.mecaps.ridingBookingSystem.serviceImpl;
 
 import com.mecaps.ridingBookingSystem.entity.Driver;
 import com.mecaps.ridingBookingSystem.entity.Rider;
-import com.mecaps.ridingBookingSystem.exception.DriverNotFoundException;
-import com.mecaps.ridingBookingSystem.repository.DriverRepository;
 import com.mecaps.ridingBookingSystem.request.ChangePasswordRequest;
 import com.mecaps.ridingBookingSystem.request.UserRequest;
 import com.mecaps.ridingBookingSystem.response.UserResponse;
@@ -51,15 +49,23 @@ public class UserServiceImpl implements UserService {
         user.setPassword(passwordEncoder.encode(request.getPassword()));
         user.setRole(request.getRole());
 
-//        if(user.getRole().toString().equals("DRIVER")){
-//            user.setDriver(request.getDriverDetails()
-//                    .orElseThrow(() -> new DriverNotFoundException("No Driver Details found in the request.")));
-//        }
+        if(request.getDriverRequest() != null){
+            Driver driver = new Driver();
 
-        if(user.getRole().toString().equals("RIDER")){
+            driver.setUserId(user);
+            driver.setLicenseNumber(request.getDriverRequest().getLicenseNumber());
+            driver.setVehicleNumber(request.getDriverRequest().getVehicleNumber());
+            driver.setVehicleModel(request.getDriverRequest().getVehicleModel());
+
+            user.setDriver(driver);
+        }
+
+        if(request.getRiderRequest() != null){
             Rider rider = new Rider();
 
+            rider.setUserId(user);
 
+            user.setRider(rider);
         }
 
         User save = userRepository.save(user);
