@@ -23,4 +23,7 @@ public class Rider {
     private List<Rides> rides;
 
 
+    @OneToOne(mappedBy = "reviewerId", cascade = CascadeType.ALL, orphanRemoval = true)
+    private Review review;
+
 }
