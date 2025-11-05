@@ -40,4 +40,10 @@ public class User {
 
     @OneToOne(mappedBy = "userId", cascade = CascadeType.ALL, orphanRemoval = true)
     private Driver driver;
+
+    @OneToOne(mappedBy = "revieweeId", cascade = CascadeType.ALL, orphanRemoval = true)
+    private Review revieweeId;
+
+    @OneToOne(mappedBy = "reviewerId", cascade = CascadeType.ALL, orphanRemoval = true)
+    private Review reviewerId;
 }

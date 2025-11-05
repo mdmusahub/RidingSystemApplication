@@ -22,8 +22,8 @@ public class Rider {
     @OneToMany(mappedBy = "riderId", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Rides> rides;
 
+    @OneToMany(mappedBy = "riderId", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<RideRequests> rideRequests;
 
-    @OneToOne(mappedBy = "reviewerId", cascade = CascadeType.ALL, orphanRemoval = true)
-    private Review review;
 
 }

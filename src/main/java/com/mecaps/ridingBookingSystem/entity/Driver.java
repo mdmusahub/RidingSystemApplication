@@ -38,7 +38,4 @@ public class Driver {
     @OneToOne(mappedBy = "driverId", cascade = CascadeType.ALL, orphanRemoval = true)
     private Location location;
 
-
-    @OneToOne(mappedBy = "revieweeId", cascade = CascadeType.ALL, orphanRemoval = true)
-    private Review review;
 }

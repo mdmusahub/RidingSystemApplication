@@ -2,9 +2,6 @@ package com.mecaps.ridingBookingSystem.serviceImpl;
 
 import com.mecaps.ridingBookingSystem.entity.Driver;
 import com.mecaps.ridingBookingSystem.entity.Rider;
-import com.mecaps.ridingBookingSystem.exception.DriverNotFoundException;
-import com.mecaps.ridingBookingSystem.repository.DriverRepository;
-import com.mecaps.ridingBookingSystem.repository.RiderRepository;
 import com.mecaps.ridingBookingSystem.request.ChangePasswordRequest;
 import com.mecaps.ridingBookingSystem.request.UserRequest;
 import com.mecaps.ridingBookingSystem.response.UserResponse;
@@ -26,14 +23,10 @@ import java.util.Optional;
 public class UserServiceImpl implements UserService {
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
-    private DriverRepository driverRepository;
-    private RiderRepository riderRepository;
 
-    public UserServiceImpl(UserRepository userRepository, PasswordEncoder passwordEncoder, DriverRepository driverRepository, RiderRepository riderRepository) {
+    public UserServiceImpl(UserRepository userRepository, PasswordEncoder passwordEncoder) {
         this.userRepository = userRepository;
         this.passwordEncoder = passwordEncoder;
-        this.driverRepository = driverRepository;
-        this.riderRepository = riderRepository;
     }
 
     @Override

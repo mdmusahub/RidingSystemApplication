@@ -14,6 +14,7 @@ public class RideRequests {
     private Long id;
 
     @ManyToOne
+    @JoinColumn(name = "rider_id", nullable = false)
     private Rider riderId;
 
     private Double pickupLat;
