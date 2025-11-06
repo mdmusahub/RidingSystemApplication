@@ -8,7 +8,7 @@ import com.mecaps.ridingBookingSystem.repository.DriverRepository;
 import com.mecaps.ridingBookingSystem.repository.RideRequestsRepository;
 import com.mecaps.ridingBookingSystem.repository.RiderRepository;
 import com.mecaps.ridingBookingSystem.request.RideRequestsDTO;
-import com.mecaps.ridingBookingSystem.service.RideRequestsService;
+import com.mecaps.ridingBookingSystem.service.RideRequestService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
@@ -23,7 +23,7 @@ import java.util.stream.Collectors;
 import static org.apache.coyote.http11.Constants.a;
 
 @Service
-public class RideRequestsServiceImpl implements RideRequestsService {
+public class RideRequestsServiceImpl implements RideRequestService {
 
 
     private final RideRequestsRepository rideRequestsRepository;
