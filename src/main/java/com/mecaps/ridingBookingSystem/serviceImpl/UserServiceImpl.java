@@ -10,6 +10,8 @@ import com.mecaps.ridingBookingSystem.exception.UserAlreadyExistsException;
 import com.mecaps.ridingBookingSystem.exception.UserNotFoundException;
 import com.mecaps.ridingBookingSystem.repository.UserRepository;
 import com.mecaps.ridingBookingSystem.service.UserService;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -23,6 +25,7 @@ import java.util.Optional;
 public class UserServiceImpl implements UserService {
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
+//    private final static Logger logger = LoggerFactory.getLogger(UserServiceImpl.class);
 
     public UserServiceImpl(UserRepository userRepository, PasswordEncoder passwordEncoder) {
         this.userRepository = userRepository;
@@ -71,6 +74,7 @@ public class UserServiceImpl implements UserService {
         User save = userRepository.save(user);
 
         UserResponse userResponse = new UserResponse(save);
+//        logger.info("New User Created Successfully");
         return ResponseEntity.status(HttpStatus.CREATED).body(
                 Map.of(
                         "message","User created successfully",
