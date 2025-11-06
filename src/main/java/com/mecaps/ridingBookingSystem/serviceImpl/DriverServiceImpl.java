@@ -1,10 +1,12 @@
 package com.mecaps.ridingBookingSystem.serviceImpl;
 
 import com.mecaps.ridingBookingSystem.entity.Driver;
+import com.mecaps.ridingBookingSystem.entity.RideRequests;
 import com.mecaps.ridingBookingSystem.exception.DriverAlreadyExistsException;
 import com.mecaps.ridingBookingSystem.exception.DriverNotFoundException;
 import com.mecaps.ridingBookingSystem.exception.UserNotFoundException;
 import com.mecaps.ridingBookingSystem.repository.DriverRepository;
+import com.mecaps.ridingBookingSystem.repository.RideRequestsRepository;
 import com.mecaps.ridingBookingSystem.repository.UserRepository;
 import com.mecaps.ridingBookingSystem.request.DriverRequest;
 import com.mecaps.ridingBookingSystem.response.DriverResponse;
@@ -23,11 +25,13 @@ public class DriverServiceImpl implements DriverService {
 
     final private DriverRepository driverRepository;
     final private UserRepository userRepository;
+     final private RideRequestsRepository rideRequestsRepository;
 
     @Autowired
-    public DriverServiceImpl(DriverRepository driverRepository, UserRepository userRepository) {
+    public DriverServiceImpl(DriverRepository driverRepository, UserRepository userRepository, RideRequestsRepository rideRequestsRepository) {
         this.driverRepository = driverRepository;
         this.userRepository = userRepository;
+        this.rideRequestsRepository = rideRequestsRepository;
     }
 
     @Override
@@ -124,4 +128,8 @@ public class DriverServiceImpl implements DriverService {
         return ResponseEntity.ok("DELETED");
     }
 
+
+    public ResponseEntity<List<RideRequests>> getAvailableRideRequests() {
+     return ResponseEntity.ok(rideRequestsRepository.findAll());
+    }
 }

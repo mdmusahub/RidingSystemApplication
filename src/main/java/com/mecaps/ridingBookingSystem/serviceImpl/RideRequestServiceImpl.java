@@ -28,7 +28,7 @@ public class RideRequestServiceImpl implements RideRequestService {
     }
 
     @Override
-   public ResponseEntity<?> createRiderequest(RideRequestsDTO request){
+   public ResponseEntity<?> createRideRequest(RideRequestsDTO request){
         Rider rider = riderRepository.findById(request.getRiderId())
                 .orElseThrow(() -> new RiderNotFoundException
                         ("Rider not found with ID: " + request.getRiderId()));
@@ -40,7 +40,9 @@ public class RideRequestServiceImpl implements RideRequestService {
         rideRequests.setPickupLng(request.getPickupLng());
         rideRequests.setDropLat(request.getDropLat());
         rideRequests.setDropLng(request.getDropLng());
-
+        return null;
 
     }
+
+
 }

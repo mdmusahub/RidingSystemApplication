@@ -1,11 +1,14 @@
 package com.mecaps.ridingBookingSystem.controller;
 
+import com.mecaps.ridingBookingSystem.entity.RideRequests;
 import com.mecaps.ridingBookingSystem.request.DriverRequest;
 import com.mecaps.ridingBookingSystem.serviceImpl.DriverServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @RestController
 @RequestMapping("/driver")
@@ -43,4 +46,11 @@ public class DriverController {
     public ResponseEntity<?> deleteDriver(@PathVariable Long id) {
         return driverService.deleteDriver(id);
     }
+    @GetMapping("/get/rideRequests")
+    public ResponseEntity<List<RideRequests>> getAvailableRideRequests(){
+        return driverService.getAvailableRideRequests();
+
+    }
 }
+
+
