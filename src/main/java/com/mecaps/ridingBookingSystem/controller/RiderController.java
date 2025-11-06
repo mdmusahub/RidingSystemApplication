@@ -34,4 +34,6 @@ public class RiderController {
     public ResponseEntity<?> deleteRider(@PathVariable Long id) {
         return riderService.deleteRider(id);
     }
+
+    // Starting ride request process
 }

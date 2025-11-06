@@ -45,12 +45,12 @@ public class RideRequestsServiceImpl implements RideRequestsService {
         double latDistance = Math.toRadians(lat2 - lat1);
         double lonDistance = Math.toRadians(lon2 - lon1);
 
-        double step1 = Math.sin(latDistance / 2) * Math.sin(latDistance / 2)
+        double a = Math.sin(latDistance / 2) * Math.sin(latDistance / 2)
                 + Math.cos(Math.toRadians(lat1)) * Math.cos(Math.toRadians(lat2))
                 * Math.sin(lonDistance / 2) * Math.sin(lonDistance / 2);
-        double step2 = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+        double c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
 
-        return R * step2;
+        return R * c;
     }
 
     private List<Driver> findNearestDrivers(double pickupLat, double pickupLng){
@@ -81,13 +81,15 @@ public class RideRequestsServiceImpl implements RideRequestsService {
         rideRequests.setRequestedAt(LocalDateTime.now().toString());
         rideRequests.setExpiresAt(LocalDateTime.now().plusMinutes(3).toString());
 
+
+
         rideRequestsRepository.save(rideRequests);
 
         double distance = calculateDistance(request.getPickupLat(), request.getPickupLng(),
         request.getDropLat(), request.getDropLng());
         double fare = distance * 10;
 
-        List<Driver> nearestDrivers = findNearestDrivers
+        List<Driver>  nearestDrivers = findNearestDrivers
                 (request.getPickupLat(), request.getPickupLng());
 
         Map<String, Object> response = new LinkedHashMap<>();

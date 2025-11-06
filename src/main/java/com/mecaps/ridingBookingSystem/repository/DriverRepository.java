@@ -21,5 +21,5 @@ public interface DriverRepository extends JpaRepository <Driver, Long>{
     @Query("SELECT d FROM Driver d WHERE d.vehicleNumber = ?1")
     Optional<Driver> findByVehicleNumber(String vehicleNumber);
 
-    List<Driver> findByAvailableTrue();
+    List<Driver> findByIsAvailableTrue();
 }
