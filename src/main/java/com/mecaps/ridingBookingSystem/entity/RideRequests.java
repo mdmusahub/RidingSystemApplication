@@ -5,6 +5,9 @@ import lombok.Data;
 import org.hibernate.annotations.CreationTimestamp;
 import org.springframework.format.annotation.DateTimeFormat;
 
+import java.time.LocalDateTime;
+import java.util.Date;
+
 @Entity
 @Data
 public class RideRequests {
@@ -29,12 +32,9 @@ public class RideRequests {
     @Enumerated(EnumType.STRING)
     private RideStatus status;
 
-    @DateTimeFormat
-    @CreationTimestamp
-    private String requestedAt;
+    private LocalDateTime requestedAt;
 
-    @DateTimeFormat
-    private String expiresAt;
+    private LocalDateTime expiresAt;
 
     @OneToOne(mappedBy = "requestsId", cascade = CascadeType.ALL, orphanRemoval = true)
     private Rides requestId;

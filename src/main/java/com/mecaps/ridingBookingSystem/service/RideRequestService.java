@@ -10,7 +10,7 @@ public interface RideRequestService {
 
     ResponseEntity<?> createRideRequest(RideRequestsDTO request);
 
-    List<Driver> findNearestAvailableDrivers(RideRequestsDTO request, Integer limit);
+    ResponseEntity<?> confirmRideRequestPickup(Long rideRequestId, Boolean isConfirmed);
 
-    ResponseEntity<?> confirmRideRequest(Long id, Boolean confirmation);
+    ResponseEntity<?> driverRideRequestConfirmation(Long rideRequestId, Long driverId, Boolean isAccepted);
 }
