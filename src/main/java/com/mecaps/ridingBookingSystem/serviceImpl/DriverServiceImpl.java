@@ -1,15 +1,15 @@
 package com.mecaps.ridingBookingSystem.serviceImpl;
 
 import com.mecaps.ridingBookingSystem.entity.Driver;
-import com.mecaps.ridingBookingSystem.entity.RideRequests;
 import com.mecaps.ridingBookingSystem.exception.DriverAlreadyExistsException;
 import com.mecaps.ridingBookingSystem.exception.DriverNotFoundException;
 import com.mecaps.ridingBookingSystem.repository.DriverRepository;
 import com.mecaps.ridingBookingSystem.repository.UserRepository;
 import com.mecaps.ridingBookingSystem.request.DriverRequest;
+import com.mecaps.ridingBookingSystem.request.RideRequestsDTO;
 import com.mecaps.ridingBookingSystem.response.DriverResponse;
 import com.mecaps.ridingBookingSystem.service.DriverService;
-import com.mecaps.ridingBookingSystem.util.DistanceCalculator;
+import com.mecaps.ridingBookingSystem.util.DistanceFareUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -125,17 +125,19 @@ public class DriverServiceImpl implements DriverService {
 
 
     @Override
-    public List<Driver> findNearestAvailableDrivers(RideRequests rideRequest, Integer limit) {
+    public List<DriverResponse> findNearestAvailableDrivers(RideRequestsDTO request, Integer limit) {
         List<Driver> availableDrivers = driverRepository.findByIsAvailableTrue();
 
-        return availableDrivers.stream().sorted(Comparator.comparingDouble(driver ->
-                        DistanceCalculator.calculateDistance(
-                                rideRequest.getPickupLat(),
-                                rideRequest.getPickupLng(),
+        List<Driver> nearestDrivers = availableDrivers.stream().sorted(Comparator.comparingDouble(driver ->
+                        DistanceFareUtil.calculateDistance(
+                                request.getPickupLat(),
+                                request.getPickupLng(),
                                 driver.getLocation().getLatitude(),
                                 driver.getLocation().getLongitude())))
                 .limit(limit)
                 .toList();
+
+        return nearestDrivers.stream().map(DriverResponse::new).toList();
     }
 
 }

@@ -5,12 +5,13 @@ import com.mecaps.ridingBookingSystem.request.RideRequestsDTO;
 import org.springframework.http.ResponseEntity;
 
 import java.util.List;
+import java.util.Map;
 
 public interface RideRequestService {
 
-    ResponseEntity<?> createRideRequest(RideRequestsDTO request);
+    Map<String,Object> getRideFareAndDistance(RideRequestsDTO request);
 
-    ResponseEntity<?> confirmRideRequestPickup(Long rideRequestId, Boolean isConfirmed);
+    ResponseEntity<?> createRideRequest(RideRequestsDTO request);
 
     ResponseEntity<?> driverRideRequestConfirmation(Long rideRequestId, Long driverId, Boolean isAccepted);
 }
