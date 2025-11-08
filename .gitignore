@@ -34,3 +34,7 @@ build/
 
 ### Environment Variables file ###
 .env
+
+# Ignore all log files
+*.log
+/logs/

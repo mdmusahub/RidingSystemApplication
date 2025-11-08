@@ -10,6 +10,7 @@ import com.mecaps.ridingBookingSystem.exception.UserAlreadyExistsException;
 import com.mecaps.ridingBookingSystem.exception.UserNotFoundException;
 import com.mecaps.ridingBookingSystem.repository.UserRepository;
 import com.mecaps.ridingBookingSystem.service.UserService;
+import lombok.extern.slf4j.Slf4j;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
@@ -22,6 +23,7 @@ import java.util.Map;
 import java.util.Optional;
 
 @Service
+@Slf4j
 public class UserServiceImpl implements UserService {
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
@@ -74,7 +76,7 @@ public class UserServiceImpl implements UserService {
         User save = userRepository.save(user);
 
         UserResponse userResponse = new UserResponse(save);
-//        logger.info("New User Created Successfully");
+        log.info("New User Created Successfully : {}",user.getFullName());
         return ResponseEntity.status(HttpStatus.CREATED).body(
                 Map.of(
                         "message","User created successfully",
