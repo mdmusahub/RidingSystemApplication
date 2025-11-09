@@ -54,18 +54,12 @@ public class RideRequestServiceImpl implements RideRequestService {
         rideRequest.setDropLat(request.getDropLat());
         rideRequest.setDropLng(request.getDropLng());
 
-
-//        rideRequest.setRequestedAt(LocalDateTime.now().toString());
-//        rideRequest.setExpiresAt(LocalDateTime.now().plusMinutes(3).toString());
-
         rideRequestsRepository.save(rideRequest);
 
         Double distance = DistanceCalculator.calculateDistance(request.getPickupLat(), request.getPickupLng(),
                 request.getDropLat(), request.getDropLng());
         Double fare = distance * FARE_PER_KM;
-//
-//        List<Driver> nearestDrivers = findNearestDrivers
-//                (request.getPickupLat(), request.getPickupLng());
+
 
         Map<String, Object> response = new HashMap<>();
 
@@ -73,7 +67,6 @@ public class RideRequestServiceImpl implements RideRequestService {
         response.put("rideRequestId", rideRequest.getId());
         response.put("distanceInKM", distance);
         response.put("estimatedFare", fare);
-//        response.put("nearestDriversCount", nearestDrivers.size());
         response.put("success", true);
 
         return ResponseEntity.status(HttpStatus.CREATED).body(response);
