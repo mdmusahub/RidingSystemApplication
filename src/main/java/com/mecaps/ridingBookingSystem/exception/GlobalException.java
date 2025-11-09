@@ -52,4 +52,13 @@ public class GlobalException {
 
         return new ResponseEntity<>(errorResponse, HttpStatusCode.valueOf(404));
     }
+
+    @ExceptionHandler(RideRequestNotFoundException.class)
+    public ResponseEntity<ErrorResponse> handleRiderNotFound(RideRequestNotFoundException exception,
+                                                             HttpServletRequest request){
+        ErrorResponse errorResponse = new ErrorResponse(LocalDateTime.now(),
+                HttpStatus.NOT_FOUND.value(), exception.getMessage(), request.getRequestURI());
+
+        return new ResponseEntity<>(errorResponse, HttpStatusCode.valueOf(404));
+    }
 }

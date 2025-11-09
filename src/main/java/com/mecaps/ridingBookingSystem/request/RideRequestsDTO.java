@@ -5,6 +5,8 @@ import lombok.Data;
 @Data
 public class RideRequestsDTO {
 
+    private Long rideRequestId;
+
     private Long riderId;
     private Double pickupLat;
 

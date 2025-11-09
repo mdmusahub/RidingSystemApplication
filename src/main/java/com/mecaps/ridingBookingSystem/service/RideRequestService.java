@@ -11,7 +11,7 @@ public interface RideRequestService {
 
     ResponseEntity<?> createRideRequest(RideRequestsDTO request);
 
-//    List<Driver> findNearestAvailableDrivers(RideRequestsDTO request, Integer limit);
-//
-//    ResponseEntity<?> confirmRideRequest(Long id, Boolean confirmation);
+    ResponseEntity<?> findNearestAvailableDrivers(RideRequestsDTO request, Integer limit);
+
+    ResponseEntity<?> confirmRideRequest(Long id, Boolean confirmation);
 }
