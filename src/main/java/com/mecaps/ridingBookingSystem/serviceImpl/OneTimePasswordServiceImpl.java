@@ -37,7 +37,17 @@ public class OneTimePasswordServiceImpl implements OneTimePasswordService {
     }
 
     @Override
-    public void deleteOtp(Long id){
+    public boolean validateOtp(String enteredOtp, OneTimePassword otp) {
+        if (enteredOtp.equals(otp.getOtpCode())) {
+            deleteOtp(otp.getId());
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+    @Override
+    public void deleteOtp(Long id) {
         oneTimePasswordRepository.deleteById(id);
     }
 }

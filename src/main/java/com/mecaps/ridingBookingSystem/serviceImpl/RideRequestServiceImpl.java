@@ -1,9 +1,6 @@
 package com.mecaps.ridingBookingSystem.serviceImpl;
 
-import com.mecaps.ridingBookingSystem.entity.Driver;
-import com.mecaps.ridingBookingSystem.entity.RideRequests;
-import com.mecaps.ridingBookingSystem.entity.RideStatus;
-import com.mecaps.ridingBookingSystem.entity.Rider;
+import com.mecaps.ridingBookingSystem.entity.*;
 import com.mecaps.ridingBookingSystem.exception.DriverNotFoundException;
 import com.mecaps.ridingBookingSystem.exception.RideRequestNotFoundException;
 import com.mecaps.ridingBookingSystem.exception.RiderNotFoundException;
@@ -79,12 +76,13 @@ public class RideRequestServiceImpl implements RideRequestService {
 
         rideRequestsRepository.save(rideRequest);
 
-        oneTimePasswordService.createOtp(rider.getId(), rideRequest.getId());
+        OneTimePassword otp = oneTimePasswordService.createOtp(rider.getId(), rideRequest.getId());
 
         Map<String, Object> response = new HashMap<>();
 
         response.put("message", "Rider Confirmed Pickup. RideRequest created successfully");
         response.put("rideRequestId", rideRequest.getId());
+        response.put("startRideOTP",otp.getOtpCode());
         response.put("distanceInKM", this.getRideFareAndDistance(request).get("distance"));
         response.put("estimatedFare", this.getRideFareAndDistance(request).get("fare"));
         response.put("DriversAvailableNearby", driverService.findNearestAvailableDrivers(request, 3));

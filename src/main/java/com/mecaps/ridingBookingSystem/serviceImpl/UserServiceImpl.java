@@ -76,7 +76,9 @@ public class UserServiceImpl implements UserService {
         User save = userRepository.save(user);
 
         UserResponse userResponse = new UserResponse(save);
+
         log.info("New User Created Successfully : {}",user.getFullName());
+
         return ResponseEntity.status(HttpStatus.CREATED).body(
                 Map.of(
                         "message","User created successfully",
