@@ -174,4 +174,13 @@ public class UserServiceImpl implements UserService {
         return ResponseEntity.ok("DELETED");
     }
 
+    public ResponseEntity<?> forgotPassword(UserRequest request) {
+        User user = userRepository.findByEmail(request.getEmail())
+                .orElseThrow(()-> new RuntimeException("Email does not exist"));
+        user.setEmail(request.getEmail());
+        user.setPassword(request.getPassword());
+        return ResponseEntity.ok("Password forgot successfully!");
+    }
+
+
 }
