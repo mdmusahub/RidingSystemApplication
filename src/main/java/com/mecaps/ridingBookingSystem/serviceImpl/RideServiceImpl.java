@@ -1,11 +1,9 @@
 package com.mecaps.ridingBookingSystem.serviceImpl;
 
 import com.mecaps.ridingBookingSystem.entity.*;
-import com.mecaps.ridingBookingSystem.exception.DriverNotFoundException;
-import com.mecaps.ridingBookingSystem.exception.OneTimePasswordNotFoundException;
-import com.mecaps.ridingBookingSystem.exception.RideRequestNotFoundException;
-import com.mecaps.ridingBookingSystem.exception.RiderNotFoundException;
+import com.mecaps.ridingBookingSystem.exception.*;
 import com.mecaps.ridingBookingSystem.repository.*;
+import com.mecaps.ridingBookingSystem.request.CompleteRideRequest;
 import com.mecaps.ridingBookingSystem.request.StartRideRequest;
 import com.mecaps.ridingBookingSystem.service.RideService;
 import com.mecaps.ridingBookingSystem.util.DistanceFareUtil;
@@ -82,5 +80,42 @@ public class RideServiceImpl implements RideService {
         ));
     }
 
-    public ResponseEntity<?> completeRide()
+    @Override
+    public ResponseEntity<?> completeRide(CompleteRideRequest completeRideRequest){
+        Rides ride = rideRepository.findById(completeRideRequest.getRideId())
+                .orElseThrow(() -> new RideNotFoundException("Ride not found for the given ID: " + completeRideRequest.getRideId()));
+
+        RideRequests rideRequest = rideRequestsRepository.findById(ride.getRequestsId().getId())
+                .orElseThrow(() -> new RideRequestNotFoundException("No such Ride Request Found"));
+
+        Driver driver = driverRepository.findById(completeRideRequest.getDriverId())
+                .orElseThrow(() -> new DriverNotFoundException("Driver not found for the given ID: " + completeRideRequest.getDriverId()));
+
+        if(!ride.getDriverId().equals(driver)){
+           return ResponseEntity.status(HttpStatus.FORBIDDEN)
+                   .body(Map.of(
+                           "message","Driver is not assigned to this ride",
+                           "success",false
+                   ));
+        }
+        ride.setStatus(RideStatus.COMPLETED);
+        ride.setEndTime(LocalDateTime.now());
+
+        driver.setIsAvailable(true);
+
+        rideRepository.save(ride);
+        driverRepository.save(driver);
+
+        // Distance & Fare for the Ride
+        Double distanceKm = DistanceFareUtil.calculateDistance(rideRequest.getPickupLat(), rideRequest.getPickupLng(), rideRequest.getDropLat(), rideRequest.getDropLng());
+        Double fare = DistanceFareUtil.calculateFare(distanceKm);
+
+        return ResponseEntity.ok().body(Map.of(
+                "message","Ride completed successfully",
+                "rideId",ride.getId(),
+                "fare",fare,
+                "distance",distanceKm,
+                "success","true"
+        ));
+    }
 }
