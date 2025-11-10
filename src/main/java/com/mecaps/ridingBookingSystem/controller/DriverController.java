@@ -4,6 +4,7 @@ import com.mecaps.ridingBookingSystem.request.DriverRequest;
 import com.mecaps.ridingBookingSystem.serviceImpl.DriverServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -17,7 +18,6 @@ public class DriverController {
     public DriverController(DriverServiceImpl driverService) {
         this.driverService = driverService;
     }
-
     @PostMapping("/create")
     public ResponseEntity<?> createDriver(@RequestBody DriverRequest request) {
         return driverService.createDriver(request);
@@ -28,6 +28,7 @@ public class DriverController {
         return driverService.getDriverById(id);
     }
 
+    @PreAuthorize("hasRole('ADMIN')")
     @GetMapping("/getAll")
     public ResponseEntity<?> getAllDrivers() {
         return driverService.getAllDrivers();
@@ -37,7 +38,7 @@ public class DriverController {
     public ResponseEntity<?> updateDriver(@PathVariable Long id, @RequestBody DriverRequest request) {
         return driverService.updateDriver(id, request);
     }
-
+    @PreAuthorize("hasRole('ADMIN') AND hasRole('DRIVER')")
     @DeleteMapping("/delete/{id}")
     public ResponseEntity<?> deleteDriver(@PathVariable Long id) {
         return driverService.deleteDriver(id);

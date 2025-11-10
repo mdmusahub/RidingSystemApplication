@@ -1,4 +1,4 @@
-package com.mecaps.ridingBookingSystem.Config;
+package com.mecaps.ridingBookingSystem.config;
 
 import com.mecaps.ridingBookingSystem.security.JwtAuthFilter;
 import org.springframework.context.annotation.Bean;
@@ -11,6 +11,7 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+
 
 @Configuration
 @EnableWebSecurity
@@ -34,6 +35,10 @@ public class SecurityConfig {
                 .requestMatchers("/auth/login").permitAll()
                 .requestMatchers("/auth/forgot-password").permitAll()
                 .requestMatchers("/auth/reset-password").permitAll()
+                .requestMatchers("/auth/refresh").permitAll()
+                .requestMatchers("/driver/**").hasRole("DRIVER")
+                .requestMatchers("/driver/getAll").hasRole("ADMIN")
+                .requestMatchers("/user/getAll").hasRole("ADMIN")
                 .anyRequest().authenticated());
 
         httpSecurity.addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class);

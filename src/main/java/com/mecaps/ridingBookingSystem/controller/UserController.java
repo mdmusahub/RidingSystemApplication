@@ -1,10 +1,14 @@
 package com.mecaps.ridingBookingSystem.controller;
 
+import com.mecaps.ridingBookingSystem.request.ChangePasswordRequest;
 import com.mecaps.ridingBookingSystem.request.UserRequest;
 import com.mecaps.ridingBookingSystem.serviceImpl.UserServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
+
+import java.net.Authenticator;
 
 @RestController
 @RequestMapping ("/user")
@@ -37,6 +41,14 @@ public class UserController {
     @PutMapping("/update/{id}")
     public ResponseEntity<?> updateUser(@PathVariable Long id, @RequestBody UserRequest request){
         return userService.updateUser(id,request);
+    }
+
+
+    @PutMapping("/change-password")
+    public ResponseEntity<?> changePassword(@RequestBody ChangePasswordRequest request
+            , Authentication authentication){
+        String email = authentication.getName();
+        return userService.changePassword(email,request);
     }
 
     @DeleteMapping("/delete/{id}")
