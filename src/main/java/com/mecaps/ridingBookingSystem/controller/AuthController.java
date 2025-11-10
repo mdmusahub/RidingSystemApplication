@@ -130,6 +130,7 @@ public class AuthController {
 
         return ResponseEntity.ok("Password successfully changed.");
     }
+
         @PostMapping("/logout")
         public ResponseEntity<?> logout (@RequestHeader("Authorization") String authHeader){
             String token = authHeader.substring(7);
