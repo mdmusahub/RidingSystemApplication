@@ -30,7 +30,6 @@ public class User {
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
-    @Enumerated(EnumType.STRING)
     private Role role;
 
     @DateTimeFormat
