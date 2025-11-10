@@ -36,7 +36,7 @@ public class RideServiceImpl implements RideService {
 
     @Override
     public ResponseEntity<?> startRide(StartRideRequest startRideRequest) {
-        Driver driver =  driverRepository.findById(startRideRequest.getDriverId())
+        Driver driver = driverRepository.findById(startRideRequest.getDriverId())
                 .orElseThrow(() -> new DriverNotFoundException("Driver Not Found"));
 
         RideRequests rideRequest = rideRequestsRepository.findById(startRideRequest.getRideRequestId())
@@ -56,7 +56,7 @@ public class RideServiceImpl implements RideService {
         }
 
         // Distance & Fare for the Ride
-        Double distanceKm = DistanceFareUtil.calculateDistance(rideRequest.getPickupLat(),rideRequest.getPickupLng(),rideRequest.getDropLat(),rideRequest.getDropLng());
+        Double distanceKm = DistanceFareUtil.calculateDistance(rideRequest.getPickupLat(), rideRequest.getPickupLng(), rideRequest.getDropLat(), rideRequest.getDropLng());
         Double fare = DistanceFareUtil.calculateFare(distanceKm);
 
         // Start Ride
@@ -73,9 +73,14 @@ public class RideServiceImpl implements RideService {
                 .build();
 
         rideRepository.save(ride);
+
         return ResponseEntity.status(HttpStatus.CREATED).body(Map.of(
-           "message","Ride Started. Ride created successfully",
-           "currentRideStatus",""
+                "message", "Ride Started. Ride created successfully",
+                "ride", ride,
+                "currentRideStatus", ride.getStatus(),
+                "success", true
         ));
     }
+
+    public ResponseEntity<?> completeRide()
 }
