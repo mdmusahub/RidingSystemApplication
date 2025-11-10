@@ -34,11 +34,6 @@ public class SecurityConfig {
         httpSecurity.csrf(AbstractHttpConfigurer::disable).authorizeHttpRequests(auth -> auth.
                 requestMatchers("/user/create").permitAll()
                 .requestMatchers("/auth/login").permitAll()
-<<<<<<< HEAD:src/main/java/com/mecaps/ridingBookingSystem/config/SecurityConfig.java
-=======
-                .requestMatchers("/auth/forgot-password").permitAll()
-                .requestMatchers("/auth/reset-password").permitAll()
->>>>>>> c4b4f52786c7b306a37824f7225c2c404c10d043:src/main/java/com/mecaps/ridingBookingSystem/Config/SecurityConfig.java
                 .requestMatchers("/auth/refresh").permitAll()
                 .requestMatchers("/driver/**").hasRole("DRIVER")
                 .requestMatchers("/driver/getAll").hasRole("ADMIN")
