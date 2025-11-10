@@ -18,7 +18,7 @@ public class MapController {
     }
 
     @GetMapping("/distance")
-    public double getDistance(@RequestParam String origin, @RequestParam String destination) {
+    public Double getDistance(@RequestParam String origin, @RequestParam String destination) {
         return googleMapService.getDistanceInKm(origin, destination);
     }
     @GetMapping("/fare")
