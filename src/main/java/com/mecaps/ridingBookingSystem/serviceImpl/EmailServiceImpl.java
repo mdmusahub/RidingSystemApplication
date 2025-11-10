@@ -1,11 +1,12 @@
 package com.mecaps.ridingBookingSystem.serviceImpl;
 
+import com.mecaps.ridingBookingSystem.service.EmailService;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.stereotype.Service;
 
 @Service
-public class EmailServiceImpl  {
+public class EmailServiceImpl  implements EmailService {
 
     private JavaMailSender mailSender;
 
@@ -13,6 +14,7 @@ public class EmailServiceImpl  {
         this.mailSender = mailSender;
     }
 
+    @Override
     public void sendSimpleEmail(String to, String subject, String body) {
         SimpleMailMessage message = new SimpleMailMessage();
         message.setTo(to);
