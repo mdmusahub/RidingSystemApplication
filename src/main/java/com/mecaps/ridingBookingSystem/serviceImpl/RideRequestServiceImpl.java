@@ -1,9 +1,7 @@
 package com.mecaps.ridingBookingSystem.serviceImpl;
 
-import com.mecaps.ridingBookingSystem.entity.Driver;
-import com.mecaps.ridingBookingSystem.entity.RideRequests;
-import com.mecaps.ridingBookingSystem.entity.RideStatus;
-import com.mecaps.ridingBookingSystem.entity.Rider;
+import com.mecaps.ridingBookingSystem.entity.*;
+import com.mecaps.ridingBookingSystem.exception.DriverNotFoundException;
 import com.mecaps.ridingBookingSystem.exception.RideRequestNotFoundException;
 import com.mecaps.ridingBookingSystem.exception.RiderNotFoundException;
 import com.mecaps.ridingBookingSystem.repository.DriverRepository;
@@ -11,33 +9,52 @@ import com.mecaps.ridingBookingSystem.repository.RideRequestsRepository;
 import com.mecaps.ridingBookingSystem.repository.RiderRepository;
 import com.mecaps.ridingBookingSystem.request.RideRequestsDTO;
 import com.mecaps.ridingBookingSystem.service.RideRequestService;
-import com.mecaps.ridingBookingSystem.util.DistanceCalculator;
+import com.mecaps.ridingBookingSystem.util.DistanceFareUtil;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestParam;
 
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.*;
-import java.util.stream.Collectors;
 
 @Service
 public class RideRequestServiceImpl implements RideRequestService {
 
-    private final static Double FARE_PER_KM = 10.00;
 
     private final RideRequestsRepository rideRequestsRepository;
     private final RiderRepository riderRepository;
+    private final DriverServiceImpl driverService;
     private final DriverRepository driverRepository;
+    private final OneTimePasswordServiceImpl oneTimePasswordService;
 
     public RideRequestServiceImpl(RideRequestsRepository rideRequestsRepository,
                                   RiderRepository riderRepository,
-                                  DriverRepository driverRepository) {
+                                  DriverRepository driverRepository, DriverServiceImpl driverService, DriverRepository driverRepository1, OneTimePasswordServiceImpl oneTimePasswordService) {
         this.rideRequestsRepository = rideRequestsRepository;
         this.riderRepository = riderRepository;
+        this.driverService = driverService;
         this.driverRepository = driverRepository;
+        this.oneTimePasswordService = oneTimePasswordService;
+    }
+
+    @Override
+    public Map<String,Object> getRideFareAndDistance(RideRequestsDTO request) {
+
+        Double distance = DistanceFareUtil.calculateDistance(
+                request.getPickupLat(),
+                request.getPickupLng(),
+                request.getDropLat(),
+                request.getDropLng()
+        );
+        Double fare = DistanceFareUtil.calculateFare(distance);
+
+        Map<String, Object> response = new HashMap<>();
+
+        response.put("estimatedFare", fare);
+        response.put("distanceInKM", distance);
+        response.put("DriversAvailableNearby", driverService.findNearestAvailableDrivers(request, 3).size());
+
+        return response;
     }
 
     @Override
@@ -46,66 +63,76 @@ public class RideRequestServiceImpl implements RideRequestService {
                 .orElseThrow(() -> new RiderNotFoundException
                         ("Rider not found with ID: " + request.getRiderId()));
 
-        RideRequests rideRequest = new RideRequests();
-
-        rideRequest.setRiderId(rider);
-        rideRequest.setPickupLat(request.getPickupLat());
-        rideRequest.setPickupLng(request.getPickupLng());
-        rideRequest.setDropLat(request.getDropLat());
-        rideRequest.setDropLng(request.getDropLng());
+        RideRequests rideRequest = RideRequests.builder()
+                .riderId(rider)
+                .pickupLat(request.getPickupLat())
+                .pickupLng(request.getPickupLng())
+                .dropLat(request.getDropLat())
+                .dropLng(request.getDropLng())
+                .status(RideStatus.REQUESTED)
+                .requestedAt(LocalDateTime.now())
+                .expiresAt(LocalDateTime.now().plusMinutes(3))
+                .build();
 
         rideRequestsRepository.save(rideRequest);
 
-        Double distance = DistanceCalculator.calculateDistance(request.getPickupLat(), request.getPickupLng(),
-                request.getDropLat(), request.getDropLng());
-        Double fare = distance * FARE_PER_KM;
-
+        OneTimePassword otp = oneTimePasswordService.createOtp(rider.getId(), rideRequest.getId());
 
         Map<String, Object> response = new HashMap<>();
 
-        response.put("Message", "Ride request created successfully");
+        response.put("message", "Rider Confirmed Pickup. RideRequest created successfully");
         response.put("rideRequestId", rideRequest.getId());
-        response.put("distanceInKM", distance);
-        response.put("estimatedFare", fare);
+        response.put("startRideOTP",otp.getOtpCode());
+        response.put("distanceInKM", this.getRideFareAndDistance(request).get("distance"));
+        response.put("estimatedFare", this.getRideFareAndDistance(request).get("fare"));
+        response.put("DriversAvailableNearby", driverService.findNearestAvailableDrivers(request, 3));
         response.put("success", true);
 
         return ResponseEntity.status(HttpStatus.CREATED).body(response);
     }
 
     @Override
-    public ResponseEntity<?> confirmRideRequest(Long rideRequestId, Boolean confirmation) {
+    public ResponseEntity<?> driverRideRequestConfirmation(Long rideRequestId, Long driverId, Boolean isAccepted) {
         RideRequests rideRequest = rideRequestsRepository.findById(rideRequestId)
                 .orElseThrow(() -> new RideRequestNotFoundException("No Such Ride Request Found"));
 
-        if (confirmation) {
-            rideRequest.setStatus(RideStatus.REQUESTED);
-            rideRequest.setRequestedAt(LocalDateTime.now().toString());
-            rideRequest.setExpiresAt(LocalDateTime.now().plusMinutes(3).toString());
-
-            rideRequestsRepository.save(rideRequest);
-
-            return ResponseEntity.status(HttpStatus.ACCEPTED).body(Map.of(
-                    "message","Ride Request Confirmed",
-                    "body",rideRequest,
-                    "success",true
-            ));
-        } else {
-            rideRequestsRepository.deleteById(rideRequestId);
-            return ResponseEntity.ok("Ride Request Avoided");
+        if (!rideRequest.getStatus().equals(RideStatus.REQUESTED)) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                    .body(Map.of(
+                            "message", "Ride Request is not in REQUESTED state",
+                            "currentRideStatus", rideRequest.getStatus().toString(),
+                            "success", false
+                    ));
         }
-    }
 
-    @Override
-    public List<Driver> findNearestAvailableDrivers(RideRequestsDTO request, Integer limit) {
-        List<Driver> availableDrivers = driverRepository.findByIsAvailableTrue();
+        Driver driver = driverRepository.findById(driverId)
+                .orElseThrow(() -> new DriverNotFoundException("DRIVER NOT FOUND"));
 
-        return availableDrivers.stream().sorted(Comparator.comparingDouble(driver ->
-                        DistanceCalculator.calculateDistance(
-                                request.getPickupLat(),
-                                request.getPickupLng(),
-                                driver.getLocation().getLatitude(),
-                                driver.getLocation().getLongitude())))
-                .limit(limit)
-                .toList();
+        if (LocalDateTime.now().isAfter(rideRequest.getExpiresAt())) {
+            rideRequest.setStatus(RideStatus.EXPIRED);
+            rideRequestsRepository.save(rideRequest);
+            return ResponseEntity
+                    .status(HttpStatus.GONE)
+                    .body("Ride Request has expired");
+        }
+
+        if (!isAccepted) {
+            rideRequest.setStatus(RideStatus.CANCELLED);
+            rideRequestsRepository.save(rideRequest);
+            return ResponseEntity
+                    .status(HttpStatus.OK)
+                    .body("Ride Request Cancelled by Driver.");
+        }
+
+        rideRequest.setStatus(RideStatus.ACCEPTED);
+        driver.setIsAvailable(false);
+
+        rideRequestsRepository.save(rideRequest);
+        driverRepository.save(driver);
+
+        return ResponseEntity.status(HttpStatus.ACCEPTED)
+                .body(Map.of(
+                        "message", "Driver Accepted Ride Request"
+                ));
     }
 }

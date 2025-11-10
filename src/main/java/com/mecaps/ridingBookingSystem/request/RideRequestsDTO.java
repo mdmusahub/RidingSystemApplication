@@ -6,6 +6,7 @@ import lombok.Data;
 public class RideRequestsDTO {
 
     private Long riderId;
+
     private Double pickupLat;
 
     private Double pickupLng;
