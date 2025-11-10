@@ -5,23 +5,14 @@ import com.mecaps.ridingBookingSystem.exception.InvalidCredentialsException;
 import com.mecaps.ridingBookingSystem.exception.UserNotFoundException;
 import com.mecaps.ridingBookingSystem.repository.UserRepository;
 import com.mecaps.ridingBookingSystem.request.AuthDTO;
-<<<<<<< HEAD
 import com.mecaps.ridingBookingSystem.request.RefreshTokenRequest;
 import com.mecaps.ridingBookingSystem.response.TokenResponse;
 import com.mecaps.ridingBookingSystem.security.JwtService;
 import com.mecaps.ridingBookingSystem.security.TokenBlackListService;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.access.prepost.PreAuthorize;
-=======
 import com.mecaps.ridingBookingSystem.request.ForgotPasswordDTO;
-import com.mecaps.ridingBookingSystem.request.RefreshTokenRequest;
 import com.mecaps.ridingBookingSystem.request.ResetPasswordTokenDTO;
-import com.mecaps.ridingBookingSystem.response.TokenResponse;
-import com.mecaps.ridingBookingSystem.security.JwtService;
-import com.mecaps.ridingBookingSystem.security.TokenBlackListService;
 import com.mecaps.ridingBookingSystem.serviceImpl.EmailServiceImpl;
-import org.springframework.http.ResponseEntity;
->>>>>>> c4b4f52786c7b306a37824f7225c2c404c10d043
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 
@@ -37,24 +28,14 @@ public class AuthController {
     private final PasswordEncoder passwordEncoder;
     private final JwtService jwtService;
     private final TokenBlackListService tokenBlackListService;
-<<<<<<< HEAD
-
-
-    public AuthController(UserRepository userRepository, PasswordEncoder passwordEncoder, JwtService jwtService, TokenBlackListService tokenBlackListService) {
-=======
     private final EmailServiceImpl emailService;
 
-
     public AuthController(UserRepository userRepository, PasswordEncoder passwordEncoder, JwtService jwtService, TokenBlackListService tokenBlackListService, EmailServiceImpl emailService) {
->>>>>>> c4b4f52786c7b306a37824f7225c2c404c10d043
         this.userRepository = userRepository;
         this.passwordEncoder = passwordEncoder;
         this.jwtService = jwtService;
         this.tokenBlackListService = tokenBlackListService;
-<<<<<<< HEAD
-=======
         this.emailService = emailService;
->>>>>>> c4b4f52786c7b306a37824f7225c2c404c10d043
     }
 
     @PostMapping("/login")
@@ -68,58 +49,24 @@ public class AuthController {
             throw new InvalidCredentialsException("Invalid Credentials.");
         }
 
-<<<<<<< HEAD
-        String accessToken = jwtService.generateAccessToken(user.getEmail(),String.valueOf(user.getRole()));
-        String refreshToken = jwtService.generateRefreshToken(user.getEmail(),String.valueOf(user.getRole()));
-
-        Map<String, String> authResponse = new HashMap<>();
-        authResponse.put("AccessToken : ",accessToken);
-        authResponse.put("RefreshToken : ",refreshToken);
-=======
         String accessToken = jwtService.generateAccessToken(user.getEmail(), String.valueOf(user.getRole()));
         String refreshToken = jwtService.generateRefreshToken(user.getEmail(), String.valueOf(user.getRole()));
 
         Map<String, String> authResponse = new HashMap<>();
         authResponse.put("AccessToken : ", accessToken);
         authResponse.put("RefreshToken : ", refreshToken);
->>>>>>> c4b4f52786c7b306a37824f7225c2c404c10d043
         authResponse.put("Role : ", String.valueOf(user.getRole()));
         authResponse.put("Email : ", user.getEmail());
         return authResponse;
     }
-<<<<<<< HEAD
-    @PostMapping("/refresh")
-    public ResponseEntity<?> refresh(@RequestBody RefreshTokenRequest request){
-=======
 
     @PostMapping("/refresh")
     public ResponseEntity<?> refresh(@RequestBody RefreshTokenRequest request) {
->>>>>>> c4b4f52786c7b306a37824f7225c2c404c10d043
         String oldRefreshToken = request.getRefreshToken();
 
         String email = jwtService.extractEmail(oldRefreshToken);
         String role = jwtService.extractRole(oldRefreshToken);
 
-<<<<<<< HEAD
-        String newAccessToken = jwtService.generateAccessToken(email,role);
-        String newRefreshToken = jwtService.generateRefreshToken(email,role);
-
-        TokenResponse tokenResponse = new TokenResponse(newAccessToken,newRefreshToken);
-        return  ResponseEntity.ok(Map.of(
-
-                "NewAccessToken",newAccessToken,
-                "NewRefreshToken",newRefreshToken));
-
-    }
-
-    @PostMapping("/logout")
-    public ResponseEntity<?> logout(@RequestHeader("Authorization") String authHeader){
-        String token = authHeader.substring(7);
-        tokenBlackListService.blackListToken(token);
-        return ResponseEntity.ok("Logged out successfully");
-    }
-}
-=======
         String newAccessToken = jwtService.generateAccessToken(email, role);
         String newRefreshToken = jwtService.generateRefreshToken(email, role);
 
@@ -183,11 +130,10 @@ public class AuthController {
         return ResponseEntity.ok("Password successfully changed.");
     }
 
-        @PostMapping("/logout")
-        public ResponseEntity<?> logout (@RequestHeader("Authorization") String authHeader){
-            String token = authHeader.substring(7);
-            tokenBlackListService.blackListToken(token);
-            return ResponseEntity.ok("Logged out successfully");
-        }
+    @PostMapping("/logout")
+    public ResponseEntity<?> logout(@RequestHeader("Authorization") String authHeader) {
+        String token = authHeader.substring(7);
+        tokenBlackListService.blackListToken(token);
+        return ResponseEntity.ok("Logged out successfully");
     }
->>>>>>> c4b4f52786c7b306a37824f7225c2c404c10d043
+}
