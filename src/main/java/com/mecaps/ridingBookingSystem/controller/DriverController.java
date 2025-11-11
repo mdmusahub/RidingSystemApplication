@@ -46,11 +46,11 @@ public class DriverController {
     public ResponseEntity<?> deleteDriver(@PathVariable Long id) {
         return driverService.deleteDriver(id);
     }
-    @GetMapping("/get/rideRequests")
-    public ResponseEntity<List<RideRequests>> getAvailableRideRequests(){
-        return driverService.getAvailableRideRequests();
+//    @GetMapping("/get/rideRequests")
+//    public ResponseEntity<List<RideRequests>> getAvailableRideRequests(){
+//        return driverService.getAvailableRideRequests();
 
     }
-}
+
 
 
