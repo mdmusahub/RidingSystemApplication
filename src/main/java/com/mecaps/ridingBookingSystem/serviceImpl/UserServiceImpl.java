@@ -2,8 +2,6 @@ package com.mecaps.ridingBookingSystem.serviceImpl;
 
 import com.mecaps.ridingBookingSystem.entity.Driver;
 import com.mecaps.ridingBookingSystem.entity.Rider;
-import com.mecaps.ridingBookingSystem.exception.DriverNotFoundException;
-import com.mecaps.ridingBookingSystem.repository.DriverRepository;
 import com.mecaps.ridingBookingSystem.request.ChangePasswordRequest;
 import com.mecaps.ridingBookingSystem.request.UserRequest;
 import com.mecaps.ridingBookingSystem.response.UserResponse;
@@ -12,6 +10,9 @@ import com.mecaps.ridingBookingSystem.exception.UserAlreadyExistsException;
 import com.mecaps.ridingBookingSystem.exception.UserNotFoundException;
 import com.mecaps.ridingBookingSystem.repository.UserRepository;
 import com.mecaps.ridingBookingSystem.service.UserService;
+import lombok.extern.slf4j.Slf4j;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -22,9 +23,11 @@ import java.util.Map;
 import java.util.Optional;
 
 @Service
+@Slf4j
 public class UserServiceImpl implements UserService {
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
+//    private final static Logger logger = LoggerFactory.getLogger(UserServiceImpl.class);
 
     public UserServiceImpl(UserRepository userRepository, PasswordEncoder passwordEncoder) {
         this.userRepository = userRepository;
@@ -51,20 +54,31 @@ public class UserServiceImpl implements UserService {
         user.setPassword(passwordEncoder.encode(request.getPassword()));
         user.setRole(request.getRole());
 
-//        if(user.getRole().toString().equals("DRIVER")){
-//            user.setDriver(request.getDriverDetails()
-//                    .orElseThrow(() -> new DriverNotFoundException("No Driver Details found in the request.")));
-//        }
+        if(request.getDriverRequest() != null){
+            Driver driver = new Driver();
 
-        if(user.getRole().toString().equals("RIDER")){
+            driver.setUserId(user);
+            driver.setLicenseNumber(request.getDriverRequest().getLicenseNumber());
+            driver.setVehicleNumber(request.getDriverRequest().getVehicleNumber());
+            driver.setVehicleModel(request.getDriverRequest().getVehicleModel());
+
+            user.setDriver(driver);
+        }
+
+        if(request.getRiderRequest() != null){
             Rider rider = new Rider();
 
+            rider.setUserId(user);
 
+            user.setRider(rider);
         }
 
         User save = userRepository.save(user);
 
         UserResponse userResponse = new UserResponse(save);
+
+        log.info("New User Created Successfully : {}",user.getFullName());
+
         return ResponseEntity.status(HttpStatus.CREATED).body(
                 Map.of(
                         "message","User created successfully",
@@ -159,5 +173,14 @@ public class UserServiceImpl implements UserService {
 
         return ResponseEntity.ok("DELETED");
     }
+
+    public ResponseEntity<?> forgotPassword(UserRequest request) {
+        User user = userRepository.findByEmail(request.getEmail())
+                .orElseThrow(()-> new RuntimeException("Email does not exist"));
+        user.setEmail(request.getEmail());
+        user.setPassword(request.getPassword());
+        return ResponseEntity.ok("Password forgot successfully!");
+    }
+
 
 }
