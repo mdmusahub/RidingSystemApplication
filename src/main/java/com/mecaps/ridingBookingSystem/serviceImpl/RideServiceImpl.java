@@ -49,6 +49,6 @@ public class RideServiceImpl implements RideService {
                     .body("Invalid OTP");
         }
 
-        // Ride creation
+return ResponseEntity.ok("Is under progress");
     }
 }
