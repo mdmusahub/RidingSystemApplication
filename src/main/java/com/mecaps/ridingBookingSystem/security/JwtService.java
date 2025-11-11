@@ -41,56 +41,56 @@ public class JwtService {
                 .compact();
     }
 
-        public Claims extractAllClaims (String token){
-            return Jwts.parser()
-                    .verifyWith(getSecretKey())
-                    .build()
-                    .parseClaimsJws(token)
-                    .getPayload();
-        }
 
-        public String createResetPasswordToken (String email){
+    public Claims extractAllClaims(String token) {
+        return Jwts.parser()
+                .verifyWith(getSecretKey())
+                .build()
+                .parseClaimsJws(token)
+                .getPayload();
+    }
 
-            long resetExpiry = 1000 * 60 * 15;
-            return Jwts.builder()
-                    .subject(email)
-                    .claim("type", "Reset_Password")
-                    .issuedAt(new Date(System.currentTimeMillis()))
-                    .expiration(new Date(System.currentTimeMillis() + resetExpiry))
-                    .signWith(getSecretKey())
-                    .compact();
-        }
+    public String createResetPasswordToken(String email) {
 
-        public String extractEmail (String token){
-            return extractAllClaims(token)
-                    .getSubject();
-        }
+        long resetExpiry = 1000 * 60 * 15;
+        return Jwts.builder()
+                .subject(email)
+                .claim("type", "Reset_Password")
+                .issuedAt(new Date(System.currentTimeMillis()))
+                .expiration(new Date(System.currentTimeMillis() + resetExpiry))
+                .signWith(getSecretKey())
+                .compact();
+    }
 
-        public String extractRole (String token){
-            return extractAllClaims(token)
-                    .get("role", String.class);
-        }
+    public String extractEmail(String token) {
+        return extractAllClaims(token)
+                .getSubject();
+    }
 
-        public boolean isTokenValid (String token){
-            return extractAllClaims(token)
-                    .getExpiration().after(new Date());
-        }
+    public String extractRole(String token) {
+        return extractAllClaims(token)
+                .get("role", String.class);
+    }
 
-        public Boolean isAccessToken (String token){
-            try {
-                return "AccessToken".equals(extractAllClaims(token).get("type", String.class));
-            } catch (JwtException e) {
-                return false;
-            }
-        }
-        public Boolean isRefreshToken (String token){
-            try {
-                return "RefreshToken".equals(extractAllClaims(token).get("type", String.class));
-            } catch (JwtException e) {
-                return false;
-            }
+    public boolean isTokenValid(String token) {
+        return extractAllClaims(token)
+                .getExpiration().after(new Date());
+    }
+
+    public Boolean isAccessToken(String token) {
+        try {
+            return "AccessToken".equals(extractAllClaims(token).get("type", String.class));
+        } catch (JwtException e) {
+            return false;
         }
     }
 
-
+    public Boolean isRefreshToken(String token) {
+        try {
+            return "RefreshToken".equals(extractAllClaims(token).get("type", String.class));
+        } catch (JwtException e) {
+            return false;
+        }
+    }
+}
 

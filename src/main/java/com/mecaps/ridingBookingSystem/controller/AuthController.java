@@ -5,14 +5,14 @@ import com.mecaps.ridingBookingSystem.exception.InvalidCredentialsException;
 import com.mecaps.ridingBookingSystem.exception.UserNotFoundException;
 import com.mecaps.ridingBookingSystem.repository.UserRepository;
 import com.mecaps.ridingBookingSystem.request.AuthDTO;
-import com.mecaps.ridingBookingSystem.request.ForgotPasswordDTO;
 import com.mecaps.ridingBookingSystem.request.RefreshTokenRequest;
-import com.mecaps.ridingBookingSystem.request.ResetPasswordTokenDTO;
 import com.mecaps.ridingBookingSystem.response.TokenResponse;
 import com.mecaps.ridingBookingSystem.security.JwtService;
 import com.mecaps.ridingBookingSystem.security.TokenBlackListService;
-import com.mecaps.ridingBookingSystem.serviceImpl.EmailServiceImpl;
 import org.springframework.http.ResponseEntity;
+import com.mecaps.ridingBookingSystem.request.ForgotPasswordDTO;
+import com.mecaps.ridingBookingSystem.request.ResetPasswordTokenDTO;
+import com.mecaps.ridingBookingSystem.serviceImpl.EmailServiceImpl;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 
@@ -30,7 +30,6 @@ public class AuthController {
     private final JwtService jwtService;
     private final TokenBlackListService tokenBlackListService;
     private final EmailServiceImpl emailService;
-
 
     public AuthController(UserRepository userRepository, PasswordEncoder passwordEncoder, JwtService jwtService, TokenBlackListService tokenBlackListService, EmailServiceImpl emailService) {
         this.userRepository = userRepository;
@@ -132,10 +131,10 @@ public class AuthController {
         return ResponseEntity.ok("Password successfully changed.");
     }
 
-        @PostMapping("/logout")
-        public ResponseEntity<?> logout (@RequestHeader("Authorization") String authHeader){
-            String token = authHeader.substring(7);
-            tokenBlackListService.blackListToken(token);
-            return ResponseEntity.ok("Logged out successfully");
-        }
+    @PostMapping("/logout")
+    public ResponseEntity<?> logout(@RequestHeader("Authorization") String authHeader) {
+        String token = authHeader.substring(7);
+        tokenBlackListService.blackListToken(token);
+        return ResponseEntity.ok("Logged out successfully");
     }
+}
