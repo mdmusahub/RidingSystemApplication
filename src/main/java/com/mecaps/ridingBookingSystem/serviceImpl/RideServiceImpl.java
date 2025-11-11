@@ -22,14 +22,16 @@ public class RideServiceImpl implements RideService {
     private final DriverRepository driverRepository;
     private final RideRequestsRepository rideRequestsRepository;
     private final RiderRepository riderRepository;
+    private final RideHistoryServiceImpl rideHistoryService;
 
-    public RideServiceImpl(RideRepository rideRepository, OneTimePasswordServiceImpl oneTimePasswordService, OneTimePasswordRepository oneTimePasswordRepository, DriverRepository driverRepository, RideRequestsRepository rideRequestsRepository, RiderRepository riderRepository) {
+    public RideServiceImpl(RideRepository rideRepository, OneTimePasswordServiceImpl oneTimePasswordService, OneTimePasswordRepository oneTimePasswordRepository, DriverRepository driverRepository, RideRequestsRepository rideRequestsRepository, RiderRepository riderRepository, RideHistoryServiceImpl rideHistoryService) {
         this.rideRepository = rideRepository;
         this.oneTimePasswordService = oneTimePasswordService;
         this.oneTimePasswordRepository = oneTimePasswordRepository;
         this.driverRepository = driverRepository;
         this.rideRequestsRepository = rideRequestsRepository;
         this.riderRepository = riderRepository;
+        this.rideHistoryService = rideHistoryService;
     }
 
     @Override
@@ -37,12 +39,11 @@ public class RideServiceImpl implements RideService {
         Driver driver = driverRepository.findById(startRideRequest.getDriverId())
                 .orElseThrow(() -> new DriverNotFoundException("Driver Not Found"));
 
-        RideRequests rideRequest = rideRequestsRepository.findById(startRideRequest.getRideRequestId())
+        RideRequests newRideRequest = rideRequestsRepository.findById(startRideRequest.getRideRequestId())
                 .orElseThrow(() -> new RideRequestNotFoundException("No such Ride Request Found"));
 
-        Rider rider = riderRepository.findById(rideRequest.getRiderId().getId())
+        Rider rider = riderRepository.findById(newRideRequest.getRiderId().getId())
                 .orElseThrow(() -> new RiderNotFoundException("Rider Not Found"));
-
 
         OneTimePassword otp = oneTimePasswordRepository.findByRideRequestId(startRideRequest.getRideRequestId())
                 .orElseThrow(() -> new OneTimePasswordNotFoundException("Otp not found"));
@@ -54,14 +55,14 @@ public class RideServiceImpl implements RideService {
         }
 
         // Distance & Fare for the Ride
-        Double distanceKm = DistanceFareUtil.calculateDistance(rideRequest.getPickupLat(), rideRequest.getPickupLng(), rideRequest.getDropLat(), rideRequest.getDropLng());
+        Double distanceKm = DistanceFareUtil.calculateDistance(newRideRequest.getPickupLat(), newRideRequest.getPickupLng(), newRideRequest.getDropLat(), newRideRequest.getDropLng());
         Double fare = DistanceFareUtil.calculateFare(distanceKm);
 
         // Start Ride
         Rides ride = Rides.builder()
                 .riderId(rider)
                 .driverId(driver)
-                .requestsId(rideRequest)
+                .requestsId(newRideRequest)
                 .fare(fare)
                 .distanceKm(distanceKm)
                 .driverRating(driver.getRating())
@@ -106,15 +107,11 @@ public class RideServiceImpl implements RideService {
         rideRepository.save(ride);
         driverRepository.save(driver);
 
-        // Distance & Fare for the Ride
-        Double distanceKm = DistanceFareUtil.calculateDistance(rideRequest.getPickupLat(), rideRequest.getPickupLng(), rideRequest.getDropLat(), rideRequest.getDropLng());
-        Double fare = DistanceFareUtil.calculateFare(distanceKm);
+        RideHistory rideHistory = rideHistoryService.createRideHistory(ride);
 
         return ResponseEntity.ok().body(Map.of(
                 "message","Ride completed successfully",
-                "rideId",ride.getId(),
-                "fare",fare,
-                "distance",distanceKm,
+                "rideHistory",rideHistory,
                 "success","true"
         ));
     }

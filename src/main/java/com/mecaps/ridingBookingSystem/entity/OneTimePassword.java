@@ -25,6 +25,6 @@ public class OneTimePassword {
     private Rider riderId;
 
     @OneToOne
-    private RideRequests rideRequestId;
+    private RideRequests rideRequest;
 }
 

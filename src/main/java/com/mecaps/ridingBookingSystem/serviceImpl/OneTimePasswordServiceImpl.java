@@ -1,6 +1,7 @@
 package com.mecaps.ridingBookingSystem.serviceImpl;
 
 import com.mecaps.ridingBookingSystem.entity.OneTimePassword;
+import com.mecaps.ridingBookingSystem.entity.RideRequests;
 import com.mecaps.ridingBookingSystem.exception.RideRequestNotFoundException;
 import com.mecaps.ridingBookingSystem.exception.RiderNotFoundException;
 import com.mecaps.ridingBookingSystem.repository.OneTimePasswordRepository;
@@ -24,12 +25,12 @@ public class OneTimePasswordServiceImpl implements OneTimePasswordService {
     }
 
     @Override
-    public OneTimePassword createOtp(Long riderId, Long rideRequestId) {
+    public OneTimePassword createOtp(RideRequests newRideRequest) {
         OneTimePassword otp = OneTimePassword.builder()
                 .otpCode(OtpUtil.generateOtp())
-                .riderId(riderRepository.findById(riderId)
+                .riderId(riderRepository.findById(newRideRequest.getRiderId().getId())
                         .orElseThrow(() -> new RiderNotFoundException("RIDER NOT FOUND")))
-                .rideRequestId(rideRequestsRepository.findById(rideRequestId)
+                .rideRequest(rideRequestsRepository.findById(newRideRequest.getId())
                         .orElseThrow(() -> new RideRequestNotFoundException("No Such Ride Request Found")))
                 .build();
 

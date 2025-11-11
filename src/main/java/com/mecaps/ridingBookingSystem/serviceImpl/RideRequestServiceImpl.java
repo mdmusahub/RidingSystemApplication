@@ -74,7 +74,7 @@ public class RideRequestServiceImpl implements RideRequestService {
 
         rideRequestsRepository.save(rideRequest);
 
-        OneTimePassword otp = oneTimePasswordService.createOtp(rider.getId(), rideRequest.getId());
+        OneTimePassword otp = oneTimePasswordService.createOtp(rideRequest);
 
         Map<String, Object> response = new HashMap<>();
 
