@@ -34,11 +34,12 @@ public class SecurityConfig {
         httpSecurity.csrf(AbstractHttpConfigurer::disable).authorizeHttpRequests(auth -> auth.
                 requestMatchers("/user/create").permitAll()
                 .requestMatchers("/auth/login").permitAll()
+                .requestMatchers("/auth/forgot-password").permitAll()
+                .requestMatchers("/auth/reset-password").permitAll()
                 .requestMatchers("/auth/refresh").permitAll()
                 .requestMatchers("/driver/**").hasRole("DRIVER")
                 .requestMatchers("/driver/getAll").hasRole("ADMIN")
                 .requestMatchers("/user/getAll").hasRole("ADMIN")
-                .requestMatchers("/map/*").permitAll()
                 .anyRequest().authenticated());
 
         httpSecurity.addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class);

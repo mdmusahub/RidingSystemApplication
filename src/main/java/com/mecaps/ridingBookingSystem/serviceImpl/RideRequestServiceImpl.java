@@ -19,8 +19,6 @@ import java.util.*;
 
 @Service
 public class RideRequestServiceImpl implements RideRequestService {
-
-
     private final RideRequestsRepository rideRequestsRepository;
     private final RiderRepository riderRepository;
     private final DriverServiceImpl driverService;
@@ -38,7 +36,7 @@ public class RideRequestServiceImpl implements RideRequestService {
     }
 
     @Override
-    public Map<String,Object> getRideFareAndDistance(RideRequestsDTO request) {
+    public Map<String, Object> getRideFareAndDistance(RideRequestsDTO request) {
 
         Double distance = DistanceFareUtil.calculateDistance(
                 request.getPickupLat(),
@@ -76,13 +74,13 @@ public class RideRequestServiceImpl implements RideRequestService {
 
         rideRequestsRepository.save(rideRequest);
 
-        OneTimePassword otp = oneTimePasswordService.createOtp(rider.getId(), rideRequest.getId());
+        OneTimePassword otp = oneTimePasswordService.createOtp(rideRequest);
 
         Map<String, Object> response = new HashMap<>();
 
         response.put("message", "Rider Confirmed Pickup. RideRequest created successfully");
         response.put("rideRequestId", rideRequest.getId());
-        response.put("startRideOTP",otp.getOtpCode());
+        response.put("startRideOTP", otp.getOtpCode());
         response.put("distanceInKM", this.getRideFareAndDistance(request).get("distance"));
         response.put("estimatedFare", this.getRideFareAndDistance(request).get("fare"));
         response.put("DriversAvailableNearby", driverService.findNearestAvailableDrivers(request, 3));

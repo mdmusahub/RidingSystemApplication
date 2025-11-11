@@ -14,7 +14,6 @@ import java.util.Date;
 
 public class JwtService {
 
-
     private final static long ACCESS_TOKEN_EXP = 1000 * 60 * 60;
     private final static String SECRET_KEY = "a4bf05ff532862e43eaee226f19619674f8d89a7d5442e426a6e2e170e731a66";
     private final static long REFRESH_TOKEN_EXP = 7 * 24 * 60 * 60 * 1000;
@@ -94,6 +93,4 @@ public class JwtService {
         }
     }
 }
-
-
 

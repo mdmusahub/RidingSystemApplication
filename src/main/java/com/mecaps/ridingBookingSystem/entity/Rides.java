@@ -32,13 +32,15 @@ public class Rides {
     @JoinColumn(name = "request_id", nullable = false)
     private RideRequests requestsId;
 
+    @Column(nullable = false)
     private Double fare;
 
+    @Column(nullable = false)
     private Double distanceKm;
 
-    private Integer driverRating;
+    private Float driverRating;
 
-    private Integer riderRating;
+    private Float riderRating;
 
     @Column(length = 50)
     @Enumerated(EnumType.STRING)

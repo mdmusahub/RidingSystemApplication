@@ -14,10 +14,10 @@ public class GlobalException {
 
     @ExceptionHandler (UserAlreadyExistsException.class)
     public ResponseEntity<ErrorResponse> handleAlreadyExistsException
-            (UserAlreadyExistsException excepion, HttpServletRequest request){
+            (UserAlreadyExistsException exception, HttpServletRequest request){
         ErrorResponse errorResponse =new ErrorResponse(LocalDateTime.now(),
                 HttpStatus.CONFLICT.value(),
-                excepion.getMessage(),
+                exception.getMessage(),
                 request.getRequestURI());
 
         return new ResponseEntity<>(errorResponse, HttpStatusCode.valueOf(409));
@@ -41,5 +41,14 @@ public class GlobalException {
                 exception.getMessage(),request.getRequestURI());
 
         return new ResponseEntity<>(errorResponse,HttpStatusCode.valueOf(401));
+    }
+
+    @ExceptionHandler (OneTimePasswordNotFoundException.class)
+    public ResponseEntity<ErrorResponse> handleOneTimePasswordNotFoundException
+            (OneTimePasswordNotFoundException exception, HttpServletRequest request){
+        ErrorResponse errorResponse = new ErrorResponse(LocalDateTime.now(),HttpStatus.NOT_FOUND.value(),
+                exception.getMessage(),request.getRequestURI());
+
+        return new ResponseEntity<>(errorResponse,HttpStatusCode.valueOf(404));
     }
 }

@@ -1,15 +1,21 @@
 package com.mecaps.ridingBookingSystem.entity;
 
 import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 import org.springframework.format.annotation.DateTimeFormat;
 
 import java.sql.Time;
 import java.time.LocalDateTime;
 import java.util.Date;
 
-@Entity
 @Data
+@NoArgsConstructor
+@AllArgsConstructor
+@Builder
+@Entity
 public class RideCancellation {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -25,6 +31,4 @@ public class RideCancellation {
     @DateTimeFormat
     @Column(nullable = false)
     private LocalDateTime cancelledAt;
-
-
 }
