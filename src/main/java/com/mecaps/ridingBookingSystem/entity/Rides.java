@@ -48,4 +48,7 @@ public class Rides {
     @OneToOne(mappedBy = "rideId")
     private Review review;
 
+    @OneToOne(mappedBy = "rideId")
+    private Payment payment;
+
 }

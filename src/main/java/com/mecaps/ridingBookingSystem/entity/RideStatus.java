@@ -1,5 +1,5 @@
 package com.mecaps.ridingBookingSystem.entity;
 
 public enum RideStatus {
-    REQUESTED, ACCEPTED, ASSIGNED, ONGOING, COMPLETED, CANCELLED, DENIED;
+    REQUESTED, ACCEPTED, ONGOING, COMPLETED, CANCELLED, EXPIRED;
 }

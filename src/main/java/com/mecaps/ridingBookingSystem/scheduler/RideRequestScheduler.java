@@ -4,7 +4,7 @@ import com.mecaps.ridingBookingSystem.entity.RideRequests;
 import com.mecaps.ridingBookingSystem.entity.RideStatus;
 import com.mecaps.ridingBookingSystem.repository.LocationRepository;
 import com.mecaps.ridingBookingSystem.repository.RideRequestsRepository;
-import static com.mecaps.ridingBookingSystem.util.DistanceCalculator.calculateDistance;
+import static com.mecaps.ridingBookingSystem.util.DistanceFareUtil.calculateDistance;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
