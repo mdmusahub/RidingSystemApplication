@@ -1,12 +1,18 @@
 package com.mecaps.ridingBookingSystem.entity;
 
 import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 import org.hibernate.annotations.CreationTimestamp;
 
 import java.time.LocalDateTime;
 
 @Data
+@NoArgsConstructor
+@AllArgsConstructor
+@Builder
 @Entity
 public class Rides {
 
@@ -26,13 +32,15 @@ public class Rides {
     @JoinColumn(name = "request_id", nullable = false)
     private RideRequests requestsId;
 
+    @Column(nullable = false)
     private Double fare;
 
+    @Column(nullable = false)
     private Double distanceKm;
 
-    private Integer driverRating;
+    private Float driverRating;
 
-    private Integer riderRating;
+    private Float riderRating;
 
     @Column(length = 50)
     @Enumerated(EnumType.STRING)

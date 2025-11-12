@@ -44,3 +44,4 @@ public class DistanceFareUtil {
         return calculateFare(distance);
     }
 }
+

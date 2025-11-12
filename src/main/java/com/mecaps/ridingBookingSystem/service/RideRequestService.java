@@ -15,4 +15,6 @@ public interface RideRequestService {
     ResponseEntity<?> confirmPickup(RideRequestsDTO request);
 
     ResponseEntity<?> acceptRideRequest(RideAcceptanceRequestDTO requestDTO);
+
 }
+

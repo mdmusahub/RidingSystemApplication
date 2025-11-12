@@ -9,4 +9,6 @@ import java.util.Optional;
 @Repository
 public interface OneTimePasswordRepository extends JpaRepository<OneTimePassword,Long> {
     Optional<OneTimePassword> findByRideRequestId(Long id);
+
 }
+

@@ -5,9 +5,8 @@ import lombok.Setter;
 
 @Getter
 @Setter
-public class OtpGenerateRequest {
-    private Long riderId;
+public class StartRideRequest {
     private Long rideRequestId;
-
+    private String otp;
+    private Long driverId;
 }
-
