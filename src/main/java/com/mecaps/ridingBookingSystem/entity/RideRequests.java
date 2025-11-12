@@ -1,12 +1,22 @@
 package com.mecaps.ridingBookingSystem.entity;
 
 import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 import org.hibernate.annotations.CreationTimestamp;
 import org.springframework.format.annotation.DateTimeFormat;
 
-@Entity
+import java.time.LocalDateTime;
+import java.util.Date;
+
+
 @Data
+@NoArgsConstructor
+@AllArgsConstructor
+@Builder
+@Entity
 public class RideRequests {
 
     @Id
@@ -14,6 +24,7 @@ public class RideRequests {
     private Long id;
 
     @ManyToOne
+    @JoinColumn(name = "rider_id", nullable = false)
     private Rider riderId;
 
     private Double pickupLat;
@@ -24,15 +35,15 @@ public class RideRequests {
 
     private Double dropLng;
 
+    @Column(length = 50)
+    @Enumerated(EnumType.STRING)
     private RideStatus status;
 
-    @DateTimeFormat
-    @CreationTimestamp
-    private String requestedAt;
+    private LocalDateTime requestedAt;
 
-    @DateTimeFormat
-    private String expiresAt;
+    private LocalDateTime expiresAt;
 
     @OneToOne(mappedBy = "requestsId", cascade = CascadeType.ALL, orphanRemoval = true)
     private Rides requestId;
 }
+

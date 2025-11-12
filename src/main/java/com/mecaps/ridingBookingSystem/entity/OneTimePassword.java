@@ -5,31 +5,26 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import org.springframework.format.annotation.DateTimeFormat;
 
-import java.sql.Time;
 import java.time.LocalDateTime;
-import java.util.Date;
 
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
 @Entity
-public class RideCancellation {
+public class OneTimePassword {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @ManyToOne
-    private Rides rideId;
+    @Column(nullable = false,length = 6)
+    private String otpCode;
 
-    @Column(nullable = false)
-    private String cancelledBy;
+    @OneToOne
+    private Rider riderId;
 
-    private String reason;
-
-    @DateTimeFormat
-    @Column(nullable = false)
-    private LocalDateTime cancelledAt;
+    @OneToOne
+    private RideRequests rideRequest;
 }
+

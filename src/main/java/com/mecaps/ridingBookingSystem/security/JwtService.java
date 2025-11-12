@@ -11,13 +11,14 @@ import javax.crypto.SecretKey;
 import java.util.Date;
 
 @Service
+
 public class JwtService {
 
-    private final static long ACCESS_TOKEN_EXP = 60 * 60 * 1000;
+    private final static long ACCESS_TOKEN_EXP = 1000 * 60 * 60;
     private final static String SECRET_KEY = "a4bf05ff532862e43eaee226f19619674f8d89a7d5442e426a6e2e170e731a66";
     private final static long REFRESH_TOKEN_EXP = 7 * 24 * 60 * 60 * 1000;
 
-    public SecretKey getSecretKey(){
+    public SecretKey getSecretKey() {
         return Keys.hmacShaKeyFor(Decoders.BASE64.decode(SECRET_KEY));
     }
 
@@ -45,8 +46,20 @@ public class JwtService {
         return Jwts.parser()
                 .verifyWith(getSecretKey())
                 .build()
-                .parseSignedClaims(token)
+                .parseClaimsJws(token)
                 .getPayload();
+    }
+
+    public String createResetPasswordToken(String email) {
+
+        long resetExpiry = 1000 * 60 * 15;
+        return Jwts.builder()
+                .subject(email)
+                .claim("type", "Reset_Password")
+                .issuedAt(new Date(System.currentTimeMillis()))
+                .expiration(new Date(System.currentTimeMillis() + resetExpiry))
+                .signWith(getSecretKey())
+                .compact();
     }
 
     public String extractEmail(String token) {
@@ -71,14 +84,13 @@ public class JwtService {
             return false;
         }
     }
-    public Boolean isRefreshToken(String token){
-        try{
-            return "RefreshToken".equals(extractAllClaims(token).get("type",String.class));
-        }catch (JwtException e){
+
+    public Boolean isRefreshToken(String token) {
+        try {
+            return "RefreshToken".equals(extractAllClaims(token).get("type", String.class));
+        } catch (JwtException e) {
             return false;
         }
     }
 }
-
-
 
