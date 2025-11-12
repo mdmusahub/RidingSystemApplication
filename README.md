@@ -95,7 +95,6 @@ mvn spring-boot:run
 
 📍 Nearest driver auto-assignment
 
-📱 Mobile app integration using REST APIs
 
 
 
