@@ -7,6 +7,7 @@ import com.mecaps.ridingBookingSystem.exception.RiderNotFoundException;
 import com.mecaps.ridingBookingSystem.repository.DriverRepository;
 import com.mecaps.ridingBookingSystem.repository.RideRequestsRepository;
 import com.mecaps.ridingBookingSystem.repository.RiderRepository;
+import com.mecaps.ridingBookingSystem.request.RideAcceptanceRequestDTO;
 import com.mecaps.ridingBookingSystem.request.RideRequestsDTO;
 import com.mecaps.ridingBookingSystem.service.RideRequestService;
 import com.mecaps.ridingBookingSystem.util.DistanceFareUtil;
@@ -56,7 +57,7 @@ public class RideRequestServiceImpl implements RideRequestService {
     }
 
     @Override
-    public ResponseEntity<?> createRideRequest(RideRequestsDTO request) {
+    public ResponseEntity<?> confirmPickup(RideRequestsDTO request) {
         Rider rider = riderRepository.findById(request.getRiderId())
                 .orElseThrow(() -> new RiderNotFoundException
                         ("Rider not found with ID: " + request.getRiderId()));
@@ -90,8 +91,8 @@ public class RideRequestServiceImpl implements RideRequestService {
     }
 
     @Override
-    public ResponseEntity<?> driverRideRequestConfirmation(Long rideRequestId, Long driverId, Boolean isAccepted) {
-        RideRequests rideRequest = rideRequestsRepository.findById(rideRequestId)
+    public ResponseEntity<?> acceptRideRequest(RideAcceptanceRequestDTO requestDTO) {
+        RideRequests rideRequest = rideRequestsRepository.findById(requestDTO.getRideRequestId())
                 .orElseThrow(() -> new RideRequestNotFoundException("No Such Ride Request Found"));
 
         if (!rideRequest.getStatus().equals(RideStatus.REQUESTED)) {
@@ -103,7 +104,7 @@ public class RideRequestServiceImpl implements RideRequestService {
                     ));
         }
 
-        Driver driver = driverRepository.findById(driverId)
+        Driver driver = driverRepository.findById(requestDTO.getDriverId())
                 .orElseThrow(() -> new DriverNotFoundException("DRIVER NOT FOUND"));
 
         if (LocalDateTime.now().isAfter(rideRequest.getExpiresAt())) {
@@ -112,14 +113,6 @@ public class RideRequestServiceImpl implements RideRequestService {
             return ResponseEntity
                     .status(HttpStatus.GONE)
                     .body("Ride Request has expired");
-        }
-
-        if (!isAccepted) {
-            rideRequest.setStatus(RideStatus.CANCELLED);
-            rideRequestsRepository.save(rideRequest);
-            return ResponseEntity
-                    .status(HttpStatus.OK)
-                    .body("Ride Request Cancelled by Driver.");
         }
 
         rideRequest.setStatus(RideStatus.ACCEPTED);

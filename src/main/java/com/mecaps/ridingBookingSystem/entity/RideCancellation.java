@@ -22,7 +22,7 @@ public class RideCancellation {
     private Long id;
 
     @ManyToOne
-    private Rides rideId;
+    private RideRequests rideRequest;
 
     @Column(nullable = false)
     private String cancelledBy;
