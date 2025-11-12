@@ -21,7 +21,7 @@ public class RideCancellation {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     @ManyToOne
-    private Rides rideId;
+    private RideRequests rideRequest;
 
     @Column(nullable = false)
     private String cancelledBy;
@@ -31,4 +31,6 @@ public class RideCancellation {
     @DateTimeFormat
     @Column(nullable = false)
     private LocalDateTime cancelledAt;
+
+
 }
