@@ -5,7 +5,7 @@ import com.mecaps.ridingBookingSystem.entity.Role;
 import jakarta.annotation.Nullable;
 import lombok.Data;
 
-import java.util.Optional;
+
 
 @Data
 public class UserRequest {
