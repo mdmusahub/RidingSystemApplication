@@ -1,6 +1,7 @@
 package com.mecaps.ridingBookingSystem.service;
 
 import com.mecaps.ridingBookingSystem.entity.Driver;
+import com.mecaps.ridingBookingSystem.request.RideAcceptanceRequestDTO;
 import com.mecaps.ridingBookingSystem.request.RideRequestsDTO;
 import org.springframework.http.ResponseEntity;
 
@@ -13,5 +14,5 @@ public interface RideRequestService {
 
     ResponseEntity<?> createRideRequest(RideRequestsDTO request);
 
-    ResponseEntity<?> driverRideRequestConfirmation(Long rideRequestId, Long driverId, Boolean isAccepted);
+    ResponseEntity<?> acceptRideRequest(RideAcceptanceRequestDTO requestDTO);
 }

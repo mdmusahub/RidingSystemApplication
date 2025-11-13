@@ -6,6 +6,7 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.hibernate.annotations.CreationTimestamp;
+import org.springframework.format.annotation.NumberFormat;
 
 import java.time.LocalDateTime;
 
@@ -38,9 +39,9 @@ public class Rides {
     @Column(nullable = false)
     private Double distanceKm;
 
-    private Float driverRating;
+    private Integer driverRating;
 
-    private Float riderRating;
+    private Integer riderRating;
 
     @Column(length = 50)
     @Enumerated(EnumType.STRING)
