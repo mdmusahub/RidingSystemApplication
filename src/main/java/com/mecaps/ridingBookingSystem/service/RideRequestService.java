@@ -12,7 +12,7 @@ public interface RideRequestService {
 
     Map<String,Object> getRideFareAndDistance(RideRequestsDTO request);
 
-    ResponseEntity<?> confirmPickup(RideRequestsDTO request);
+    ResponseEntity<?> createRideRequest(RideRequestsDTO request);
 
     ResponseEntity<?> acceptRideRequest(RideAcceptanceRequestDTO requestDTO);
 }
