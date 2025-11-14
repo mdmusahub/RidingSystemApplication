@@ -41,21 +41,21 @@ public class UserServiceImpl implements UserService {
             throw new UserAlreadyExistsException("User with this phone number is already exists");
         }
 
-        User user = new User();
-
-        user.setFullName(request.getFullName());
-        user.setEmail(request.getEmail());
-        user.setPhone(request.getPhone());
-        user.setPassword(passwordEncoder.encode(request.getPassword()));
-        user.setRole(request.getRole());
+        User user = User.builder()
+                .fullName(request.getFullName())
+                .email(request.getEmail())
+                .phone(request.getPhone())
+                .password(request.getPassword())
+                .role(request.getRole())
+                .build();
 
         if (request.getDriverRequest() != null || request.getRole().equals(Role.DRIVER)) {
-            Driver driver = new Driver();
-
-            driver.setUserId(user);
-            driver.setLicenseNumber(request.getDriverRequest().getLicenseNumber());
-            driver.setVehicleNumber(request.getDriverRequest().getVehicleNumber());
-            driver.setVehicleModel(request.getDriverRequest().getVehicleModel());
+            Driver driver = Driver.builder()
+                    .userId(user)
+                    .licenseNumber(request.getDriverRequest().getLicenseNumber())
+                    .vehicleNumber(request.getDriverRequest().getVehicleNumber())
+                    .vehicleModel(request.getDriverRequest().getVehicleModel())
+                    .build();
 
             DriverStatus driverStatus = DriverStatus.builder()
                     .driverId(driver)
@@ -63,22 +63,19 @@ public class UserServiceImpl implements UserService {
                     .isOnline(false)
                     .build();
 
-            driver.setDriverStatus(driverStatus);
-
             Location driverLocation = Location.builder()
                     .driverId(driver)
                     .latitude(23.25540149924644)
                     .longitude(77.40025710299598)
                     .build();
 
+            driver.setDriverStatus(driverStatus);
             driver.setLocation(driverLocation);
-
             user.setDriver(driver);
         }
 
-        if (request.getRiderRequest() != null || request.getRole().equals(Role.RIDER)) {
+        if (request.getRole().name().equals("RIDER")) {
             Rider rider = new Rider();
-
             rider.setUserId(user);
             user.setRider(rider);
         }
