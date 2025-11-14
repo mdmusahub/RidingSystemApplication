@@ -11,7 +11,7 @@ import java.util.Map;
 
 @Service
 @Slf4j
-public class GoogleMapService {
+public class GoogleMapServiceImpl {
     @Value("${google.api.key}")
      private String googleApiKey;
 

@@ -1,29 +1,27 @@
 package com.mecaps.ridingBookingSystem.controller;
 
-import com.mecaps.ridingBookingSystem.serviceImpl.GoogleMapService;
+import com.mecaps.ridingBookingSystem.serviceImpl.GoogleMapServiceImpl;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import java.util.Map;
-
 @RestController
 @RequestMapping("/map")
 public class MapController {
-    private final GoogleMapService googleMapService;
+    private final GoogleMapServiceImpl googleMapServiceImpl;
 
-    public MapController(GoogleMapService googleMapService) {
-        this.googleMapService = googleMapService;
+    public MapController(GoogleMapServiceImpl googleMapServiceImpl) {
+        this.googleMapServiceImpl = googleMapServiceImpl;
     }
 
     @GetMapping("/distance")
     public Double getDistance(@RequestParam String origin, @RequestParam String destination) {
-        return googleMapService.getDistanceInKm(origin, destination);
+        return googleMapServiceImpl.getDistanceInKm(origin, destination);
     }
     @GetMapping("/fare")
     public double calculateFare(@RequestParam String origin, @RequestParam String destination){
-        return googleMapService.calculateFare(origin, destination);
+        return googleMapServiceImpl.calculateFare(origin, destination);
 
     }
 }

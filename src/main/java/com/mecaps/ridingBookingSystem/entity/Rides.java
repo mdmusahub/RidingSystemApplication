@@ -39,9 +39,9 @@ public class Rides {
     @Column(nullable = false)
     private Double distanceKm;
 
-    private Integer driverRating;
+    private Float driverRating;
 
-    private Integer riderRating;
+    private Float riderRating;
 
     @Column(length = 50)
     @Enumerated(EnumType.STRING)

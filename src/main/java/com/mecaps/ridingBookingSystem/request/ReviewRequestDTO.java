@@ -3,10 +3,11 @@ package com.mecaps.ridingBookingSystem.request;
 import lombok.Data;
 
 @Data
-public class DriverReviewRequest {
+public class ReviewRequestDTO {
     private Long rideId;
-    private Long driverId;
-    private Long riderId;
+    private Long reviewerId;
+    private Long revieweeId;
     private Integer rating;
     private String comment;
+
 }
