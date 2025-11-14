@@ -1,8 +1,10 @@
 package com.mecaps.ridingBookingSystem.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.Data;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Entity
@@ -14,7 +16,7 @@ public class Driver {
     private Long id;
 
     @OneToOne
-    @JoinColumn(name = "user_id", nullable = false)
+    @JoinColumn(name = "userId", nullable = false)
     private User userId;
 
     @Column(nullable = false)
@@ -27,14 +29,15 @@ public class Driver {
 
     private Float rating;
 
-    private Boolean isAvailable;
-
+    @JsonIgnore
     @OneToMany(mappedBy = "driverId", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<Rides> rides;
+    private List<Rides> rides = new ArrayList<>();
 
+    @JsonIgnore
     @OneToOne (mappedBy = "driverId", cascade = CascadeType.ALL, orphanRemoval = true)
     private DriverStatus driverStatus;
 
+    @JsonIgnore
     @OneToOne(mappedBy = "driverId", cascade = CascadeType.ALL, orphanRemoval = true)
     private Location location;
 

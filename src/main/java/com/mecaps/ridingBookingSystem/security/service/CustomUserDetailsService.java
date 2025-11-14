@@ -1,11 +1,17 @@
-package com.mecaps.ridingBookingSystem.security;
+package com.mecaps.ridingBookingSystem.security.service;
 
 import com.mecaps.ridingBookingSystem.entity.User;
 import com.mecaps.ridingBookingSystem.repository.UserRepository;
+import com.mecaps.ridingBookingSystem.security.model.CustomUserDetails;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
+
+import java.util.Collection;
+import java.util.List;
 
 @Service
 public class CustomUserDetailsService implements UserDetailsService {
@@ -20,10 +26,12 @@ public class CustomUserDetailsService implements UserDetailsService {
     public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
         User user = userRepository.findByEmail(email).orElseThrow(() -> new RuntimeException("USER NOT FOUND"));
 
-        return org.springframework.security.core.userdetails.User.builder()
+        return CustomUserDetails.builder()
+                .id(user.getId())
                 .username(user.getEmail())
                 .password(user.getPassword())
-                .roles(String.valueOf(user.getRole()))
+                .authorities(List.of(new SimpleGrantedAuthority("ROLE_" + user.getRole().name())))
                 .build();
+
     }
 }

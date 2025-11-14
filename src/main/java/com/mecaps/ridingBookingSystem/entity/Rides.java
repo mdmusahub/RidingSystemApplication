@@ -1,5 +1,6 @@
 package com.mecaps.ridingBookingSystem.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -31,7 +32,7 @@ public class Rides {
 
     @OneToOne
     @JoinColumn(name = "request_id", nullable = false)
-    private RideRequests requestsId;
+    private RideRequests rideRequestId;
 
     @Column(nullable = false)
     private Double fare;
@@ -39,9 +40,9 @@ public class Rides {
     @Column(nullable = false)
     private Double distanceKm;
 
-    private Integer driverRating;
+    private Float driverRating;
 
-    private Integer riderRating;
+    private Float riderRating;
 
     @Column(length = 50)
     @Enumerated(EnumType.STRING)
@@ -54,6 +55,7 @@ public class Rides {
 
     private LocalDateTime endTime;
 
+    @JsonIgnore
     @OneToOne(mappedBy = "rideId")
     private Review review;
 

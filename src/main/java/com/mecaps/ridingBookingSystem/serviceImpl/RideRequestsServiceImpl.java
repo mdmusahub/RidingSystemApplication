@@ -5,12 +5,16 @@ import com.mecaps.ridingBookingSystem.exception.DriverNotFoundException;
 import com.mecaps.ridingBookingSystem.exception.RideRequestNotFoundException;
 import com.mecaps.ridingBookingSystem.exception.RiderNotFoundException;
 import com.mecaps.ridingBookingSystem.repository.DriverRepository;
+import com.mecaps.ridingBookingSystem.repository.OneTimePasswordRepository;
 import com.mecaps.ridingBookingSystem.repository.RideRequestsRepository;
 import com.mecaps.ridingBookingSystem.repository.RiderRepository;
 import com.mecaps.ridingBookingSystem.request.RideAcceptanceRequestDTO;
 import com.mecaps.ridingBookingSystem.request.RideRequestsDTO;
-import com.mecaps.ridingBookingSystem.service.RideRequestService;
+import com.mecaps.ridingBookingSystem.service.DriverService;
+import com.mecaps.ridingBookingSystem.service.OneTimePasswordService;
+import com.mecaps.ridingBookingSystem.service.RideRequestsService;
 import com.mecaps.ridingBookingSystem.util.DistanceFareUtil;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
@@ -19,21 +23,27 @@ import java.time.LocalDateTime;
 import java.util.*;
 
 @Service
-public class RideRequestServiceImpl implements RideRequestService {
+@Slf4j
+public class RideRequestsServiceImpl implements RideRequestsService {
     private final RideRequestsRepository rideRequestsRepository;
     private final RiderRepository riderRepository;
-    private final DriverServiceImpl driverService;
+    private final DriverService driverService;
     private final DriverRepository driverRepository;
-    private final OneTimePasswordServiceImpl oneTimePasswordService;
+    private final OneTimePasswordService oneTimePasswordService;
+    private final OneTimePasswordRepository oneTimePasswordRepository;
 
-    public RideRequestServiceImpl(RideRequestsRepository rideRequestsRepository,
-                                  RiderRepository riderRepository,
-                                  DriverRepository driverRepository, DriverServiceImpl driverService, DriverRepository driverRepository1, OneTimePasswordServiceImpl oneTimePasswordService) {
+    public RideRequestsServiceImpl(RideRequestsRepository rideRequestsRepository,
+                                   RiderRepository riderRepository,
+                                   DriverRepository driverRepository,
+                                   DriverService driverService,
+                                   OneTimePasswordService oneTimePasswordService,
+                                   OneTimePasswordRepository oneTimePasswordRepository) {
         this.rideRequestsRepository = rideRequestsRepository;
         this.riderRepository = riderRepository;
         this.driverService = driverService;
         this.driverRepository = driverRepository;
         this.oneTimePasswordService = oneTimePasswordService;
+        this.oneTimePasswordRepository = oneTimePasswordRepository;
     }
 
     /**
@@ -104,6 +114,7 @@ public class RideRequestServiceImpl implements RideRequestService {
         rideRequestsRepository.save(rideRequest);
 
         OneTimePassword otp = oneTimePasswordService.createOtp(rideRequest);
+        log.info("OTP Generated successfully : {}",otp.getOtpCode());
 
         Map<String, Object> fareAndDistance = this.getRideFareAndDistance(request);
 
@@ -111,8 +122,8 @@ public class RideRequestServiceImpl implements RideRequestService {
         response.put("message", "RideRequest created successfully after rider confirmation");
         response.put("rideRequestId", rideRequest.getId());
         response.put("startRideOTP", otp.getOtpCode());
-        response.put("distanceInKM", fareAndDistance.get("distance"));
-        response.put("estimatedFare", fareAndDistance.get("fare"));
+        response.put("distanceInKM", fareAndDistance.get("distanceInKM"));
+        response.put("estimatedFare", fareAndDistance.get("estimatedFare"));
         response.put("driversAvailableNearby", driverService.findNearestAvailableDrivers(request, 3));
         response.put("success", true);
 
@@ -151,6 +162,10 @@ public class RideRequestServiceImpl implements RideRequestService {
 
         if (LocalDateTime.now().isAfter(rideRequest.getExpiresAt())) {
             rideRequest.setStatus(RideStatus.EXPIRED);
+
+            Optional<OneTimePassword> otp = oneTimePasswordRepository.findByRideRequestId(rideRequest.getId());
+            otp.ifPresent(oneTimePassword -> oneTimePasswordRepository.deleteById(otp.get().getId()));
+
             rideRequestsRepository.save(rideRequest);
             return ResponseEntity
                     .status(HttpStatus.GONE)
@@ -158,10 +173,13 @@ public class RideRequestServiceImpl implements RideRequestService {
         }
 
         rideRequest.setStatus(RideStatus.ACCEPTED);
-        driver.setIsAvailable(false);
+        DriverStatus driverStatus = driver.getDriverStatus();
+        driverStatus.setIsAvailable(false);
 
-        rideRequestsRepository.save(rideRequest);
+        driver.setDriverStatus(driverStatus);
+
         driverRepository.save(driver);
+        rideRequestsRepository.save(rideRequest);
 
         return ResponseEntity.status(HttpStatus.ACCEPTED)
                 .body(Map.of(
