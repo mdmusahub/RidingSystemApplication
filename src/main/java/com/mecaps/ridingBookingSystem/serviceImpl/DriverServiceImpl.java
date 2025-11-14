@@ -10,9 +10,11 @@ import com.mecaps.ridingBookingSystem.request.RideRequestsDTO;
 import com.mecaps.ridingBookingSystem.response.DriverResponse;
 import com.mecaps.ridingBookingSystem.service.DriverService;
 import com.mecaps.ridingBookingSystem.util.DistanceFareUtil;
+import jakarta.annotation.security.PermitAll;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 
 import java.util.Comparator;
@@ -32,6 +34,7 @@ public class DriverServiceImpl implements DriverService {
         this.userRepository = userRepository;
     }
 
+    @PermitAll
     @Override
     public ResponseEntity<?> createDriver(DriverRequest request) {
         Optional<Driver> existingLicenseNumber = driverRepository
@@ -63,6 +66,7 @@ public class DriverServiceImpl implements DriverService {
                         "success", "true"));
     }
 
+    @PreAuthorize("hasRole('ADMIN') or #id == authentication.principal.id")
     public ResponseEntity<?> getDriverById(Long id) {
         Driver driver = driverRepository.findById(id)
                 .orElseThrow(() -> new DriverNotFoundException("Driver not found with given id"));
@@ -74,6 +78,7 @@ public class DriverServiceImpl implements DriverService {
                         "success", "true"));
     }
 
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<?> getAllDrivers() {
         List<Driver> driverList = driverRepository.findAll();
         List<DriverResponse> driverResponseList = driverList.stream()
@@ -83,6 +88,8 @@ public class DriverServiceImpl implements DriverService {
                         "body", driverResponseList,
                         "success", "true"));
     }
+
+    @PreAuthorize("hasRole('ADMIN') or (hasRole('DRIVER') and #id == principal.id)")
 
     public ResponseEntity<?> updateDriver(Long id, DriverRequest request) {
         Optional<Driver> existingLicenseNumber = driverRepository
@@ -115,6 +122,7 @@ public class DriverServiceImpl implements DriverService {
     }
 
 
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<?> deleteDriver(Long id) {
         Driver driver = driverRepository.findById(id)
                 .orElseThrow(() -> new DriverNotFoundException("Driver not found with given id : " + id));
@@ -122,6 +130,8 @@ public class DriverServiceImpl implements DriverService {
 
         return ResponseEntity.ok("DELETED");
     }
+
+
 
 
     @Override

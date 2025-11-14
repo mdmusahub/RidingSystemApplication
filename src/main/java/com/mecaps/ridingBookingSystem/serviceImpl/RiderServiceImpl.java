@@ -9,8 +9,10 @@ import com.mecaps.ridingBookingSystem.repository.UserRepository;
 import com.mecaps.ridingBookingSystem.request.RiderRequest;
 import com.mecaps.ridingBookingSystem.response.RiderResponse;
 import com.mecaps.ridingBookingSystem.service.RiderService;
+import jakarta.annotation.security.PermitAll;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -27,6 +29,7 @@ public class RiderServiceImpl implements RiderService {
         this.userRepository = userRepository;
     }
 
+    @PermitAll
     @Override
     public ResponseEntity<?> createRider(RiderRequest request) {
         Rider rider = new Rider();
@@ -45,7 +48,7 @@ public class RiderServiceImpl implements RiderService {
                 )
         );
     }
-
+    @PreAuthorize("hasRole('ADMIN') or #id == authentication.principal.id")
     @Override
     public ResponseEntity<?> getRiderById(Long id) {
         Rider rider = riderRepository.findById(id)
@@ -58,7 +61,7 @@ public class RiderServiceImpl implements RiderService {
                 "success",true
         ));
     }
-
+    @PreAuthorize("hasRole('ADMIN')")
     @Override
     public ResponseEntity<?> getAllRiders() {
         List<Rider> riders = riderRepository.findAll();
@@ -66,7 +69,7 @@ public class RiderServiceImpl implements RiderService {
 
         return ResponseEntity.ok(riderResponseList);
     }
-
+    @PreAuthorize("hasRole('ADMIN')")
     @Override
     public ResponseEntity<?> deleteRider(Long id) {
         Rider rider = riderRepository.findById(id)
