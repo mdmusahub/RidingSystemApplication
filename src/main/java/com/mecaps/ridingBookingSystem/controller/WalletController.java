@@ -1,8 +1,10 @@
 package com.mecaps.ridingBookingSystem.controller;
 
 import com.mecaps.ridingBookingSystem.entity.Wallet;
+import com.mecaps.ridingBookingSystem.exception.WalletNotFoundException;
 import com.mecaps.ridingBookingSystem.service.WalletService;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.web.bind.annotation.*;
 
 import java.net.URI;
@@ -30,8 +32,12 @@ public class WalletController {
 
     @GetMapping("/{id}")
     public ResponseEntity<Wallet> getById(@PathVariable Long id) {
-        return walletService.getWalletById(id).map(ResponseEntity::ok)
-                .orElse(ResponseEntity.notFound().build());
+         try {
+            Wallet wallet = walletService.getWalletById(id);
+            return ResponseEntity.ok(wallet);
+        } catch (WalletNotFoundException e) {
+            return ResponseEntity.notFound().build();
+        }
     }
 
     @PutMapping("/{id}")
@@ -39,15 +45,24 @@ public class WalletController {
         try {
             Wallet updated = walletService.updateWallet(id, walletDetails);
             return ResponseEntity.ok(updated);
-        } catch (RuntimeException e) {
+        } catch (WalletNotFoundException e) {
             return ResponseEntity.notFound().build();
+        } catch (AccessDeniedException e) {
+            return ResponseEntity.status(403).build();
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.badRequest().body(null);
         }
     }
 
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> delete(@PathVariable Long id) {
-        walletService.deleteWallet(id);
-        return ResponseEntity.noContent().build();
+        try {
+            walletService.deleteWallet(id);
+            return ResponseEntity.noContent().build();
+        } catch (WalletNotFoundException e) {
+            return ResponseEntity.notFound().build();
+        }
+
     }
 }
 

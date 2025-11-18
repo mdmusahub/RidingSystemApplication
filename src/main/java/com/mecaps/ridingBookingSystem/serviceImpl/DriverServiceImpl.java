@@ -85,19 +85,27 @@ public class DriverServiceImpl implements DriverService {
     }
 
     public ResponseEntity<?> updateDriver(Long id, DriverRequest request) {
+        // 1. License Number Check
         Optional<Driver> existingLicenseNumber = driverRepository
                 .findByLicenseNumber(request.getLicenseNumber());
-        if (existingLicenseNumber.isPresent()) {
+        // Agar license number existing hai, AUR woh existing driver ki ID current ID se MATCH nahi karti,
+        // tabhi exception throw karo.
+        if (existingLicenseNumber.isPresent() && !existingLicenseNumber.get().getId().equals(id)) {
             throw new DriverAlreadyExistsException
                     ("Driver with this LICENSE NUMBER is already exists");
         }
 
+        // 2. Vehicle Number Check
         Optional<Driver> existingVehicleNumber = driverRepository
                 .findByVehicleNumber(request.getVehicleNumber());
-        if (existingVehicleNumber.isPresent()) {
+        // Agar vehicle number existing hai, AUR woh existing driver ki ID current ID se MATCH nahi karti,
+        // tabhi exception throw karo.
+        if (existingVehicleNumber.isPresent() && !existingVehicleNumber.get().getId().equals(id)) {
             throw new DriverAlreadyExistsException
                     ("Driver with this VEHICLE NUMBER is already exists");
         }
+
+
         Driver driver = driverRepository.findById(id)
                 .orElseThrow(() -> new DriverNotFoundException("Driver not found with given id"));
 

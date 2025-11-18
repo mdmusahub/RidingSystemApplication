@@ -10,11 +10,13 @@ import com.mecaps.ridingBookingSystem.exception.UserAlreadyExistsException;
 import com.mecaps.ridingBookingSystem.exception.UserNotFoundException;
 import com.mecaps.ridingBookingSystem.repository.UserRepository;
 import com.mecaps.ridingBookingSystem.service.UserService;
+import jakarta.annotation.security.PermitAll;
 import lombok.extern.slf4j.Slf4j;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -35,6 +37,7 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
+    @PermitAll
     public ResponseEntity<?> createUser(UserRequest request) {
         Optional<User> existingEmail = userRepository.findByEmail(request.getEmail());
         if (existingEmail.isPresent()) {
@@ -89,6 +92,7 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
+    @PreAuthorize("hasAnyRole('ADMIN','DRIVER','RIDER')")
     public ResponseEntity<?> getUserById(Long id){
         User user = userRepository.findById(id)
                 .orElseThrow(()-> new UserNotFoundException("User not found"));
@@ -102,6 +106,7 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<?> getAllUser(){
         List<User> userList = userRepository.findAll();
         List<UserResponse> userResponseList = userList.stream()
@@ -113,6 +118,7 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
+    @PreAuthorize("hasRole('ADMIN') or #id == principal.id")
     public ResponseEntity<?> updateUser(Long id, UserRequest request){
         User user = userRepository.findById(id)
                 .orElseThrow(()-> new UserNotFoundException("User not found"));
@@ -130,6 +136,7 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
+    @PermitAll
     public ResponseEntity<?> changePassword(String email, ChangePasswordRequest request){
 
         User user = userRepository.findByEmail(email)
@@ -165,6 +172,7 @@ public class UserServiceImpl implements UserService {
 
 
     @Override
+    @PreAuthorize("hasRole('ADMIN') or #id == principal.id")
     public ResponseEntity<?> deleteUser(Long id){
         User user = userRepository.findById(id)
                 .orElseThrow(()-> new UserNotFoundException("User not found"));
@@ -174,6 +182,8 @@ public class UserServiceImpl implements UserService {
         return ResponseEntity.ok("DELETED");
     }
 
+    @Override
+    @PermitAll
     public ResponseEntity<?> forgotPassword(UserRequest request) {
         User user = userRepository.findByEmail(request.getEmail())
                 .orElseThrow(()-> new RuntimeException("Email does not exist"));

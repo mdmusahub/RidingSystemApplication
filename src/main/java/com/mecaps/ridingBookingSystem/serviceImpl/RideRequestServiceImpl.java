@@ -10,8 +10,10 @@ import com.mecaps.ridingBookingSystem.repository.RiderRepository;
 import com.mecaps.ridingBookingSystem.request.RideRequestsDTO;
 import com.mecaps.ridingBookingSystem.service.RideRequestService;
 import com.mecaps.ridingBookingSystem.util.DistanceFareUtil;
+import jakarta.annotation.security.PermitAll;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
@@ -36,6 +38,7 @@ public class RideRequestServiceImpl implements RideRequestService {
     }
 
     @Override
+    @PermitAll
     public Map<String, Object> getRideFareAndDistance(RideRequestsDTO request) {
 
         Double distance = DistanceFareUtil.calculateDistance(
@@ -56,6 +59,7 @@ public class RideRequestServiceImpl implements RideRequestService {
     }
 
     @Override
+    @PreAuthorize("#request.getRiderId() == authentication.principal.id or hasRole('ADMIN')")
     public ResponseEntity<?> createRideRequest(RideRequestsDTO request) {
         Rider rider = riderRepository.findById(request.getRiderId())
                 .orElseThrow(() -> new RiderNotFoundException
@@ -90,6 +94,7 @@ public class RideRequestServiceImpl implements RideRequestService {
     }
 
     @Override
+    @PreAuthorize("hasRole('ADMIN') or (#driverId == authentication.principal.id and hasRole('DRIVER'))")
     public ResponseEntity<?> driverRideRequestConfirmation(Long rideRequestId, Long driverId, Boolean isAccepted) {
         RideRequests rideRequest = rideRequestsRepository.findById(rideRequestId)
                 .orElseThrow(() -> new RideRequestNotFoundException("No Such Ride Request Found"));

@@ -10,7 +10,7 @@ public interface WalletService {
 
     List<Wallet> getAllWallets();
 
-    Optional<Wallet> getWalletById(Long id);
+    Wallet getWalletById(Long id);
 
     Wallet updateWallet(Long id, Wallet walletDetails);
 

@@ -9,6 +9,7 @@ import com.mecaps.ridingBookingSystem.service.RideService;
 import com.mecaps.ridingBookingSystem.util.DistanceFareUtil;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
@@ -33,7 +34,7 @@ public class RideServiceImpl implements RideService {
     }
 
     @Override
-    public ResponseEntity<?> startRide(StartRideRequest startRideRequest) {
+    @PreAuthorize("hasRole('ADMIN') or (#startRideRequest.getDriverId() == authentication.principal.id and hasRole('DRIVER'))")    public ResponseEntity<?> startRide(StartRideRequest startRideRequest) {
         Driver driver = driverRepository.findById(startRideRequest.getDriverId())
                 .orElseThrow(() -> new DriverNotFoundException("Driver Not Found"));
 
@@ -81,7 +82,7 @@ public class RideServiceImpl implements RideService {
     }
 
     @Override
-    public ResponseEntity<?> completeRide(CompleteRideRequest completeRideRequest){
+    @PreAuthorize("hasRole('ADMIN') or (#completeRideRequest.getDriverId() == authentication.principal.id and hasRole('DRIVER'))")    public ResponseEntity<?> completeRide(CompleteRideRequest completeRideRequest){
         Rides ride = rideRepository.findById(completeRideRequest.getRideId())
                 .orElseThrow(() -> new RideNotFoundException("Ride not found for the given ID: " + completeRideRequest.getRideId()));
 
