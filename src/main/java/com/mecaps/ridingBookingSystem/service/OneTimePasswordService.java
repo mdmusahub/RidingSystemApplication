@@ -9,7 +9,9 @@ public interface OneTimePasswordService {
 
     boolean validateOtp(String enteredOtp, OneTimePassword otp);
 
+
     void deleteOtp(Long id);
+
 
 }
 

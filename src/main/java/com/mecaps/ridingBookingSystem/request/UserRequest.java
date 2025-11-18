@@ -13,7 +13,8 @@ public class UserRequest {
     private String password;
     private Role role;
 
+    @Nullable
     private DriverRequest driverRequest;
 
-    private RiderRequest riderRequest;
+//    private RiderRequest riderRequest;
 }

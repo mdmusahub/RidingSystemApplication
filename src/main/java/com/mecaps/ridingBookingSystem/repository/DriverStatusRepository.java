@@ -9,4 +9,6 @@ import java.util.Optional;
 @Repository
 public interface DriverStatusRepository extends JpaRepository<DriverStatus,Long> {
     Optional<DriverStatus> findByIsOnlineTrueAndIsAvailableTrue();
+
 }
+

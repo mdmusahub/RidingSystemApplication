@@ -9,9 +9,9 @@ import java.util.List;
 public interface RideCancellationService {
     ResponseEntity<?> cancelRide(RideCancellationRequest rideCancellationRequest);
 
-    RideCancellation getRideCancellationById(Long id);
+    ResponseEntity<?> getRideCancellationById(Long id);
 
-    List<RideCancellation> getAllRideCancellation();
+    ResponseEntity<?> getAllRideCancellation();
 
     ResponseEntity<?> deleteRideCancellationById(Long id);
 }
