@@ -5,7 +5,7 @@ import com.mecaps.ridingBookingSystem.exception.*;
 import com.mecaps.ridingBookingSystem.repository.*;
 import com.mecaps.ridingBookingSystem.request.CompleteRideRequest;
 import com.mecaps.ridingBookingSystem.request.StartRideRequest;
-import com.mecaps.ridingBookingSystem.service.RideService;
+import com.mecaps.ridingBookingSystem.service.RidesService;
 import com.mecaps.ridingBookingSystem.util.DistanceFareUtil;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -15,7 +15,7 @@ import java.time.LocalDateTime;
 import java.util.Map;
 
 @Service
-public class RideServiceImpl implements RideService {
+public class RideServiceImpl implements RidesService {
     private final RideRepository rideRepository;
     private final OneTimePasswordServiceImpl oneTimePasswordService;
     private final OneTimePasswordRepository oneTimePasswordRepository;

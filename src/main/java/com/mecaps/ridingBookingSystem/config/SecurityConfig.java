@@ -1,6 +1,6 @@
 package com.mecaps.ridingBookingSystem.config;
 
-import com.mecaps.ridingBookingSystem.security.JwtAuthFilter;
+import com.mecaps.ridingBookingSystem.security.jwt.JwtAuthFilter;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
@@ -43,12 +43,12 @@ public class SecurityConfig {
                         "/js/**",
                         "/css/**"
                                         ).permitAll()
+                .requestMatchers("/admin/**",
+                        "/user/getAll",
+                        "/rider/getAll",
+                        "/driver/getAll").hasRole("ADMIN")
                 .requestMatchers("/rider/**").hasRole("RIDER")
                 .requestMatchers("/driver/**").hasRole("DRIVER")
-                .requestMatchers("/admin/**",
-                        "/rider/getAll",
-                        "/driver/getAll",
-                        "/user/getAll").hasRole("ADMIN")
                 .anyRequest().authenticated());
 
         httpSecurity.addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class);

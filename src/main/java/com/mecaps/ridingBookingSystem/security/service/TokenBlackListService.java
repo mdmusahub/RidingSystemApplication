@@ -1,4 +1,4 @@
-package com.mecaps.ridingBookingSystem.security;
+package com.mecaps.ridingBookingSystem.security.service;
 
 import com.mecaps.ridingBookingSystem.entity.TokenBlackList;
 import com.mecaps.ridingBookingSystem.repository.TokenBlackListRepository;

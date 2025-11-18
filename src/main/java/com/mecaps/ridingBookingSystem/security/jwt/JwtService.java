@@ -1,4 +1,4 @@
-package com.mecaps.ridingBookingSystem.security;
+package com.mecaps.ridingBookingSystem.security.jwt;
 
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.JwtException;
@@ -93,4 +93,3 @@ public class JwtService {
         }
     }
 }
-
