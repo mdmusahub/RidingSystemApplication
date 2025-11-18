@@ -42,10 +42,13 @@ public class SecurityConfig {
                         "/success.html",
                         "/js/**",
                         "/css/**"
-                        ).permitAll()
+                                        ).permitAll()
+                .requestMatchers("/rider/**").hasRole("RIDER")
                 .requestMatchers("/driver/**").hasRole("DRIVER")
-                .requestMatchers("/driver/getAll").hasRole("ADMIN")
-                .requestMatchers("/user/getAll").hasRole("ADMIN")
+                .requestMatchers("/admin/**",
+                        "/rider/getAll",
+                        "/driver/getAll",
+                        "/user/getAll").hasRole("ADMIN")
                 .anyRequest().authenticated());
 
         httpSecurity.addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class);

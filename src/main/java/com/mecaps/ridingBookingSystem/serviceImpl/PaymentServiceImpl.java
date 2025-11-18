@@ -14,9 +14,8 @@ import com.razorpay.Order;
 import com.razorpay.RazorpayClient;
 import com.razorpay.RazorpayException;
 import com.razorpay.Utils;
+import lombok.extern.slf4j.Slf4j;
 import org.json.JSONObject;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -26,9 +25,9 @@ import java.util.UUID;
 
 @Service
 @Transactional
+@Slf4j
 public class PaymentServiceImpl implements PaymentService {
 
-    private static final Logger logger = LoggerFactory.getLogger(PaymentServiceImpl.class);
 
     @Value("${razorpay.key_id}")
     private String razorpayKeyId;
@@ -53,12 +52,12 @@ public class PaymentServiceImpl implements PaymentService {
     @Override
     public JSONObject createPaymentOrder(PaymentRequestDTO request) throws RazorpayException {
 
-        logger.info("Creating payment order for Ride ID: {} with amount: {}",
+        log.info("Creating payment order for Ride ID: {} with amount: {}",
                 request.getRideId(), request.getAmount());
 
         Rides rides = rideRepository.findById(request.getRideId())
                 .orElseThrow(() -> {
-                    logger.error("Ride not found with ID: {}", request.getRideId());
+                    log.error("Ride not found with ID: {}", request.getRideId());
                     return new RideNotFoundException("Ride Not Found");
                 });
 
@@ -78,7 +77,7 @@ public class PaymentServiceImpl implements PaymentService {
 
             paymentRepository.save(payment);
 
-            logger.info("Cash payment recorded successfully for Ride ID: {}", request.getRideId());
+            log.info("Cash payment recorded successfully for Ride ID: {}", request.getRideId());
 
             return new JSONObject(Map.of(
                     "message", "Cash payment recorded successfully",
@@ -98,7 +97,7 @@ public class PaymentServiceImpl implements PaymentService {
 
         Order order = razorpayClient.orders.create(orderRequest);
 
-        logger.debug("Razorpay order created with ID: {}", (Object) order.get("id"));
+        log.debug("Razorpay order created with ID: {}", (Object) order.get("id"));
 
         Payment payment = Payment.builder()
                 .rideId(rides)
@@ -110,11 +109,11 @@ public class PaymentServiceImpl implements PaymentService {
 
         paymentRepository.save(payment);
 
-        logger.info("Payment entry created with PENDING status for Ride ID: {}", request.getRideId());
+        log.info("Payment entry created with PENDING status for Ride ID: {}", request.getRideId());
 
         return order.toJson();
     }catch (Exception e){
-            logger.error("Error creating Razorpay order: {}", e.getMessage(), e);
+            log.error("Error creating Razorpay order: {}", e.getMessage(), e);
             throw new PaymentVerificationException("Failed to create Razorpay order");
         }
     }
@@ -122,7 +121,7 @@ public class PaymentServiceImpl implements PaymentService {
     @Override
     public Payment verifyPayment(String paymentId, String orderId, String signature) {
 
-        logger.info("Verifying payment for Order ID: {}", orderId);
+        log.info("Verifying payment for Order ID: {}", orderId);
 
         try {
 
@@ -133,7 +132,7 @@ public class PaymentServiceImpl implements PaymentService {
 
             boolean isSignatureValid = Utils.verifyPaymentSignature(object, secretKey);
 
-            logger.debug("Signature validation result for Order ID {}: {}", orderId, isSignatureValid);
+            log.debug("Signature validation result for Order ID {}: {}", orderId, isSignatureValid);
 
             if (!isSignatureValid) {
                 throw new PaymentVerificationException("Invalid payment signature.");
@@ -147,15 +146,15 @@ public class PaymentServiceImpl implements PaymentService {
             payment.setPaymentStatus(PaymentStatus.SUCCESS);
             paymentRepository.save(payment);
 
-            logger.info("Payment verified successfully for Order ID: {}", orderId);
+            log.info("Payment verified successfully for Order ID: {}", orderId);
             return payment;
 
         } catch (PaymentVerificationException ex) {
-            logger.error("Payment verification failed: {}", ex.getMessage());
+            log.error("Payment verification failed: {}", ex.getMessage());
             throw ex;
 
         } catch (Exception e) {
-            logger.error("Unexpected error during payment verification: {}", e.getMessage(), e);
+            log.error("Unexpected error during payment verification: {}", e.getMessage(), e);
             throw new PaymentVerificationException(
                     "Payment verification failed due to server error.", e);
         }
