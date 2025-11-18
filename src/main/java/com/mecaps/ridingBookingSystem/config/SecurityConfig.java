@@ -3,7 +3,6 @@ package com.mecaps.ridingBookingSystem.config;
 import com.mecaps.ridingBookingSystem.security.JwtAuthFilter;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
@@ -31,12 +30,19 @@ public class SecurityConfig {
 
     @Bean
     public SecurityFilterChain securityFilerChain(HttpSecurity httpSecurity) throws Exception {
-        httpSecurity.csrf(AbstractHttpConfigurer::disable).authorizeHttpRequests(auth -> auth.
-                requestMatchers("/user/create").permitAll()
-                .requestMatchers("/auth/login").permitAll()
-                .requestMatchers("/auth/forgot-password").permitAll()
-                .requestMatchers("/auth/reset-password").permitAll()
-                .requestMatchers("/auth/refresh").permitAll()
+        httpSecurity.csrf(AbstractHttpConfigurer::disable).authorizeHttpRequests(auth -> auth
+                .requestMatchers(    "/user/create",
+                        "/auth/login",
+                        "/auth/forgot-password",
+                        "/auth/reset-password",
+                        "/auth/refresh",
+                        "/api/payment/create",
+                        "/api/payment/verify",
+                        "/payment.html",
+                        "/success.html",
+                        "/js/**",
+                        "/css/**"
+                        ).permitAll()
                 .requestMatchers("/driver/**").hasRole("DRIVER")
                 .requestMatchers("/driver/getAll").hasRole("ADMIN")
                 .requestMatchers("/user/getAll").hasRole("ADMIN")
