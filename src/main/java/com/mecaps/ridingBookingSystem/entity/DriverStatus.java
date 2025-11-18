@@ -1,14 +1,21 @@
 package com.mecaps.ridingBookingSystem.entity;
 
 import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 import org.hibernate.annotations.CreationTimestamp;
 import org.springframework.boot.autoconfigure.web.WebProperties;
+import org.springframework.format.annotation.DateTimeFormat;
 
 import java.time.LocalDateTime;
 
-@Entity
 @Data
+@NoArgsConstructor
+@AllArgsConstructor
+@Builder
+@Entity
 public class DriverStatus {
 
     @Id
@@ -23,6 +30,7 @@ public class DriverStatus {
 
     private Boolean isAvailable;
 
-    @CreationTimestamp
+    @DateTimeFormat
     private LocalDateTime lastActive;
 }
+

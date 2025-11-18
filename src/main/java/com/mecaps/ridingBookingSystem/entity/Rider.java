@@ -24,5 +24,4 @@ public class Rider {
 
     @OneToMany(mappedBy = "riderId", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<RideRequests> rideRequests;
-
 }

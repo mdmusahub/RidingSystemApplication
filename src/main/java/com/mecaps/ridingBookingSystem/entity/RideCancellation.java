@@ -21,8 +21,11 @@ public class RideCancellation {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @OneToOne
+    private RideRequests rideRequest;
+
     @ManyToOne
-    private Rides rideId;
+    private Driver driver;
 
     @Column(nullable = false)
     private String cancelledBy;

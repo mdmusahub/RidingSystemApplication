@@ -9,9 +9,11 @@ import com.mecaps.ridingBookingSystem.repository.RideRequestsRepository;
 import com.mecaps.ridingBookingSystem.repository.RiderRepository;
 import com.mecaps.ridingBookingSystem.service.OneTimePasswordService;
 import com.mecaps.ridingBookingSystem.util.OtpUtil;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 @Service
+@Slf4j
 public class OneTimePasswordServiceImpl implements OneTimePasswordService {
 
     private final OneTimePasswordRepository oneTimePasswordRepository;
@@ -40,15 +42,11 @@ public class OneTimePasswordServiceImpl implements OneTimePasswordService {
     @Override
     public boolean validateOtp(String enteredOtp, OneTimePassword otp) {
         if (enteredOtp.equals(otp.getOtpCode())) {
-            deleteOtp(otp.getId());
+            oneTimePasswordRepository.deleteById(otp.getId());
+            log.info("OTP Validated and Deleted Successfully");
             return true;
         } else {
             return false;
         }
-    }
-
-    @Override
-    public void deleteOtp(Long id) {
-        oneTimePasswordRepository.deleteById(id);
     }
 }

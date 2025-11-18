@@ -1,9 +1,8 @@
 package com.mecaps.ridingBookingSystem.config;
 
-import com.mecaps.ridingBookingSystem.security.JwtAuthFilter;
+import com.mecaps.ridingBookingSystem.security.jwt.JwtAuthFilter;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
@@ -37,7 +36,10 @@ public class SecurityConfig {
                 .requestMatchers("/auth/forgot-password").permitAll()
                 .requestMatchers("/auth/reset-password").permitAll()
                 .requestMatchers("/auth/refresh").permitAll()
+                .requestMatchers("/admin/**").hasRole("ADMIN")
+                .requestMatchers("/rider/**").hasRole("RIDER")
                 .requestMatchers("/driver/**").hasRole("DRIVER")
+                .requestMatchers("/rider/getAll").hasRole("ADMIN")
                 .requestMatchers("/driver/getAll").hasRole("ADMIN")
                 .requestMatchers("/user/getAll").hasRole("ADMIN")
                 .anyRequest().authenticated());
