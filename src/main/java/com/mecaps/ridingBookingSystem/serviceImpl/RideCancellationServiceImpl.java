@@ -9,6 +9,7 @@ import com.mecaps.ridingBookingSystem.repository.OneTimePasswordRepository;
 import com.mecaps.ridingBookingSystem.repository.RideCancellationRepository;
 import com.mecaps.ridingBookingSystem.repository.RideRequestsRepository;
 import com.mecaps.ridingBookingSystem.request.RideCancellationRequest;
+import com.mecaps.ridingBookingSystem.response.RideCancellationResponse;
 import com.mecaps.ridingBookingSystem.service.OneTimePasswordService;
 import com.mecaps.ridingBookingSystem.service.RideCancellationService;
 import org.springframework.http.HttpStatus;
@@ -68,7 +69,7 @@ public class RideCancellationServiceImpl implements RideCancellationService {
 
         return ResponseEntity.ok().body(Map.of(
                 "message", "Ride cancelled successfully",
-                "body", rideCancellation,
+                "body", new RideCancellationResponse(rideCancellation),
                 "success", true
         ));
     }
@@ -77,12 +78,14 @@ public class RideCancellationServiceImpl implements RideCancellationService {
     public ResponseEntity<?> getRideCancellationById(Long id) {
         RideCancellation rideCancellation = rideCancellationRepository.findById(id)
                 .orElseThrow(() -> new RideCancellationNotFound("Ride Cancellation not found for the given ID: " + id));
-        return ResponseEntity.ok().body(rideCancellation);
+        return ResponseEntity.ok().body(new RideCancellationResponse(rideCancellation));
     }
 
     @Override
     public ResponseEntity<?> getAllRideCancellation() {
-        return ResponseEntity.ok().body(rideCancellationRepository.findAll());
+        List<RideCancellation> rideCancellationList = rideCancellationRepository.findAll();
+        List<RideCancellationResponse> rideCancellationResponseList = rideCancellationList.stream().map(RideCancellationResponse::new).toList();
+        return ResponseEntity.ok().body(rideCancellationResponseList);
     }
 
     @Override
