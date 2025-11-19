@@ -1,12 +1,8 @@
 package com.mecaps.ridingBookingSystem.controller;
 
-import com.mecaps.ridingBookingSystem.request.RideCancellationRequest;
-import com.mecaps.ridingBookingSystem.request.RideRequestsDTO;
-import com.mecaps.ridingBookingSystem.request.RiderRequest;
-import com.mecaps.ridingBookingSystem.service.RideCancellationService;
-import com.mecaps.ridingBookingSystem.service.RideHistoryService;
-import com.mecaps.ridingBookingSystem.service.RideRequestsService;
-import com.mecaps.ridingBookingSystem.serviceImpl.RiderServiceImpl;
+import com.mecaps.ridingBookingSystem.request.*;
+import com.mecaps.ridingBookingSystem.service.*;
+import com.mecaps.ridingBookingSystem.service.RiderService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
@@ -17,16 +13,18 @@ import java.util.Map;
 @RequestMapping("/rider")
 public class RiderController {
 
-    private final RiderServiceImpl riderService;
+    private final RiderService riderService;
     private final RideRequestsService rideRequestsService;
     private final RideHistoryService rideHistoryService;
     private final RideCancellationService rideCancellationService;
+    private final ReviewService reviewService;
 
-    public RiderController(RiderServiceImpl riderService, RideRequestsService rideRequestsService, RideHistoryService rideHistoryService, RideCancellationService rideCancellationService){
+    public RiderController(RiderService riderService, RideRequestsService rideRequestsService, RideHistoryService rideHistoryService, RideCancellationService rideCancellationService, ReviewService reviewService){
         this.riderService = riderService;
         this.rideRequestsService = rideRequestsService;
         this.rideHistoryService = rideHistoryService;
         this.rideCancellationService = rideCancellationService;
+        this.reviewService = reviewService;
     }
 
     @PreAuthorize("hasRole('ADMIN') or hasRole('RIDER')")
@@ -65,5 +63,15 @@ public class RiderController {
     @PostMapping("/cancel-ride-request")
     public ResponseEntity<?> cancelRide(@RequestBody RideCancellationRequest rideCancellationRequest){
         return rideCancellationService.cancelRide(rideCancellationRequest);
+    }
+
+    @PostMapping("/submit-review")
+    public ResponseEntity<?> submitReview(@RequestBody ReviewRequestDTO reviewRequestDTO){
+        return reviewService.submitReview(reviewRequestDTO);
+    }
+
+    @PutMapping("/update-review")
+    public ResponseEntity<?> updateReview(@RequestBody UpdateReviewRequestDTO updateReviewRequestDTO){
+        return reviewService.updateReview(updateReviewRequestDTO);
     }
 }

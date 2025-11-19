@@ -36,6 +36,7 @@ public class SecurityConfig {
                         "/auth/forgot-password",
                         "/auth/reset-password",
                         "/auth/refresh").permitAll()
+                .requestMatchers("/map/**").permitAll()
                 .requestMatchers("/admin/**",
                         "/user/getAll",
                         "/rider/getAll",
