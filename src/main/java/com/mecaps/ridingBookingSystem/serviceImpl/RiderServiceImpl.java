@@ -29,7 +29,7 @@ public class RiderServiceImpl implements RiderService {
         this.userRepository = userRepository;
     }
 
-    @PermitAll
+    @PreAuthorize("hasRole('USER')")
     @Override
     public ResponseEntity<?> createRider(RiderRequest request) {
         Rider rider = new Rider();
