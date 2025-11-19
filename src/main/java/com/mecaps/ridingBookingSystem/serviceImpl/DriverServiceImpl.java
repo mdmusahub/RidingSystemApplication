@@ -34,7 +34,7 @@ public class DriverServiceImpl implements DriverService {
         this.userRepository = userRepository;
     }
 
-    @PermitAll
+
     @Override
     public ResponseEntity<?> createDriver(DriverRequest request) {
         Optional<Driver> existingLicenseNumber = driverRepository
