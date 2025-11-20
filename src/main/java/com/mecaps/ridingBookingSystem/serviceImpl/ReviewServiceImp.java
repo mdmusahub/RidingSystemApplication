@@ -40,6 +40,17 @@ public class ReviewServiceImp implements ReviewService {
     public ResponseEntity<?> submitReview(ReviewRequestDTO reviewRequestDTO) {
         Rides ride = rideRepository.findById(reviewRequestDTO.getRideId())
                 .orElseThrow(() -> new RideNotFoundException("Ride not found"));
+
+        // Ride completion validation
+        if (!ride.getStatus().equals(RideStatus.COMPLETED)) {
+            return ResponseEntity.badRequest()
+                    .body(Map.of(
+                            "error", "Cannot submit review before ride completion",
+                            "currentRideStatus", ride.getStatus(),
+                            "success", false
+                    ));
+        }
+
         User reviewer = userRepository.findById(reviewRequestDTO.getReviewerId())
                 .orElseThrow(() -> new UserNotFoundException("User not found"));
         User reviewee = userRepository.findById(reviewRequestDTO.getRevieweeId())
@@ -47,7 +58,7 @@ public class ReviewServiceImp implements ReviewService {
         Rider rider = ride.getRiderId();
         Driver driver = ride.getDriverId();
 
-        // Extracting the logged-in user id
+        // Extracting the logged-in user details
         Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         CustomUserDetails userDetails = (CustomUserDetails) principal;
 
@@ -59,35 +70,36 @@ public class ReviewServiceImp implements ReviewService {
                             "currentUser", userDetails.getUsername(),
                             "success", false
                     ));
-        } else {
-            // Rating value range validation
-            if (reviewRequestDTO.getRating() <= 1 || reviewRequestDTO.getRating() >= 5) {
-                return ResponseEntity.badRequest()
-                        .body(Map.of(
-                                "error", "rating must be between 1 to 5",
-                                "success", false
-                        ));
-            }
+        }
 
-            Review review = Review.builder()
-                    .rideId(ride)
-                    .reviewerId(reviewer)
-                    .revieweeId(reviewee)
-                    .rating(reviewRequestDTO.getRating())
-                    .comment(reviewRequestDTO.getComment())
-                    .build();
-            Review savedReview = reviewRepository.save(review);
-
-            // update reviewee average rating
-            this.updateRevieweeAverageRating(savedReview);
-
-            return ResponseEntity.ok()
+        // Rating value range validation
+        if (reviewRequestDTO.getRating() <= 1 || reviewRequestDTO.getRating() >= 5) {
+            return ResponseEntity.badRequest()
                     .body(Map.of(
-                            "message", "Review submitted successfully",
-                            "review", new ReviewResponse(savedReview),
-                            "success", true
+                            "error", "rating must be between 1 to 5",
+                            "success", false
                     ));
         }
+
+        Review review = Review.builder()
+                .rideId(ride)
+                .reviewerId(reviewer)
+                .revieweeId(reviewee)
+                .rating(reviewRequestDTO.getRating())
+                .comment(reviewRequestDTO.getComment())
+                .build();
+        Review savedReview = reviewRepository.save(review);
+
+        // update reviewee average rating
+        this.updateRevieweeAverageRating(savedReview);
+
+        return ResponseEntity.ok()
+                .body(Map.of(
+                        "message", "Review submitted successfully",
+                        "review", new ReviewResponse(savedReview),
+                        "success", true
+                ));
+
     }
 
     @Override
@@ -101,7 +113,7 @@ public class ReviewServiceImp implements ReviewService {
         User reviewer = review.getReviewerId();
         User reviewee = review.getRevieweeId();
 
-        // Extracting the logged-in user id
+        // Extracting the logged-in user details
         Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         CustomUserDetails userDetails = (CustomUserDetails) principal;
 
