@@ -48,4 +48,3 @@ public class Driver {
     private Location location;
 
 }
-
