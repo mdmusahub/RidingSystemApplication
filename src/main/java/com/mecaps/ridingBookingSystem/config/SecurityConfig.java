@@ -41,8 +41,7 @@ public class SecurityConfig {
                         "/payment.html",
                         "/success.html",
                         "/js/**",
-                        "/css/**"
-                                        ).permitAll()
+                        "/css/**").permitAll()
                 .requestMatchers("/admin/**",
                         "/user/getAll",
                         "/rider/getAll",

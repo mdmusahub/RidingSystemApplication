@@ -22,7 +22,7 @@ public class RiderServiceImpl implements RiderService {
     private final UserRepository userRepository;
     private final RiderRepository riderRepository;
 
-    public RiderServiceImpl(RiderRepository riderRepository,UserRepository userRepository){
+    public RiderServiceImpl(RiderRepository riderRepository, UserRepository userRepository) {
         this.riderRepository = riderRepository;
         this.userRepository = userRepository;
     }
@@ -41,7 +41,7 @@ public class RiderServiceImpl implements RiderService {
                 Map.of(
                         "message", "Rider created successfully",
                         "body", riderResponse,
-                        "status","true"
+                        "status", "true"
                 )
         );
     }
@@ -53,9 +53,9 @@ public class RiderServiceImpl implements RiderService {
 
         RiderResponse riderResponse = new RiderResponse(rider);
         return ResponseEntity.ok(Map.of(
-                "message","Rider found successfully",
-                "body",riderResponse,
-                "success",true
+                "message", "Rider found successfully",
+                "body", riderResponse,
+                "success", true
         ));
     }
 
@@ -70,7 +70,7 @@ public class RiderServiceImpl implements RiderService {
     @Override
     public ResponseEntity<?> deleteRider(Long id) {
         Rider rider = riderRepository.findById(id)
-                .orElseThrow(()-> new RiderNotFoundException("Rider not found with given id : " + id));
+                .orElseThrow(() -> new RiderNotFoundException("Rider not found with given id : " + id));
         riderRepository.delete(rider);
 
         return ResponseEntity.ok("DELETED");

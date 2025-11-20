@@ -1,12 +1,7 @@
 package com.mecaps.ridingBookingSystem.controller;
 
 import com.mecaps.ridingBookingSystem.request.*;
-import com.mecaps.ridingBookingSystem.service.RideCancellationService;
-import com.mecaps.ridingBookingSystem.service.RideHistoryService;
-import com.mecaps.ridingBookingSystem.service.RideRequestsService;
-import com.mecaps.ridingBookingSystem.service.RidesService;
-import com.mecaps.ridingBookingSystem.serviceImpl.DriverServiceImpl;
-import org.springframework.beans.factory.annotation.Autowired;
+import com.mecaps.ridingBookingSystem.service.*;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
@@ -15,18 +10,20 @@ import org.springframework.web.bind.annotation.*;
 @RequestMapping("/driver")
 public class DriverController {
 
-    private final DriverServiceImpl driverService;
+    private final DriverService driverService;
     private final RideRequestsService rideRequestsService;
     private final RidesService ridesService;
     private final RideHistoryService rideHistoryService;
     private final RideCancellationService rideCancellationService;
+    private final ReviewService reviewService;
 
-    public DriverController(DriverServiceImpl driverService, RideRequestsService rideRequestsService, RidesService ridesService, RideHistoryService rideHistoryService, RideCancellationService rideCancellationService) {
+    public DriverController(DriverService driverService, RideRequestsService rideRequestsService, RidesService ridesService, RideHistoryService rideHistoryService, RideCancellationService rideCancellationService, ReviewService reviewService) {
         this.driverService = driverService;
         this.rideRequestsService = rideRequestsService;
         this.ridesService = ridesService;
         this.rideHistoryService = rideHistoryService;
         this.rideCancellationService = rideCancellationService;
+        this.reviewService = reviewService;
     }
     @PreAuthorize("hasRole('ADMIN') or hasRole('DRIVER')")
     @GetMapping("/get/{id}")
@@ -75,5 +72,15 @@ public class DriverController {
     @PostMapping("/cancel-ride-request")
     public ResponseEntity<?> cancelRide(@RequestBody RideCancellationRequest rideCancellationRequest){
         return rideCancellationService.cancelRide(rideCancellationRequest);
+    }
+
+    @PostMapping("/submit-review")
+    public ResponseEntity<?> submitReview(@RequestBody ReviewRequestDTO reviewRequestDTO){
+        return reviewService.submitReview(reviewRequestDTO);
+    }
+
+    @PutMapping("/update-review")
+    public ResponseEntity<?> updateReview(@RequestBody UpdateReviewRequestDTO updateReviewRequestDTO){
+        return reviewService.updateReview(updateReviewRequestDTO);
     }
 }
