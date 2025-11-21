@@ -2,6 +2,7 @@ package com.mecaps.ridingBookingSystem.controller;
 
 import com.mecaps.ridingBookingSystem.entity.WalletTransaction;
 import com.mecaps.ridingBookingSystem.service.WalletTransactionService;
+import com.mecaps.ridingBookingSystem.serviceImpl.WalletTransactionServiceImpl;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -12,9 +13,9 @@ import java.util.List;
 @RequestMapping("/api/transactions")
 public class WalletTransactionController {
 
-    private final WalletTransactionService txService;
+    private final WalletTransactionServiceImpl txService;
 
-    public WalletTransactionController(WalletTransactionService txService) {
+    public WalletTransactionController(WalletTransactionServiceImpl txService) {
         this.txService = txService;
     }
 

@@ -31,16 +31,17 @@ public class SecurityConfig {
 
     @Bean
     public SecurityFilterChain securityFilerChain(HttpSecurity httpSecurity) throws Exception {
-        httpSecurity.csrf(AbstractHttpConfigurer::disable).authorizeHttpRequests(auth -> auth.
-                requestMatchers("/user/create").permitAll()
-                .requestMatchers("/auth/login").permitAll()
-                .requestMatchers("/auth/forgot-password").permitAll()
-                .requestMatchers("/auth/reset-password").permitAll()
-                .requestMatchers("/auth/refresh").permitAll()
-                .requestMatchers("/driver/**").hasRole("DRIVER")
-                .requestMatchers("/driver/getAll").hasRole("ADMIN")
-                .requestMatchers("/user/getAll").hasRole("ADMIN")
-                .anyRequest().authenticated());
+        httpSecurity.csrf(AbstractHttpConfigurer::disable)
+                .authorizeHttpRequests(auth ->
+                        auth.requestMatchers("/user/create").permitAll()
+                       .requestMatchers("/auth/login").permitAll()
+                       .requestMatchers("/auth/forgot-password").permitAll()
+                       .requestMatchers("/auth/reset-password").permitAll()
+                       .requestMatchers("/auth/refresh").permitAll()
+                       .requestMatchers("/driver/**").hasRole("DRIVER")
+                       .requestMatchers("/driver/getAll").hasRole("ADMIN")
+                       .requestMatchers("/user/getAll").hasRole("ADMIN")
+                       .anyRequest().authenticated());
 
         httpSecurity.addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class);
         return httpSecurity.build();

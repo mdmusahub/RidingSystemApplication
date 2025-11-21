@@ -86,9 +86,9 @@ public class AuthController {
 
         // Security ke liye: email exist ho ya na ho, same response dena
         if (userOpt.isPresent()) {
-            // Token banao
+            // Token bana
             String token = jwtService.createResetPasswordToken(email);
-            // Link banao
+            // phir Link banegi
             String resetLink = "http://localhost:8080/auth/reset-password?token=" + token;
             // Email bhejo
             emailService.sendSimpleEmail(
@@ -102,28 +102,28 @@ public class AuthController {
     }
 
 
-    // 2. Reset password — user email+ newPassword dega
+    // Reset-password mein link ke through enter hoga user
     @PostMapping("/reset-password")
     public ResponseEntity<String> resetPassword(@RequestBody ResetPasswordTokenDTO request) {
         String token = request.getToken();
         String newPassword = request.getNewPassword();
 
-        // 1️. Token se email nikaalo
+        // Token email se nikaalte hai
         String email = jwtService.extractEmail(token);
 
-        // 2️. Token valid hai kya?
+        // Token valid hai kya check hota hai
         if (!jwtService.isTokenValid(token) || email == null) {
             return ResponseEntity.badRequest().body("Invalid or expired reset token.");
         }
 
-        // 3️. UserRepository ke through DB me user find karo
+        // UserRepository ke through DB me user find karna
         Optional<User> userOtp = userRepository.findByEmail(email);
 
         if (userOtp.isEmpty()) {
             return ResponseEntity.badRequest().body("User not found!");
         }
 
-        // 4️. Password update karo aur encode karo
+        // Password update karna aur encode karna
         User user = userOtp.get();
         user.setPassword(passwordEncoder.encode(newPassword));
         userRepository.save(user);

@@ -92,7 +92,7 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    @PreAuthorize("hasAnyRole('ADMIN','DRIVER','RIDER')")
+    @PreAuthorize("hasAnyRole('ADMIN') or #id == principal.id')")
     public ResponseEntity<?> getUserById(Long id){
         User user = userRepository.findById(id)
                 .orElseThrow(()-> new UserNotFoundException("User not found"));

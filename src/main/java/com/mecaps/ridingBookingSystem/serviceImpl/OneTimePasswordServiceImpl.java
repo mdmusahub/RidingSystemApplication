@@ -27,7 +27,8 @@ public class OneTimePasswordServiceImpl implements OneTimePasswordService {
 
     @Override
     @PreAuthorize("#riderId == authentication.principal.id or hasRole('ADMIN')")
-// Yahan check hoga ki jo riderId pass kiya gaya hai, woh logged-in user ki ID se match karta hai.
+// Yahan pr check hoga ki jo riderId pass kiya gaya hai, woh logged-in user ki ID se match karta hai.
+
     public OneTimePassword createOtp(Long riderId, Long rideRequestId) {
         OneTimePassword otp = OneTimePassword.builder()
                 .otpCode(OtpUtil.generateOtp())
@@ -42,7 +43,8 @@ public class OneTimePasswordServiceImpl implements OneTimePasswordService {
 
     @Override
     @PreAuthorize("hasAnyRole('DRIVER','ADMIN')")
-// OTP validation primarily driver ya admin karta hai
+// OTP validation primarily driver ya admin kare gye
+
     public boolean validateOtp(String enteredOtp, OneTimePassword otp) {
         if (enteredOtp.equals(otp.getOtpCode())) {
             deleteOtp(otp.getId());

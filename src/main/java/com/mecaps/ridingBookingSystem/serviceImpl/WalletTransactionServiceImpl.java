@@ -32,16 +32,16 @@ public class WalletTransactionServiceImpl implements WalletTransactionService {
     }
 
 
-    // --- 2. Single Transaction Dekhna ---
+    // Id ke through Transaction Dekhna ---
     @Override
-    // Security: Check karega ki yeh transaction, logged-in user ke wallet ka hai ya nahi. Ya phir Admin ho.
+    // Check karna ki yeh transaction, logged-in user ke wallet ka hai ya nahi. Ya phir Admin ho is method ko accesss krne wala.
     @PreAuthorize("@transactionSecurity.isTransactionOwner(#id, authentication.principal.id) or hasRole('ROLE_ADMIN')")
     public Optional<WalletTransaction> getTransactionById(Long id) {
         return transactionRepo.findById(id);
     }
 
     @Transactional
-    // Security: Transaction sirf wohi user bana sakta hai, jiske wallet ID se transaction link hai. Ya phir Admin.
+    // Transaction sirf wohi user kr sakta hai, jiske wallet ID se transaction link hai. Ya phir Admin hona chaiye.
     @PreAuthorize("#tx.wallet.id == authentication.principal.id or hasRole('ROLE_ADMIN')")
     public WalletTransaction createTransaction(WalletTransaction tx) {
         // fetch wallet
@@ -49,7 +49,7 @@ public class WalletTransactionServiceImpl implements WalletTransactionService {
         Wallet wallet = walletRepo.findById(walletId)
                 .orElseThrow(() -> new WalletNotFoundException("Wallet not found: " + walletId));
 
-        // business rule: debit must have enough balance
+        // debit must have enough balance
         if ("DEBIT".equalsIgnoreCase(tx.getType())) {
             if (wallet.getBalance() == null) wallet.setBalance(0.0);
             if (wallet.getBalance() < tx.getAmount()) {

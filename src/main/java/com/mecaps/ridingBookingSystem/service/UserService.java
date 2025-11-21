@@ -18,5 +18,5 @@ public interface UserService {
     ResponseEntity<?> changePassword(String email, ChangePasswordRequest request);
 
     ResponseEntity<?> deleteUser(Long id);
-    public ResponseEntity<?> forgotPassword(UserRequest request);
+    ResponseEntity<?> forgotPassword(UserRequest request);
 }
