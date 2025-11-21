@@ -1,5 +1,6 @@
 package com.mecaps.ridingBookingSystem.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -43,7 +44,8 @@ public class RideRequests {
 
     private LocalDateTime expiresAt;
 
-    @OneToOne(mappedBy = "requestsId", cascade = CascadeType.ALL, orphanRemoval = true)
-    private Rides requestId;
+    @JsonIgnore
+    @OneToOne(mappedBy = "rideRequestId", cascade = CascadeType.ALL, orphanRemoval = true)
+    private Rides ride;
 }
 

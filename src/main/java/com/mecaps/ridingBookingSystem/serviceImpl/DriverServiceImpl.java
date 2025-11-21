@@ -1,9 +1,11 @@
 package com.mecaps.ridingBookingSystem.serviceImpl;
 
 import com.mecaps.ridingBookingSystem.entity.Driver;
+import com.mecaps.ridingBookingSystem.entity.DriverStatus;
 import com.mecaps.ridingBookingSystem.exception.DriverAlreadyExistsException;
 import com.mecaps.ridingBookingSystem.exception.DriverNotFoundException;
 import com.mecaps.ridingBookingSystem.repository.DriverRepository;
+import com.mecaps.ridingBookingSystem.repository.DriverStatusRepository;
 import com.mecaps.ridingBookingSystem.repository.UserRepository;
 import com.mecaps.ridingBookingSystem.request.DriverRequest;
 import com.mecaps.ridingBookingSystem.request.RideRequestsDTO;
@@ -25,11 +27,13 @@ public class DriverServiceImpl implements DriverService {
 
     final private DriverRepository driverRepository;
     final private UserRepository userRepository;
+    final private DriverStatusRepository driverStatusRepository;
 
     @Autowired
-    public DriverServiceImpl(DriverRepository driverRepository, UserRepository userRepository) {
+    public DriverServiceImpl(DriverRepository driverRepository, UserRepository userRepository, DriverStatusRepository driverStatusRepository) {
         this.driverRepository = driverRepository;
         this.userRepository = userRepository;
+        this.driverStatusRepository = driverStatusRepository;
     }
 
     @Override
@@ -53,16 +57,27 @@ public class DriverServiceImpl implements DriverService {
         driver.setLicenseNumber(request.getLicenseNumber());
         driver.setVehicleNumber(request.getVehicleNumber());
         driver.setVehicleModel(request.getVehicleModel());
+
+        DriverStatus driverStatus = DriverStatus.builder()
+                .driverId(driver)
+                .isOnline(true)
+                .isAvailable(true)
+                .build();
+
+        driver.setDriverStatus(driverStatus);
+
         Driver save = driverRepository.save(driver);
 
         DriverResponse driverResponse = new DriverResponse(save);
 
         return ResponseEntity.status(HttpStatus.CREATED)
                 .body(Map.of("message", "Driver created successfully",
-                        "body", driverResponse,
+                        "driver", driverResponse,
+                        "status",driverStatus,
                         "success", "true"));
     }
 
+    @Override
     public ResponseEntity<?> getDriverById(Long id) {
         Driver driver = driverRepository.findById(id)
                 .orElseThrow(() -> new DriverNotFoundException("Driver not found with given id"));
@@ -74,6 +89,7 @@ public class DriverServiceImpl implements DriverService {
                         "success", "true"));
     }
 
+    @Override
     public ResponseEntity<?> getAllDrivers() {
         List<Driver> driverList = driverRepository.findAll();
         List<DriverResponse> driverResponseList = driverList.stream()
@@ -84,27 +100,21 @@ public class DriverServiceImpl implements DriverService {
                         "success", "true"));
     }
 
+    @Override
     public ResponseEntity<?> updateDriver(Long id, DriverRequest request) {
-        // 1. License Number Check
         Optional<Driver> existingLicenseNumber = driverRepository
                 .findByLicenseNumber(request.getLicenseNumber());
-        // Agar license number existing hai, AUR woh existing driver ki ID current ID se MATCH nahi karti,
-        // tabhi exception throw karo.
-        if (existingLicenseNumber.isPresent() && !existingLicenseNumber.get().getId().equals(id)) {
+        if (existingLicenseNumber.isPresent()) {
             throw new DriverAlreadyExistsException
                     ("Driver with this LICENSE NUMBER is already exists");
         }
 
-        // 2. Vehicle Number Check
         Optional<Driver> existingVehicleNumber = driverRepository
                 .findByVehicleNumber(request.getVehicleNumber());
-        // Agar vehicle number existing hai, AUR woh existing driver ki ID current ID se MATCH nahi karti,
-        // tabhi exception throw karo.
-        if (existingVehicleNumber.isPresent() && !existingVehicleNumber.get().getId().equals(id)) {
+        if (existingVehicleNumber.isPresent()) {
             throw new DriverAlreadyExistsException
                     ("Driver with this VEHICLE NUMBER is already exists");
         }
-
 
         Driver driver = driverRepository.findById(id)
                 .orElseThrow(() -> new DriverNotFoundException("Driver not found with given id"));
@@ -122,7 +132,7 @@ public class DriverServiceImpl implements DriverService {
                         "success", "true"));
     }
 
-
+    @Override
     public ResponseEntity<?> deleteDriver(Long id) {
         Driver driver = driverRepository.findById(id)
                 .orElseThrow(() -> new DriverNotFoundException("Driver not found with given id : " + id));
@@ -131,12 +141,20 @@ public class DriverServiceImpl implements DriverService {
         return ResponseEntity.ok("DELETED");
     }
 
-
     @Override
     public List<DriverResponse> findNearestAvailableDrivers(RideRequestsDTO request, Integer limit) {
-        List<Driver> availableDrivers = driverRepository.findByIsAvailableTrue();
+        List<Driver> availableDrivers = driverStatusRepository.findByIsOnlineTrueAndIsAvailableTrue()
+                .stream().map(DriverStatus::getDriverId).toList();
 
-        List<Driver> nearestDrivers = availableDrivers.stream().sorted(Comparator.comparingDouble(driver ->
+
+        List<Driver> nearestDriversWithin1Km = availableDrivers.stream()
+                .filter(driver -> DistanceFareUtil.calculateDistance(
+                        request.getPickupLat(),
+                        request.getPickupLng(),
+                        driver.getLocation().getLatitude(),
+                        driver.getLocation().getLongitude()
+                ) <= 3.0 )
+                .sorted(Comparator.comparingDouble(driver ->
                         DistanceFareUtil.calculateDistance(
                                 request.getPickupLat(),
                                 request.getPickupLng(),
@@ -145,7 +163,7 @@ public class DriverServiceImpl implements DriverService {
                 .limit(limit)
                 .toList();
 
-        return nearestDrivers.stream().map(DriverResponse::new).toList();
+        return nearestDriversWithin1Km.stream().map(DriverResponse::new).toList();
     }
 
 }

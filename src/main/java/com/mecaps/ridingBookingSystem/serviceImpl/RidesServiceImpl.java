@@ -5,7 +5,8 @@ import com.mecaps.ridingBookingSystem.exception.*;
 import com.mecaps.ridingBookingSystem.repository.*;
 import com.mecaps.ridingBookingSystem.request.CompleteRideRequest;
 import com.mecaps.ridingBookingSystem.request.StartRideRequest;
-import com.mecaps.ridingBookingSystem.service.RideService;
+import com.mecaps.ridingBookingSystem.response.RidesResponse;
+import com.mecaps.ridingBookingSystem.service.RidesService;
 import com.mecaps.ridingBookingSystem.util.DistanceFareUtil;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -16,21 +17,23 @@ import java.time.LocalDateTime;
 import java.util.Map;
 
 @Service
-public class RideServiceImpl implements RideService {
+public class RidesServiceImpl implements RidesService {
     private final RideRepository rideRepository;
     private final OneTimePasswordServiceImpl oneTimePasswordService;
     private final OneTimePasswordRepository oneTimePasswordRepository;
     private final DriverRepository driverRepository;
     private final RideRequestsRepository rideRequestsRepository;
     private final RiderRepository riderRepository;
+    private final RideHistoryServiceImpl rideHistoryService;
 
-    public RideServiceImpl(RideRepository rideRepository, OneTimePasswordServiceImpl oneTimePasswordService, OneTimePasswordRepository oneTimePasswordRepository, DriverRepository driverRepository, RideRequestsRepository rideRequestsRepository, RiderRepository riderRepository) {
+    public RidesServiceImpl(RideRepository rideRepository, OneTimePasswordServiceImpl oneTimePasswordService, OneTimePasswordRepository oneTimePasswordRepository, DriverRepository driverRepository, RideRequestsRepository rideRequestsRepository, RiderRepository riderRepository, RideHistoryServiceImpl rideHistoryService) {
         this.rideRepository = rideRepository;
         this.oneTimePasswordService = oneTimePasswordService;
         this.oneTimePasswordRepository = oneTimePasswordRepository;
         this.driverRepository = driverRepository;
         this.rideRequestsRepository = rideRequestsRepository;
         this.riderRepository = riderRepository;
+        this.rideHistoryService = rideHistoryService;
     }
 
     @Override
@@ -38,12 +41,11 @@ public class RideServiceImpl implements RideService {
         Driver driver = driverRepository.findById(startRideRequest.getDriverId())
                 .orElseThrow(() -> new DriverNotFoundException("Driver Not Found"));
 
-        RideRequests rideRequest = rideRequestsRepository.findById(startRideRequest.getRideRequestId())
+        RideRequests newRideRequest = rideRequestsRepository.findById(startRideRequest.getRideRequestId())
                 .orElseThrow(() -> new RideRequestNotFoundException("No such Ride Request Found"));
 
-        Rider rider = riderRepository.findById(rideRequest.getRiderId().getId())
+        Rider rider = riderRepository.findById(newRideRequest.getRiderId().getId())
                 .orElseThrow(() -> new RiderNotFoundException("Rider Not Found"));
-
 
         OneTimePassword otp = oneTimePasswordRepository.findByRideRequestId(startRideRequest.getRideRequestId())
                 .orElseThrow(() -> new OneTimePasswordNotFoundException("Otp not found"));
@@ -55,14 +57,14 @@ public class RideServiceImpl implements RideService {
         }
 
         // Distance & Fare for the Ride
-        Double distanceKm = DistanceFareUtil.calculateDistance(rideRequest.getPickupLat(), rideRequest.getPickupLng(), rideRequest.getDropLat(), rideRequest.getDropLng());
+        Double distanceKm = DistanceFareUtil.calculateDistance(newRideRequest.getPickupLat(), newRideRequest.getPickupLng(), newRideRequest.getDropLat(), newRideRequest.getDropLng());
         Double fare = DistanceFareUtil.calculateFare(distanceKm);
 
         // Start Ride
         Rides ride = Rides.builder()
                 .riderId(rider)
                 .driverId(driver)
-                .requestsId(rideRequest)
+                .rideRequestId(newRideRequest)
                 .fare(fare)
                 .distanceKm(distanceKm)
                 .driverRating(driver.getRating())
@@ -71,12 +73,14 @@ public class RideServiceImpl implements RideService {
                 .startTime(LocalDateTime.now())
                 .build();
 
-        rideRepository.save(ride);
+        Rides save = rideRepository.save(ride);
+
+        RidesResponse ridesResponse = new RidesResponse(save);
 
         return ResponseEntity.status(HttpStatus.CREATED).body(Map.of(
                 "message", "Ride Started. Ride created successfully",
-                "ride", ride,
-                "currentRideStatus", ride.getStatus(),
+                "ride", ridesResponse,
+                "currentRideStatus", ridesResponse.getStatus(),
                 "success", true
         ));
     }
@@ -86,7 +90,7 @@ public class RideServiceImpl implements RideService {
         Rides ride = rideRepository.findById(completeRideRequest.getRideId())
                 .orElseThrow(() -> new RideNotFoundException("Ride not found for the given ID: " + completeRideRequest.getRideId()));
 
-        RideRequests rideRequest = rideRequestsRepository.findById(ride.getRequestsId().getId())
+        RideRequests rideRequest = rideRequestsRepository.findById(ride.getRideRequestId().getId())
                 .orElseThrow(() -> new RideRequestNotFoundException("No such Ride Request Found"));
 
         Driver driver = driverRepository.findById(completeRideRequest.getDriverId())
@@ -102,20 +106,21 @@ public class RideServiceImpl implements RideService {
         ride.setStatus(RideStatus.COMPLETED);
         ride.setEndTime(LocalDateTime.now());
 
-        driver.setIsAvailable(true);
+        DriverStatus driverStatus = driver.getDriverStatus();
+        driverStatus.setIsAvailable(true);
 
-        rideRepository.save(ride);
+        driver.setDriverStatus(driverStatus);
         driverRepository.save(driver);
 
-        // Distance & Fare for the Ride
-        Double distanceKm = DistanceFareUtil.calculateDistance(rideRequest.getPickupLat(), rideRequest.getPickupLng(), rideRequest.getDropLat(), rideRequest.getDropLng());
-        Double fare = DistanceFareUtil.calculateFare(distanceKm);
+        Rides save = rideRepository.save(ride);
+        RidesResponse ridesResponse = new RidesResponse(save);
+
+        rideHistoryService.createRideHistory(ride);
 
         return ResponseEntity.ok().body(Map.of(
                 "message","Ride completed successfully",
-                "rideId",ride.getId(),
-                "fare",fare,
-                "distance",distanceKm,
+                "ride",ridesResponse,
+                "currentRideStatus",ridesResponse.getStatus(),
                 "success","true"
         ));
     }

@@ -5,8 +5,6 @@ import com.mecaps.ridingBookingSystem.entity.Role;
 import jakarta.annotation.Nullable;
 import lombok.Data;
 
-
-
 @Data
 public class UserRequest {
     private String fullName;
@@ -17,6 +15,6 @@ public class UserRequest {
 
     @Nullable
     private DriverRequest driverRequest;
-    @Nullable
-    private RiderRequest riderRequest;
+
+//    private RiderRequest riderRequest;
 }

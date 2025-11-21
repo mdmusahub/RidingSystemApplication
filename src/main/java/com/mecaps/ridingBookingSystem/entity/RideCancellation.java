@@ -1,22 +1,31 @@
 package com.mecaps.ridingBookingSystem.entity;
 
 import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 import org.springframework.format.annotation.DateTimeFormat;
 
 
 import java.time.LocalDateTime;
 
 
-@Entity
 @Data
+@NoArgsConstructor
+@AllArgsConstructor
+@Builder
+@Entity
 public class RideCancellation {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @OneToOne
+    private RideRequests rideRequest;
+
     @ManyToOne
-    private Rides rideId;
+    private Driver driver;
 
     @Column(nullable = false)
     private String cancelledBy;
@@ -26,6 +35,4 @@ public class RideCancellation {
     @DateTimeFormat
     @Column(nullable = false)
     private LocalDateTime cancelledAt;
-
-
 }

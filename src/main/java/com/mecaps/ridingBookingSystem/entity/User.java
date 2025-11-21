@@ -1,15 +1,19 @@
 package com.mecaps.ridingBookingSystem.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
-import lombok.Data;
-import lombok.ToString;
+import lombok.*;
 import org.hibernate.annotations.CreationTimestamp;
 import org.springframework.format.annotation.DateTimeFormat;
 
 import java.util.Date;
+import java.util.List;
 
-@Entity
 @Data
+@NoArgsConstructor
+@AllArgsConstructor
+@Builder
+@Entity
 public class User {
 
     @Id
@@ -28,7 +32,6 @@ public class User {
     @Column(nullable = false)
     private String password;
 
-    @Enumerated(EnumType.STRING)
     @Column(nullable = false)
     private Role role;
 
@@ -36,18 +39,19 @@ public class User {
     @CreationTimestamp
     private Date createdAt;
 
-
+    @JsonIgnore
     @OneToOne(mappedBy = "userId", cascade = CascadeType.ALL, orphanRemoval = true)
     private Rider rider;
 
+    @JsonIgnore
     @OneToOne(mappedBy = "userId", cascade = CascadeType.ALL, orphanRemoval = true)
     private Driver driver;
 
+    @JsonIgnore
+    @OneToMany(mappedBy = "reviewer")
+    private List<Review> reviewerReviews;
 
-    @OneToOne(mappedBy = "reviewerId")
-    private Review reviewerId;
-
-    @OneToOne(mappedBy = "revieweeId")
-    private Review revieweeId;
-
+    @JsonIgnore
+    @OneToMany(mappedBy = "reviewee")
+    private List<Review> revieweeReviews;
 }

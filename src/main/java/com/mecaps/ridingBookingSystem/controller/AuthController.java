@@ -1,14 +1,18 @@
 package com.mecaps.ridingBookingSystem.controller;
 
+import com.mecaps.ridingBookingSystem.entity.DriverStatus;
+import com.mecaps.ridingBookingSystem.entity.Role;
 import com.mecaps.ridingBookingSystem.entity.User;
 import com.mecaps.ridingBookingSystem.exception.InvalidCredentialsException;
 import com.mecaps.ridingBookingSystem.exception.UserNotFoundException;
+import com.mecaps.ridingBookingSystem.repository.DriverStatusRepository;
 import com.mecaps.ridingBookingSystem.repository.UserRepository;
 import com.mecaps.ridingBookingSystem.request.AuthDTO;
 import com.mecaps.ridingBookingSystem.request.RefreshTokenRequest;
 import com.mecaps.ridingBookingSystem.response.TokenResponse;
-import com.mecaps.ridingBookingSystem.security.JwtService;
-import com.mecaps.ridingBookingSystem.security.TokenBlackListService;
+import com.mecaps.ridingBookingSystem.security.jwt.JwtService;
+import com.mecaps.ridingBookingSystem.security.service.TokenBlackListService;
+import io.jsonwebtoken.Claims;
 import org.springframework.http.ResponseEntity;
 import com.mecaps.ridingBookingSystem.request.ForgotPasswordDTO;
 import com.mecaps.ridingBookingSystem.request.ResetPasswordTokenDTO;
@@ -16,6 +20,7 @@ import com.mecaps.ridingBookingSystem.serviceImpl.EmailServiceImpl;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
@@ -30,13 +35,15 @@ public class AuthController {
     private final JwtService jwtService;
     private final TokenBlackListService tokenBlackListService;
     private final EmailServiceImpl emailService;
+    private final DriverStatusRepository driverStatusRepository;
 
-    public AuthController(UserRepository userRepository, PasswordEncoder passwordEncoder, JwtService jwtService, TokenBlackListService tokenBlackListService, EmailServiceImpl emailService) {
+    public AuthController(UserRepository userRepository, PasswordEncoder passwordEncoder, JwtService jwtService, TokenBlackListService tokenBlackListService, EmailServiceImpl emailService, DriverStatusRepository driverStatusRepository) {
         this.userRepository = userRepository;
         this.passwordEncoder = passwordEncoder;
         this.jwtService = jwtService;
         this.tokenBlackListService = tokenBlackListService;
         this.emailService = emailService;
+        this.driverStatusRepository = driverStatusRepository;
     }
 
     @PostMapping("/login")
@@ -52,6 +59,13 @@ public class AuthController {
 
         String accessToken = jwtService.generateAccessToken(user.getEmail(), String.valueOf(user.getRole()));
         String refreshToken = jwtService.generateRefreshToken(user.getEmail(), String.valueOf(user.getRole()));
+
+        if (user.getRole().equals(Role.DRIVER)) {
+            DriverStatus driverStatus = user.getDriver().getDriverStatus();
+            driverStatus.setIsAvailable(true);
+            driverStatus.setIsOnline(true);
+            driverStatusRepository.save(driverStatus);
+        }
 
         Map<String, String> authResponse = new HashMap<>();
         authResponse.put("AccessToken : ", accessToken);
@@ -134,6 +148,20 @@ public class AuthController {
     @PostMapping("/logout")
     public ResponseEntity<?> logout(@RequestHeader("Authorization") String authHeader) {
         String token = authHeader.substring(7);
+
+        Claims claim = jwtService.extractAllClaims(token);
+
+        if (claim.get("role").equals(Role.DRIVER)) {
+            User user = userRepository.findByEmail(claim.getSubject())
+                    .orElseThrow(() -> new UserNotFoundException("User not found for the given email: " + claim.getSubject()));
+            DriverStatus driverStatus = user.getDriver().getDriverStatus();
+            driverStatus.setIsAvailable(false);
+            driverStatus.setIsOnline(false);
+            driverStatus.setLastActive(LocalDateTime.now());
+
+            driverStatusRepository.save(driverStatus);
+        }
+
         tokenBlackListService.blackListToken(token);
         return ResponseEntity.ok("Logged out successfully");
     }

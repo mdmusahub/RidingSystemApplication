@@ -1,9 +1,8 @@
 package com.mecaps.ridingBookingSystem.config;
 
-import com.mecaps.ridingBookingSystem.security.JwtAuthFilter;
+import com.mecaps.ridingBookingSystem.security.jwt.JwtAuthFilter;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
@@ -31,17 +30,20 @@ public class SecurityConfig {
 
     @Bean
     public SecurityFilterChain securityFilerChain(HttpSecurity httpSecurity) throws Exception {
-        httpSecurity.csrf(AbstractHttpConfigurer::disable)
-                .authorizeHttpRequests(auth ->
-                        auth.requestMatchers("/user/create").permitAll()
-                       .requestMatchers("/auth/login").permitAll()
-                       .requestMatchers("/auth/forgot-password").permitAll()
-                       .requestMatchers("/auth/reset-password").permitAll()
-                       .requestMatchers("/auth/refresh").permitAll()
-                       .requestMatchers("/driver/**").hasRole("DRIVER")
-                       .requestMatchers("/driver/getAll").hasRole("ADMIN")
-                       .requestMatchers("/user/getAll").hasRole("ADMIN")
-                       .anyRequest().authenticated());
+        httpSecurity.csrf(AbstractHttpConfigurer::disable).authorizeHttpRequests(auth -> auth.
+                requestMatchers("/user/create",
+                        "/auth/login",
+                        "/auth/forgot-password",
+                        "/auth/reset-password",
+                        "/auth/refresh").permitAll()
+                .requestMatchers("/map/**").permitAll()
+                .requestMatchers("/admin/**",
+                        "/user/getAll",
+                        "/rider/getAll",
+                        "/driver/getAll").hasRole("ADMIN")
+                .requestMatchers("/rider/**").hasRole("RIDER")
+                .requestMatchers("/driver/**").hasRole("DRIVER")
+                .anyRequest().authenticated());
 
         httpSecurity.addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class);
         return httpSecurity.build();
