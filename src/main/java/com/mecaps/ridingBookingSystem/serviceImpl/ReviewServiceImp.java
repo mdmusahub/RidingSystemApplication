@@ -10,6 +10,7 @@ import com.mecaps.ridingBookingSystem.request.UpdateReviewRequestDTO;
 import com.mecaps.ridingBookingSystem.response.ReviewResponse;
 import com.mecaps.ridingBookingSystem.security.model.CustomUserDetails;
 import com.mecaps.ridingBookingSystem.service.ReviewService;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -20,6 +21,7 @@ import java.util.Objects;
 
 
 @Service
+@Slf4j
 public class ReviewServiceImp implements ReviewService {
 
     private final ReviewRepository reviewRepository;
@@ -73,7 +75,7 @@ public class ReviewServiceImp implements ReviewService {
         }
 
         // Rating value range validation
-        if (reviewRequestDTO.getRating() <= 1 || reviewRequestDTO.getRating() >= 5) {
+        if (!(reviewRequestDTO.getRating() >= 1 && reviewRequestDTO.getRating() <= 5)) {
             return ResponseEntity.badRequest()
                     .body(Map.of(
                             "error", "rating must be between 1 to 5",
@@ -83,8 +85,8 @@ public class ReviewServiceImp implements ReviewService {
 
         Review review = Review.builder()
                 .rideId(ride)
-                .reviewerId(reviewer)
-                .revieweeId(reviewee)
+                .reviewer(reviewer)
+                .reviewee(reviewee)
                 .rating(reviewRequestDTO.getRating())
                 .comment(reviewRequestDTO.getComment())
                 .build();
@@ -110,15 +112,15 @@ public class ReviewServiceImp implements ReviewService {
         Rides ride = review.getRideId();
         Driver driver = ride.getDriverId();
         Rider rider = ride.getRiderId();
-        User reviewer = review.getReviewerId();
-        User reviewee = review.getRevieweeId();
+        User reviewer = review.getReviewer();
+        User reviewee = review.getReviewee();
 
         // Extracting the logged-in user details
         Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         CustomUserDetails userDetails = (CustomUserDetails) principal;
 
         // validating if the review is given by the user that is logged in
-        if (!Objects.equals(review.getReviewerId().getId(), userDetails.getId())) {
+        if (!Objects.equals(review.getReviewer().getId(), userDetails.getId())) {
             return ResponseEntity.status(HttpStatus.FORBIDDEN)
                     .body(Map.of(
                             "error", "This review was not given by "
@@ -147,11 +149,12 @@ public class ReviewServiceImp implements ReviewService {
         Rides ride = review.getRideId();
         Driver driver = ride.getDriverId();
         Rider rider = ride.getRiderId();
-        User reviewer = review.getReviewerId();
-        User reviewee = review.getRevieweeId();
+        User reviewer = review.getReviewer();
+        User reviewee = review.getReviewee();
 
+        log.info("Calculating average rating...");
         // updating reviewee average rating according to the updated rating by reviewer
-        Double avg = reviewRepository.getAverageRatingByRevieweeId(review.getRevieweeId().getId());
+        Double avg = reviewRepository.getAverageRatingByRevieweeId(review.getReviewee().getId());
         Float avgRating = avg == null ? 0f : Math.round(avg.floatValue() * 10f) / 10f;
 
         if (reviewer.equals(rider.getUserId())) {

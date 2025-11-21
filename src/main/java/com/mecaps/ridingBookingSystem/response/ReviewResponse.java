@@ -19,8 +19,8 @@ public class ReviewResponse {
     public ReviewResponse(Review review){
         this.id = review.getId();
         this.rideId = review.getRideId().getId();
-        this.reviewer = new UserResponse(review.getReviewerId());
-        this.reviewee = new UserResponse(review.getRevieweeId());
+        this.reviewer = new UserResponse(review.getReviewer());
+        this.reviewee = new UserResponse(review.getReviewee());
         this.rating = review.getRating();
         this.createdAt = review.getCreatedAt();
     }

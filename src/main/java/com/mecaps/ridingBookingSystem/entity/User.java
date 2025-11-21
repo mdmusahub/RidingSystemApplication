@@ -7,6 +7,7 @@ import org.hibernate.annotations.CreationTimestamp;
 import org.springframework.format.annotation.DateTimeFormat;
 
 import java.util.Date;
+import java.util.List;
 
 @Data
 @NoArgsConstructor
@@ -39,7 +40,6 @@ public class User {
     @CreationTimestamp
     private Date createdAt;
 
-
     @JsonIgnore
     @OneToOne(mappedBy = "userId", cascade = CascadeType.ALL, orphanRemoval = true)
     private Rider rider;
@@ -49,11 +49,10 @@ public class User {
     private Driver driver;
 
     @JsonIgnore
-    @OneToOne(mappedBy = "reviewerId")
-    private Review reviewerId;
+    @OneToMany(mappedBy = "reviewer")
+    private List<Review> reviewerReviews;
 
     @JsonIgnore
-    @OneToOne(mappedBy = "revieweeId")
-    private Review revieweeId;
-
+    @OneToMany(mappedBy = "reviewee")
+    private List<Review> revieweeReviews;
 }

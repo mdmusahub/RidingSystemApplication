@@ -21,17 +21,17 @@ public class Review {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @OneToOne
+    @ManyToOne
     @JoinColumn(name = "rideId", nullable = false)
     private Rides rideId;
 
     @ManyToOne
     @JoinColumn(name = "reviewer_id", nullable = false)
-    private User reviewerId;
+    private User reviewer;
 
     @ManyToOne
     @JoinColumn(name = "reviewee_id", nullable = false)
-    private User revieweeId;
+    private User reviewee;
 
     @Column(nullable = false)
     private Integer rating;

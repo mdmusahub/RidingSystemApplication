@@ -10,6 +10,7 @@ import org.hibernate.annotations.CreationTimestamp;
 import org.springframework.format.annotation.NumberFormat;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Data
 @NoArgsConstructor
@@ -56,7 +57,7 @@ public class Rides {
     private LocalDateTime endTime;
 
     @JsonIgnore
-    @OneToOne(mappedBy = "rideId")
-    private Review review;
+    @OneToMany(mappedBy = "rideId")
+    private List<Review> reviews;
 
 }

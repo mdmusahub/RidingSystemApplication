@@ -10,6 +10,7 @@ import java.util.Optional;
 @Repository
 public interface ReviewRepository extends JpaRepository<Review, Long> {
 
-    @Query("SELECT AVG(r.rating) FROM Review r WHERE r.revieweeId = :revieweeId")
-    Double getAverageRatingByRevieweeId(Long revieweeId);
+    @Query("SELECT AVG(r.rating) FROM Review r WHERE r.reviewee.id = :id")
+    Double getAverageRatingByRevieweeId(Long id);
+
 }
