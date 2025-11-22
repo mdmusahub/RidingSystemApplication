@@ -66,6 +66,7 @@ public class ReviewServiceImp implements ReviewService {
 
         // validating if the review is given by the user that is logged in
         if (!Objects.equals(reviewer.getId(), userDetails.getId())) {
+            log.error("Reviewer and current logged-in User doesn't match.");
             return ResponseEntity.status(HttpStatus.FORBIDDEN)
                     .body(Map.of(
                             "error", "Reviewer and current logged-in User doesn't match.",
@@ -152,7 +153,6 @@ public class ReviewServiceImp implements ReviewService {
         User reviewer = review.getReviewer();
         User reviewee = review.getReviewee();
 
-        log.info("Calculating average rating...");
         // updating reviewee average rating according to the updated rating by reviewer
         Double avg = reviewRepository.getAverageRatingByRevieweeId(review.getReviewee().getId());
         Float avgRating = avg == null ? 0f : Math.round(avg.floatValue() * 10f) / 10f;

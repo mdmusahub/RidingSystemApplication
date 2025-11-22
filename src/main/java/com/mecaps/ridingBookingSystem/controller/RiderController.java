@@ -3,6 +3,7 @@ package com.mecaps.ridingBookingSystem.controller;
 import com.mecaps.ridingBookingSystem.request.*;
 import com.mecaps.ridingBookingSystem.service.*;
 import com.mecaps.ridingBookingSystem.service.RiderService;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
@@ -11,6 +12,7 @@ import java.util.Map;
 
 @RestController
 @RequestMapping("/rider")
+@Slf4j
 public class RiderController {
 
     private final RiderService riderService;
