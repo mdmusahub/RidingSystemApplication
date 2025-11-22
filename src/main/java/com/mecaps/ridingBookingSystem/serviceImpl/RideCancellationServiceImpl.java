@@ -20,6 +20,12 @@ import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+/**
+ * Service implementation for handling ride cancellation operations.
+ * Ride can be cancel from both ends driver and rider until its status marks as ONGOING.
+ * Supports cancelling a ride, fetching cancellation details,
+ * retrieving all cancellations, and deleting cancellation records.
+ */
 
 @Service
 public class RideCancellationServiceImpl implements RideCancellationService {
@@ -36,7 +42,10 @@ public class RideCancellationServiceImpl implements RideCancellationService {
         this.oneTimePasswordService = oneTimePasswordService;
         this.oneTimePasswordRepository = oneTimePasswordRepository;
     }
-
+/**
+ * Ride Cancellation method for riders and drivers.
+ * Both  can cancel ride  anytime until its Status is not marked as ONGOING or COMPLETED.
+ **/
     @Override
     public ResponseEntity<?> cancelRide(RideCancellationRequest rideCancellationRequest) {
         RideRequests cancelRideRequest = rideRequestsRepository.findById(rideCancellationRequest.getRideRequestId())
@@ -57,6 +66,7 @@ public class RideCancellationServiceImpl implements RideCancellationService {
                 .reason(rideCancellationRequest.getReason())
                 .cancelledAt(LocalDateTime.now())
                 .build();
+        // Mark driver available again
 
         DriverStatus driverStatus = driver.getDriverStatus();
         driverStatus.setIsAvailable(true);
@@ -73,6 +83,13 @@ public class RideCancellationServiceImpl implements RideCancellationService {
                 "success", true
         ));
     }
+    /**
+     * Fetches a ride cancellation record by its ID.
+     * User can get ride cancellation data by its ID.
+     * @param id cancellation ID
+     * @return cancellation details wrapped in response body
+     * @throws RideCancellationNotFound if no record exists for the given ID
+     */
 
     @Override
     public ResponseEntity<?> getRideCancellationById(Long id) {
@@ -80,6 +97,11 @@ public class RideCancellationServiceImpl implements RideCancellationService {
                 .orElseThrow(() -> new RideCancellationNotFound("Ride Cancellation not found for the given ID: " + id));
         return ResponseEntity.ok().body(new RideCancellationResponse(rideCancellation));
     }
+    /**
+     * Retrieves all ride cancellation records in the system.
+     * Mainly for Admin Usage where ADMIN can get All ride cancellation data.
+     * @return list of all cancellation responses
+     */
 
     @Override
     public ResponseEntity<?> getAllRideCancellation() {
@@ -87,6 +109,8 @@ public class RideCancellationServiceImpl implements RideCancellationService {
         List<RideCancellationResponse> rideCancellationResponseList = rideCancellationList.stream().map(RideCancellationResponse::new).toList();
         return ResponseEntity.ok().body(rideCancellationResponseList);
     }
+
+    // method for delte ride cancel data by Id. Admin Usage Only.
 
     @Override
     public ResponseEntity<?> deleteRideCancellationById(Long id) {

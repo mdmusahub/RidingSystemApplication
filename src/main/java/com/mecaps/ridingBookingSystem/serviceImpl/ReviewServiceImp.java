@@ -18,7 +18,12 @@ import org.springframework.stereotype.Service;
 
 import java.util.Map;
 import java.util.Objects;
-
+/**
+ * Service implementation for handling review-related operations.
+ * Review Can be Submmitte from both ends Drivers and Riders.
+ * Supports submitting new reviews, updating existing reviews,
+ * and recalculating average ratings for riders and drivers.
+ */
 
 @Service
 @Slf4j
@@ -37,7 +42,13 @@ public class ReviewServiceImp implements ReviewService {
         this.driverRepository = driverRepository;
         this.riderRepository = riderRepository;
     }
-
+    /**
+     * Submits a new review for a completed ride.
+     * Both Driver and Rider can Submit review for each other.
+     * After saving, recalculates the reviewee's average rating.
+     * @param reviewRequestDTO DTO containing review details
+     * @return success or error response
+     */
     @Override
     public ResponseEntity<?> submitReview(ReviewRequestDTO reviewRequestDTO) {
         Rides ride = rideRepository.findById(reviewRequestDTO.getRideId())
@@ -103,6 +114,12 @@ public class ReviewServiceImp implements ReviewService {
                 ));
 
     }
+    /**
+     * Updates an existing review given by the logged-in user.
+     * After updating, recalculates average rating for the reviewee.
+     * @param updateReviewRequestDTO DTO containing updated rating/comment
+     * @return success or error response
+     */
 
     @Override
     public ResponseEntity<?> updateReview(UpdateReviewRequestDTO updateReviewRequestDTO) {
@@ -144,7 +161,7 @@ public class ReviewServiceImp implements ReviewService {
                     ));
         }
     }
-
+// Update Average review after updating.
     private void updateRevieweeAverageRating(Review review) {
         Rides ride = review.getRideId();
         Driver driver = ride.getDriverId();

@@ -15,6 +15,12 @@ import org.springframework.stereotype.Service;
 import java.time.LocalDateTime;
 import java.util.Map;
 
+/**
+ * Service Implementation of Ride Service
+ * Whenever A rider request for ride he will get fare and distance from data.
+ * Driver will Accept ride and Start ride after validating OTP.
+ * Driver will mark Completed Ride after reaching its destination.
+ */
 @Service
 public class RidesServiceImpl implements RidesService {
     private final RideRepository rideRepository;
@@ -35,6 +41,21 @@ public class RidesServiceImpl implements RidesService {
         this.rideHistoryService = rideHistoryService;
     }
 
+    /**
+     * Starts a new ride.
+     * <p>
+     * Steps:
+     * <ul>
+     *   <li>Fetches driver, ride request and rider from database</li>
+     *   <li>Validates OTP for the ride request</li>
+     *   <li>Calculates distance and fare using pickup and drop coordinates</li>
+     *   <li>Creates a new {@link Rides} entry with status {@link RideStatus#ONGOING}</li>
+     * </ul>
+     * @param startRideRequest request object containing driver id, ride request id and OTP
+     * @return {@link ResponseEntity} containing ride details and status.
+     * @throws DriverNotFoundException       if the driver is not found
+     * @throws RideRequestNotFoundException  if the ride request is not found
+     */
     @Override
     public ResponseEntity<?> startRide(StartRideRequest startRideRequest) {
         Driver driver = driverRepository.findById(startRideRequest.getDriverId())
@@ -83,7 +104,23 @@ public class RidesServiceImpl implements RidesService {
                 "success", true
         ));
     }
-
+    /**
+     * Marks a ride as completed by Driver after reaching its Location.
+     * <p>
+     * Steps:
+     * <ul>
+     *   <li>Fetches ride, ride request and driver from database</li>
+     *   <li>Checks if the provided driver is actually assigned to this ride</li>
+     *   <li>Updates ride status to {@link RideStatus#COMPLETED} and sets end time</li>
+     *   <li>Marks driver as available again</li>
+     *   <li>Creates ride history entry</li>
+     * </ul>
+     * @param completeRideRequest request object containing ride id and driver id
+     * @return {@link ResponseEntity} with updated ride details and status.
+     * @throws RideNotFoundException         if the ride is not found
+     * @throws RideRequestNotFoundException  if the ride request is not found
+     * @throws DriverNotFoundException       if the driver is not found
+     */
     @Override
     public ResponseEntity<?> completeRide(CompleteRideRequest completeRideRequest){
         Rides ride = rideRepository.findById(completeRideRequest.getRideId())
