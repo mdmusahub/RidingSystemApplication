@@ -12,6 +12,7 @@ import com.mecaps.ridingBookingSystem.request.RefreshTokenRequest;
 import com.mecaps.ridingBookingSystem.response.TokenResponse;
 import com.mecaps.ridingBookingSystem.security.jwt.JwtService;
 import com.mecaps.ridingBookingSystem.security.service.TokenBlackListService;
+import com.mecaps.ridingBookingSystem.service.EmailService;
 import io.jsonwebtoken.Claims;
 import org.springframework.http.ResponseEntity;
 import com.mecaps.ridingBookingSystem.request.ForgotPasswordDTO;
@@ -34,10 +35,11 @@ public class AuthController {
     private final PasswordEncoder passwordEncoder;
     private final JwtService jwtService;
     private final TokenBlackListService tokenBlackListService;
-    private final EmailServiceImpl emailService;
+    private final EmailService emailService;
     private final DriverStatusRepository driverStatusRepository;
 
-    public AuthController(UserRepository userRepository, PasswordEncoder passwordEncoder, JwtService jwtService, TokenBlackListService tokenBlackListService, EmailServiceImpl emailService, DriverStatusRepository driverStatusRepository) {
+    public AuthController(UserRepository userRepository, PasswordEncoder passwordEncoder, JwtService jwtService, TokenBlackListService tokenBlackListService,
+                          EmailService emailService, DriverStatusRepository driverStatusRepository) {
         this.userRepository = userRepository;
         this.passwordEncoder = passwordEncoder;
         this.jwtService = jwtService;

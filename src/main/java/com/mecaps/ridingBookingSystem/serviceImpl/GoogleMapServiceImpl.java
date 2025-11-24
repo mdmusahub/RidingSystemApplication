@@ -1,5 +1,6 @@
 package com.mecaps.ridingBookingSystem.serviceImpl;
 
+import com.mecaps.ridingBookingSystem.service.GoogleMapService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
@@ -11,7 +12,7 @@ import java.util.Map;
 
 @Service
 @Slf4j
-public class GoogleMapServiceImpl {
+public class GoogleMapServiceImpl implements GoogleMapService {
     @Value("${google.api.key}")
      private String googleApiKey;
 

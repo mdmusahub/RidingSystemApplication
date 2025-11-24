@@ -39,7 +39,8 @@ public class RideCancellationServiceImpl implements RideCancellationService {
 
     @Override
     public ResponseEntity<?> cancelRide(RideCancellationRequest rideCancellationRequest) {
-        RideRequests cancelRideRequest = rideRequestsRepository.findById(rideCancellationRequest.getRideRequestId())
+        RideRequests cancelRideRequest = rideRequestsRepository.findById(rideCancellationRequest
+                        .getRideRequestId())
                 .orElseThrow(() -> new RideRequestNotFoundException("Ride Request not found for the given ID: " + rideCancellationRequest.getRideRequestId()));
 
         Driver driver = driverRepository.findById(rideCancellationRequest.getDriverId())

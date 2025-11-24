@@ -3,7 +3,6 @@ package com.mecaps.ridingBookingSystem.controller;
 import com.mecaps.ridingBookingSystem.entity.Wallet;
 import com.mecaps.ridingBookingSystem.exception.WalletNotFoundException;
 import com.mecaps.ridingBookingSystem.service.WalletService;
-import com.mecaps.ridingBookingSystem.serviceImpl.WalletServiceImpl;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.web.bind.annotation.*;
@@ -14,9 +13,9 @@ import java.util.List;
 @RestController
 @RequestMapping("/api/wallets")
 public class WalletController {
-    private final WalletServiceImpl walletService;
+    private final WalletService walletService;
 
-    public WalletController(WalletServiceImpl walletService) {
+    public WalletController(WalletService walletService) {
         this.walletService = walletService;
     }
 

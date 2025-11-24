@@ -19,7 +19,7 @@ public class RiderController {
     private final RideCancellationService rideCancellationService;
     private final ReviewService reviewService;
 
-    public RiderController(RiderService riderService, RideRequestsService rideRequestsService, RideHistoryService rideHistoryService, RideCancellationService rideCancellationService, ReviewService reviewService){
+    public RiderController(RiderService riderService, RideRequestsService rideRequestsService,RideHistoryService rideHistoryService, RideCancellationService rideCancellationService, ReviewService reviewService){
         this.riderService = riderService;
         this.rideRequestsService = rideRequestsService;
         this.rideHistoryService = rideHistoryService;

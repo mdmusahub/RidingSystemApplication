@@ -2,6 +2,7 @@ package com.mecaps.ridingBookingSystem.controller;
 
 import com.mecaps.ridingBookingSystem.request.ChangePasswordRequest;
 import com.mecaps.ridingBookingSystem.request.UserRequest;
+import com.mecaps.ridingBookingSystem.service.UserService;
 import com.mecaps.ridingBookingSystem.serviceImpl.UserServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -16,9 +17,9 @@ import java.net.Authenticator;
 public class UserController {
 
     @Autowired
-    final private UserServiceImpl userService;
+    final private UserService userService;
 
-    public UserController(UserServiceImpl userService) {
+    public UserController(UserService userService) {
         this.userService = userService;
     }
 
