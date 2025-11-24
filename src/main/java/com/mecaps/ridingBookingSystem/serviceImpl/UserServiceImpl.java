@@ -17,7 +17,10 @@ import org.springframework.stereotype.Service;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
-
+/**
+ * Service implementation that manages user registration, profile operations,
+ * and password-related actions.
+ */
 @Service
 @Slf4j
 public class UserServiceImpl implements UserService {
@@ -28,7 +31,16 @@ public class UserServiceImpl implements UserService {
         this.userRepository = userRepository;
         this.passwordEncoder = passwordEncoder;
     }
-
+    /**
+     * Creates a new user account with optional driver/rider profile.
+     * A User can be driver/Rider or Admin based on Role.
+     * If the role is DRIVER or driverRequest is provided,
+     * a Driver entity with status and default location is created.
+     * If the role is RIDER, a Rider entity is created.
+     * @param request user registration request
+     * @return response entity with created user details
+     * @throws UserAlreadyExistsException if email or phone already exists
+     */
     @Override
     public ResponseEntity<?> createUser(UserRequest request) {
         Optional<User> existingEmail = userRepository.findByEmail(request.getEmail());
@@ -93,7 +105,12 @@ public class UserServiceImpl implements UserService {
                         "success", "true"
                 ));
     }
-
+    /**
+     * Fetches user details by ID.
+     * @param id user ID
+     * @return response entity with user details
+     * @throws UserNotFoundException if user is not found
+     */
     @Override
     public ResponseEntity<?> getUserById(Long id) {
         User user = userRepository.findById(id)
@@ -106,6 +123,12 @@ public class UserServiceImpl implements UserService {
                         "body", userResponse,
                         "success", "true"));
     }
+    /**
+     * Returns a list of all users in the system from DataBase.
+     * Admin Usage Only.
+     * @return response entity with list of user responses
+     */
+
 
     @Override
     public ResponseEntity<?> getAllUser() {
@@ -117,6 +140,13 @@ public class UserServiceImpl implements UserService {
                         "body", userResponseList,
                         "success", "true"));
     }
+    /**
+     * Updates user profile details like name, email, phone, and password.
+     * @param id      user ID to update
+     * @param request updated user data
+     * @return response entity with updated user information
+     * @throws UserNotFoundException if user is not found
+     */
 
     @Override
     public ResponseEntity<?> updateUser(Long id, UserRequest request) {
@@ -134,6 +164,13 @@ public class UserServiceImpl implements UserService {
                         "body", save,
                         "success", "true"));
     }
+    /**
+     * Changes user password after validating old password and new password fields.
+     * @param email   user email
+     * @param request password change request
+     * @return response entity with status and message
+     * @throws UserNotFoundException if user is not found by email
+     */
 
     @Override
     public ResponseEntity<?> changePassword(String email, ChangePasswordRequest request) {
@@ -167,7 +204,12 @@ public class UserServiceImpl implements UserService {
         return ResponseEntity.ok(Map.of("success", "true"
                 , "message", "Password updated successfully"));
     }
-
+    /**
+     * Deletes a user by ID.
+     * @param id user ID
+     * @return response entity with delete confirmation
+     * @throws UserNotFoundException if user is not found
+     */
 
     @Override
     public ResponseEntity<?> deleteUser(Long id) {
