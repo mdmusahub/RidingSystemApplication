@@ -123,13 +123,12 @@ public class UserServiceImpl implements UserService {
                         "body", userResponse,
                         "success", "true"));
     }
+
     /**
      * Returns a list of all users in the system from DataBase.
      * Admin Usage Only.
      * @return response entity with list of user responses
      */
-
-
     @Override
     public ResponseEntity<?> getAllUser() {
         List<User> userList = userRepository.findAll();
@@ -140,6 +139,7 @@ public class UserServiceImpl implements UserService {
                         "body", userResponseList,
                         "success", "true"));
     }
+
     /**
      * Updates user profile details like name, email, phone, and password.
      * @param id      user ID to update
@@ -147,7 +147,6 @@ public class UserServiceImpl implements UserService {
      * @return response entity with updated user information
      * @throws UserNotFoundException if user is not found
      */
-
     @Override
     public ResponseEntity<?> updateUser(Long id, UserRequest request) {
         User user = userRepository.findById(id)
@@ -164,6 +163,7 @@ public class UserServiceImpl implements UserService {
                         "body", save,
                         "success", "true"));
     }
+
     /**
      * Changes user password after validating old password and new password fields.
      * @param email   user email
@@ -171,7 +171,6 @@ public class UserServiceImpl implements UserService {
      * @return response entity with status and message
      * @throws UserNotFoundException if user is not found by email
      */
-
     @Override
     public ResponseEntity<?> changePassword(String email, ChangePasswordRequest request) {
 
@@ -204,13 +203,13 @@ public class UserServiceImpl implements UserService {
         return ResponseEntity.ok(Map.of("success", "true"
                 , "message", "Password updated successfully"));
     }
+
     /**
      * Deletes a user by ID.
      * @param id user ID
      * @return response entity with delete confirmation
      * @throws UserNotFoundException if user is not found
      */
-
     @Override
     public ResponseEntity<?> deleteUser(Long id) {
         User user = userRepository.findById(id)
@@ -221,6 +220,18 @@ public class UserServiceImpl implements UserService {
         return ResponseEntity.ok("DELETED");
     }
 
+    /**
+     * Handles the forgot-password functionality for a user.
+     * <p>
+     * This method verifies whether a user exists with the provided email,
+     * updates the user's password, and returns a success response.
+     * If the email does not exist in the system, a {@link RuntimeException}
+     * is thrown.
+     *
+     * @param request the request object containing the user's email and the new password
+     * @return a {@link ResponseEntity} containing a success message upon successful password update
+     * @throws RuntimeException if no user is found with the given email
+     */
     public ResponseEntity<?> forgotPassword(UserRequest request) {
         User user = userRepository.findByEmail(request.getEmail())
                 .orElseThrow(() -> new RuntimeException("Email does not exist"));
@@ -228,6 +239,4 @@ public class UserServiceImpl implements UserService {
         user.setPassword(request.getPassword());
         return ResponseEntity.ok("Password forgot successfully!");
     }
-
-
 }
