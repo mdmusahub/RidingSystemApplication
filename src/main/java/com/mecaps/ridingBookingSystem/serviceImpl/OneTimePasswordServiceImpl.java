@@ -1,3 +1,4 @@
+
 package com.mecaps.ridingBookingSystem.serviceImpl;
 
 import com.mecaps.ridingBookingSystem.entity.OneTimePassword;
@@ -9,7 +10,6 @@ import com.mecaps.ridingBookingSystem.repository.RideRequestsRepository;
 import com.mecaps.ridingBookingSystem.repository.RiderRepository;
 import com.mecaps.ridingBookingSystem.service.OneTimePasswordService;
 import com.mecaps.ridingBookingSystem.util.OtpUtil;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 /**
  * Service implementation for generating and validating One-Time Passwords (OTP) .
@@ -17,7 +17,6 @@ import org.springframework.stereotype.Service;
  * Handles OTP creation for ride requests and validating user-entered OTPs.
  */
 @Service
-@Slf4j
 public class OneTimePasswordServiceImpl implements OneTimePasswordService {
 
     private final OneTimePasswordRepository oneTimePasswordRepository;
@@ -62,11 +61,15 @@ public class OneTimePasswordServiceImpl implements OneTimePasswordService {
     @Override
     public boolean validateOtp(String enteredOtp, OneTimePassword otp) {
         if (enteredOtp.equals(otp.getOtpCode())) {
-            oneTimePasswordRepository.deleteById(otp.getId());
-            log.info("OTP Validated and Deleted Successfully");
+            deleteOtp(otp.getId());
             return true;
         } else {
             return false;
         }
+    }
+
+    @Override
+    public void deleteOtp(Long id) {
+        oneTimePasswordRepository.deleteById(id);
     }
 }

@@ -6,4 +6,6 @@ import lombok.Data;
 public class RideAcceptanceRequestDTO {
     private Long rideRequestId;
     private Long driverId;
+
 }
+

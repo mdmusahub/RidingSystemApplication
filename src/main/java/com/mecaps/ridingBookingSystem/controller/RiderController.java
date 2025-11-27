@@ -47,6 +47,9 @@ public class RiderController {
         return riderService.deleteRider(id);
     }
 
+
+    // Starting ride request process
+
     @PostMapping("/get-fare-distance")
     public Map<String, Object> getFareAndDistance(@RequestBody RideRequestsDTO rideRequestsDTO){
         return rideRequestsService.getRideFareAndDistance(rideRequestsDTO);

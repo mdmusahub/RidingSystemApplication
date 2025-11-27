@@ -17,11 +17,11 @@ import java.io.IOException;
 
 @Component
 public class JwtAuthFilter extends OncePerRequestFilter {
-    private final JwtService jwtService;
+    private final com.mecaps.ridingBookingSystem.security.jwt.JwtService jwtService;
     private final CustomUserDetailsService userDetailsService;
     private final TokenBlackListService tokenBlackListService;
 
-    public JwtAuthFilter(JwtService jwtService, CustomUserDetailsService userDetailsService, TokenBlackListService tokenBlackListService) {
+    public JwtAuthFilter(com.mecaps.ridingBookingSystem.security.jwt.JwtService jwtService, CustomUserDetailsService userDetailsService, TokenBlackListService tokenBlackListService) {
         this.jwtService = jwtService;
         this.userDetailsService = userDetailsService;
         this.tokenBlackListService = tokenBlackListService;
