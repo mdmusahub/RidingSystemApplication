@@ -113,6 +113,7 @@ public class RidesServiceImpl implements RidesService {
                 "message", "Ride Started. Ride created successfully",
                 "ride", ridesResponse,
                 "currentRideStatus", ridesResponse.getStatus(),
+                "currentPaymentStatus",payment.getPaymentStatus().name(),
                 "success", true
         ));
     }
