@@ -20,7 +20,7 @@ public class Payment {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long Id;
+    private Long id;
 
     @OneToOne
     @JoinColumn(name = "ride_id", nullable = false)
@@ -29,15 +29,27 @@ public class Payment {
     @Column(nullable = false)
     private Double amount;
 
+    @Enumerated(EnumType.STRING)
     @Column(nullable = false)
     private PaymentMethod paymentMethod;
 
+    @Enumerated(EnumType.STRING)
     private PaymentStatus paymentStatus;
 
-    private String transactionId;
 
     @DateTimeFormat
     @CreationTimestamp
     private LocalDateTime createdAt;
+
+    // optional legacy field if you used transactionId earlier
+    private String transactionId;
+
+
+    // store razorpay order id (created when order is created) - DO NOT overwrite
+    private String razorpayOrderId;
+
+    // store razorpay payment id (set after successful payment/verification)
+    private String razorpayPaymentId;
+
 
 }

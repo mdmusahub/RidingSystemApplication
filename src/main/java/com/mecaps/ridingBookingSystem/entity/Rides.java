@@ -59,7 +59,7 @@ public class Rides {
     @OneToOne(mappedBy = "rideId")
     private Review review;
 
-    @OneToOne(mappedBy = "rideId")
+    @OneToOne(mappedBy = "rideId",cascade = CascadeType.ALL, orphanRemoval = true)
     private Payment payment;
 
 }

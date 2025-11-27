@@ -52,7 +52,7 @@ public class UserServiceImpl implements UserService {
         if (request.getDriverRequest() != null || request.getRole().equals(Role.DRIVER)) {
             Driver driver = Driver.builder()
                     .userId(user)
-                    .licenseNumber(request.getDriverRequest().getLicenseNumber())
+                    .licenseNumber( request.getDriverRequest().getLicenseNumber())
                     .vehicleNumber(request.getDriverRequest().getVehicleNumber())
                     .vehicleModel(request.getDriverRequest().getVehicleModel())
                     .build();
