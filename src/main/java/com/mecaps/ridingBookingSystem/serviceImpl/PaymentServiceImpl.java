@@ -143,20 +143,6 @@ public class PaymentServiceImpl implements PaymentService {
             throw new RuntimeException("Signature verification failed: " + e.getMessage());
         }
     }
-    private String hmacSHA256(String data, String secret) throws Exception {
-        Mac sha256 = Mac.getInstance("HmacSHA256");
-        SecretKeySpec secretKeySpec = new SecretKeySpec(secret.getBytes(), "HmacSHA256");
-        sha256.init(secretKeySpec);
-
-        byte[] hash = sha256.doFinal(data.getBytes());
-        StringBuilder hexString = new StringBuilder();
-        for (byte b : hash) {
-            String hex = Integer.toHexString(0xff & b);
-            if (hex.length() == 1) hexString.append('0');
-            hexString.append(hex);
-        }
-        return hexString.toString();
-    }
 
 
     @Override
