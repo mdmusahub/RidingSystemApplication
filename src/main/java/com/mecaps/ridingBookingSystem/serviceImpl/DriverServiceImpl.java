@@ -21,9 +21,12 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
-
+/**
+ * Service Class of implementation for managing drivers.
+ * Handles CRUD operations and nearest-driver searching logic.
+ */
 @Service
-public class DriverServiceImpl implements DriverService {
+public class DriverServiceImpl implements DriverService{
 
     final private DriverRepository driverRepository;
     final private UserRepository userRepository;
@@ -35,6 +38,15 @@ public class DriverServiceImpl implements DriverService {
         this.userRepository = userRepository;
         this.driverStatusRepository = driverStatusRepository;
     }
+
+    /**
+     * Creates a new driver for first time and save it in Driver Entity.
+     * Validates duplicate license number and vehicle number.
+     *
+     * @param request incoming driver request for  creation  driver data
+     * @return ResponseEntity with created driver details
+     * @throws DriverAlreadyExistsException if license or vehicle number already exists
+     */
 
     @Override
     public ResponseEntity<?> createDriver(DriverRequest request) {
@@ -77,6 +89,10 @@ public class DriverServiceImpl implements DriverService {
                         "success", "true"));
     }
 
+/**
+ * Fetches a driver by ID.
+ * Mainly Used by Admin Usage where Admin can get Driver Data by its Id.
+ */
     @Override
     public ResponseEntity<?> getDriverById(Long id) {
         Driver driver = driverRepository.findById(id)
@@ -88,7 +104,11 @@ public class DriverServiceImpl implements DriverService {
                         "body", driverResponse,
                         "success", "true"));
     }
-
+    /**
+     * Returns all drivers in the system.
+     * Mainly Used for Admin Usage where Admin Can see All Driver Data.
+     * @return ResponseEntity containing list of drivers.
+     */
     @Override
     public ResponseEntity<?> getAllDrivers() {
         List<Driver> driverList = driverRepository.findAll();
@@ -99,6 +119,16 @@ public class DriverServiceImpl implements DriverService {
                         "body", driverResponseList,
                         "success", "true"));
     }
+
+    /**
+     * Updates an existing driver's details.
+     *
+     * @param id      driver ID
+     * @param request updated driver data
+     * @return ResponseEntity with updated driver
+     * @throws DriverAlreadyExistsException for duplicate values
+     * @throws DriverNotFoundException      if driver does not exist
+     */
 
     @Override
     public ResponseEntity<?> updateDriver(Long id, DriverRequest request) {
@@ -131,7 +161,13 @@ public class DriverServiceImpl implements DriverService {
                         "body", driverResponse,
                         "success", "true"));
     }
-
+    /**
+     * Deletes a driver by ID.
+     * Driver and Admin  can Delete Driver'data by its Id.
+     * @param id driver ID
+     * @return simple success message
+     * @throws DriverNotFoundException if driver does not exist
+     */
     @Override
     public ResponseEntity<?> deleteDriver(Long id) {
         Driver driver = driverRepository.findById(id)

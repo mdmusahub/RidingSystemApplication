@@ -19,7 +19,11 @@ import java.time.Duration;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.Map;
-
+/**
+ * Service implementation for handling ride history records.
+ * When Driver mark ride COMPLETED a ride history will be saved in Database.
+ * Supports retrieving, creating, filtering, and deleting ride history entries for both riders and drivers.
+ */
 @Service
 public class RideHistoryServiceImpl implements RideHistoryService {
     private final RideHistoryRepository rideHistoryRepository;
@@ -32,18 +36,26 @@ public class RideHistoryServiceImpl implements RideHistoryService {
         this.driverRepository = driverRepository;
     }
 
+
+// get ride history from Db by its Id.
     @Override
     public ResponseEntity<?> getRideHistoryById(Long id){
         RideHistory rideHistory = rideHistoryRepository.findById(id)
                 .orElseThrow(() -> new RideHistoryNotFoundException("Ride History not found for the given rideId=" + id));
         return ResponseEntity.ok().body(rideHistory);
     }
-
+// All Rides Data from DataBase. Admin Usage Only.
     @Override
     public ResponseEntity<?> getAllRideHistory(){
         return ResponseEntity.ok().body(rideHistoryRepository.findAll());
     }
-
+    /**
+     * Retrieves all ride history entries for a specific rider.
+     *
+     * @param riderId ID of the rider
+     * @return filtered list of ride history records for that rider
+     * @throws RiderNotFoundException if rider does not exist
+     */
     @Override
     public ResponseEntity<?> getAllRidesHistoryForRider(Long riderId) {
         Rider rider = riderRepository.findById(riderId)
@@ -60,6 +72,14 @@ public class RideHistoryServiceImpl implements RideHistoryService {
         ));
     }
 
+    /**
+     * Retrieves all ride history entries for a specific driver.
+     *
+     * @param driverId ID of the driver
+     * @return filtered list of ride history records for that driver
+     * @throws DriverNotFoundException if driver does not exist
+     */
+
     @Override
     public ResponseEntity<?> getAllRidesHistoryForDriver(Long driverId) {
         Driver driver = driverRepository.findById(driverId)
@@ -75,7 +95,12 @@ public class RideHistoryServiceImpl implements RideHistoryService {
                 "success",true
         ));
     }
-
+    /**
+     * Creates and saves a new ride history entry for a completed ride.
+     * Generates a  history summary containing completion date/time,distance covered,total ride duration
+     * @param newRide the completed ride entity
+     * @return saved RideHistory entity
+     */
     @Override
     public RideHistory createRideHistory(Rides newRide){
         RideHistory rideHistory = RideHistory.builder()
@@ -92,7 +117,11 @@ public class RideHistoryServiceImpl implements RideHistoryService {
 
         return rideHistoryRepository.save(rideHistory);
     }
-
+    /**
+     * Deletes a ride history entry by its ID.
+     * @param id ride history ID
+     * @return 204 NO CONTENT with success message
+     */
     @Override
     public ResponseEntity<?> deleteRideHistoryById(Long id){
         rideHistoryRepository.deleteById(id);

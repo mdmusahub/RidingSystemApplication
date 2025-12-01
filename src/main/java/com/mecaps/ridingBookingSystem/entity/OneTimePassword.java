@@ -27,4 +27,3 @@ public class OneTimePassword {
     @OneToOne
     private RideRequests rideRequest;
 }
-

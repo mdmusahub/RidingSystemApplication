@@ -15,6 +15,11 @@ import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.Map;
+/**
+ * Service implementation for managing Rider-related operations.
+ * Supports creating a rider profile, fetching rider details,
+ * retrieving all riders, and deleting a rider.
+ */
 
 @Service
 public class RiderServiceImpl implements RiderService {
@@ -22,11 +27,18 @@ public class RiderServiceImpl implements RiderService {
     private final UserRepository userRepository;
     private final RiderRepository riderRepository;
 
-    public RiderServiceImpl(RiderRepository riderRepository,UserRepository userRepository){
+    public RiderServiceImpl(RiderRepository riderRepository, UserRepository userRepository) {
         this.riderRepository = riderRepository;
         this.userRepository = userRepository;
     }
-
+    /**
+     * Creates a new rider linked to an existing user.
+     * A User can be RIDER , DRIVER OR ADMIN.
+     * When USer Select ROLE Rider a rider is create in DB.
+     * @param request contains the userId to map with the rider
+     * @return success response with created Rider details
+     * @throws UserNotFoundException if the user does not exist
+     */
     @Override
     public ResponseEntity<?> createRider(RiderRequest request) {
         Rider rider = new Rider();
@@ -41,11 +53,16 @@ public class RiderServiceImpl implements RiderService {
                 Map.of(
                         "message", "Rider created successfully",
                         "body", riderResponse,
-                        "status","true"
+                        "status", "true"
                 )
         );
     }
-
+    /**
+     * Fetches a rider by their ID.
+     * @param id rider ID
+     * @return rider details wrapped in a response entity
+     * @throws RiderNotFoundException if no rider exists with the given ID
+     */
     @Override
     public ResponseEntity<?> getRiderById(Long id) {
         Rider rider = riderRepository.findById(id)
@@ -53,12 +70,16 @@ public class RiderServiceImpl implements RiderService {
 
         RiderResponse riderResponse = new RiderResponse(rider);
         return ResponseEntity.ok(Map.of(
-                "message","Rider found successfully",
-                "body",riderResponse,
-                "success",true
+                "message", "Rider found successfully",
+                "body", riderResponse,
+                "success", true
         ));
     }
-
+    /**
+     * Retrieves all riders from Database.
+     * Admin Usage Only
+     * @return list of RiderResponse objects
+     */
     @Override
     public ResponseEntity<?> getAllRiders() {
         List<Rider> riders = riderRepository.findAll();
@@ -66,11 +87,17 @@ public class RiderServiceImpl implements RiderService {
 
         return ResponseEntity.ok(riderResponseList);
     }
+    /**
+     * Deletes a rider by ID.
+     * @param id rider ID
+     * @return success message on deletion
+     * @throws RiderNotFoundException if rider does not exist
+     */
 
     @Override
     public ResponseEntity<?> deleteRider(Long id) {
         Rider rider = riderRepository.findById(id)
-                .orElseThrow(()-> new RiderNotFoundException("Rider not found with given id : " + id));
+                .orElseThrow(() -> new RiderNotFoundException("Rider not found with given id : " + id));
         riderRepository.delete(rider);
 
         return ResponseEntity.ok("DELETED");

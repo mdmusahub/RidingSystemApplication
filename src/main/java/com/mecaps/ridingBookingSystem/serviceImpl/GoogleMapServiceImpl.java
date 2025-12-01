@@ -8,14 +8,26 @@ import org.springframework.web.util.UriComponentsBuilder;
 
 import java.util.List;
 import java.util.Map;
-
+/**
+ * Service class responsible for interacting with Google Maps Distance Matrix API.
+ * Provides utility methods to calculate distance and fare between two locations.
+ */
 @Service
 @Slf4j
 public class GoogleMapServiceImpl {
     @Value("${google.api.key}")
      private String googleApiKey;
 
+    /**
+     * RestTemplate used for making HTTP requests to Google APIs.
+     */
     private final RestTemplate restTemplate = new RestTemplate();
+    /**
+     * This Method helps us to get the distance between two Location in km.
+     * @param origin      starting point
+     * @param destination  ending point
+     * @return distance in kilometers (double)
+     */
 
     public Double getDistanceInKm(String origin, String destination) {
         String url = UriComponentsBuilder.fromHttpUrl("https://maps.googleapis.com/maps/api/distancematrix/json")
@@ -27,7 +39,8 @@ public class GoogleMapServiceImpl {
 
         log.info(googleApiKey);
 
-        // It extract data from map into km and actual direction
+        // It extract data from map data to  into km and actual direction
+
         Map<String, Object> response = restTemplate.getForObject(url, Map.class);
 
         System.out.println("Response: " + response);
@@ -44,12 +57,19 @@ public class GoogleMapServiceImpl {
 
     }
 
+    /**
+     * Calculates the fare between two locations based on distance.
+     * 10 rs per Km
+     * @param origin      pickup address or coordinates
+     * @param destination drop address or coordinates
+     * @return final fare amount
+     */
+
 public double calculateFare(String origin, String destination){
 double distanceInKm = getDistanceInKm(origin, destination);
 double farePerKm  = distanceInKm * 10.0;
 return farePerKm;
 
-
-    }
+}
     }
 

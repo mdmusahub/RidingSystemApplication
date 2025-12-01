@@ -15,6 +15,12 @@ import org.springframework.stereotype.Service;
 import java.time.LocalDateTime;
 import java.util.Map;
 
+/**
+ * Service Implementation of Ride Service
+ * Whenever A rider request for ride he will get fare and distance from data.
+ * Driver will Accept ride and Start ride after validating OTP.
+ * Driver will mark Completed Ride after reaching its destination.
+ */
 @Service
 public class RidesServiceImpl implements RidesService {
     private final RideRepository rideRepository;
@@ -24,8 +30,9 @@ public class RidesServiceImpl implements RidesService {
     private final RideRequestsRepository rideRequestsRepository;
     private final RiderRepository riderRepository;
     private final RideHistoryServiceImpl rideHistoryService;
+    private final PaymentRepository paymentRepository;
 
-    public RidesServiceImpl(RideRepository rideRepository, OneTimePasswordServiceImpl oneTimePasswordService, OneTimePasswordRepository oneTimePasswordRepository, DriverRepository driverRepository, RideRequestsRepository rideRequestsRepository, RiderRepository riderRepository, RideHistoryServiceImpl rideHistoryService) {
+    public RidesServiceImpl(RideRepository rideRepository, OneTimePasswordServiceImpl oneTimePasswordService, OneTimePasswordRepository oneTimePasswordRepository, DriverRepository driverRepository, RideRequestsRepository rideRequestsRepository, RiderRepository riderRepository, RideHistoryServiceImpl rideHistoryService, PaymentRepository paymentRepository) {
         this.rideRepository = rideRepository;
         this.oneTimePasswordService = oneTimePasswordService;
         this.oneTimePasswordRepository = oneTimePasswordRepository;
@@ -33,8 +40,24 @@ public class RidesServiceImpl implements RidesService {
         this.rideRequestsRepository = rideRequestsRepository;
         this.riderRepository = riderRepository;
         this.rideHistoryService = rideHistoryService;
+        this.paymentRepository = paymentRepository;
     }
 
+    /**
+     * Starts a new ride.
+     * <p>
+     * Steps:
+     * <ul>
+     *   <li>Fetches driver, ride request and rider from database</li>
+     *   <li>Validates OTP for the ride request</li>
+     *   <li>Calculates distance and fare using pickup and drop coordinates</li>
+     *   <li>Creates a new {@link Rides} entry with status {@link RideStatus#ONGOING}</li>
+     * </ul>
+     * @param startRideRequest request object containing driver id, ride request id and OTP
+     * @return {@link ResponseEntity} containing ride details and status.
+     * @throws DriverNotFoundException       if the driver is not found
+     * @throws RideRequestNotFoundException  if the ride request is not found
+     */
     @Override
     public ResponseEntity<?> startRide(StartRideRequest startRideRequest) {
         Driver driver = driverRepository.findById(startRideRequest.getDriverId())
@@ -72,6 +95,16 @@ public class RidesServiceImpl implements RidesService {
                 .startTime(LocalDateTime.now())
                 .build();
 
+        // CREATE PAYMENT (PENDING)
+        Payment payment = Payment.builder()
+                .rideId(ride)
+                .amount(fare)
+                .paymentMethod(PaymentMethod.ONLINE)
+                .paymentStatus(PaymentStatus.PENDING)
+                .build();
+
+        ride.setPayment(payment);
+
         Rides save = rideRepository.save(ride);
 
         RidesResponse ridesResponse = new RidesResponse(save);
@@ -80,10 +113,27 @@ public class RidesServiceImpl implements RidesService {
                 "message", "Ride Started. Ride created successfully",
                 "ride", ridesResponse,
                 "currentRideStatus", ridesResponse.getStatus(),
+                "currentPaymentStatus",payment.getPaymentStatus().name(),
                 "success", true
         ));
     }
-
+    /**
+     * Marks a ride as completed by Driver after reaching its Location.
+     * <p>
+     * Steps:
+     * <ul>
+     *   <li>Fetches ride, ride request and driver from database</li>
+     *   <li>Checks if the provided driver is actually assigned to this ride</li>
+     *   <li>Updates ride status to {@link RideStatus#COMPLETED} and sets end time</li>
+     *   <li>Marks driver as available again</li>
+     *   <li>Creates ride history entry</li>
+     * </ul>
+     * @param completeRideRequest request object containing ride id and driver id
+     * @return {@link ResponseEntity} with updated ride details and status.
+     * @throws RideNotFoundException         if the ride is not found
+     * @throws RideRequestNotFoundException  if the ride request is not found
+     * @throws DriverNotFoundException       if the driver is not found
+     */
     @Override
     public ResponseEntity<?> completeRide(CompleteRideRequest completeRideRequest){
         Rides ride = rideRepository.findById(completeRideRequest.getRideId())
@@ -102,6 +152,17 @@ public class RidesServiceImpl implements RidesService {
                            "success",false
                    ));
         }
+
+        Payment payment = paymentRepository.findByRideId_Id(ride.getId());
+        if (payment == null) throw new PaymentNotFoundException("Payment Not Found");
+
+        if (payment.getPaymentStatus() != PaymentStatus.SUCCESS)
+            return ResponseEntity.status(HttpStatus.PAYMENT_REQUIRED).body(Map.of(
+                    "success", false,
+                    "message", "Payment not completed!",
+                    "paymentStatus", payment.getPaymentStatus()
+            ));
+
         ride.setStatus(RideStatus.COMPLETED);
         ride.setEndTime(LocalDateTime.now());
 

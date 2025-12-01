@@ -1,31 +1,42 @@
 package com.mecaps.ridingBookingSystem.entity;
 
 import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 import org.hibernate.annotations.CreationTimestamp;
 import org.springframework.format.annotation.DateTimeFormat;
 
 import java.time.LocalDateTime;
 
 @Entity
+@NoArgsConstructor
+@AllArgsConstructor
+@Builder
 @Data
+@Table(name = "review",
+        uniqueConstraints = {
+                @UniqueConstraint(columnNames = {"ride_id", "reviewer_id", "reviewee_id"})
+        }
+)
 public class Review {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @OneToOne
+    @ManyToOne
     @JoinColumn(name = "rideId", nullable = false)
     private Rides rideId;
 
-    @OneToOne
+    @ManyToOne
     @JoinColumn(name = "reviewer_id", nullable = false)
-    private User reviewerId;
+    private User reviewer;
 
-    @OneToOne
+    @ManyToOne
     @JoinColumn(name = "reviewee_id", nullable = false)
-    private User revieweeId;
+    private User reviewee;
 
     @Column(nullable = false)
     private Integer rating;
