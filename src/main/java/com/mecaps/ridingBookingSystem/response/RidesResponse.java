@@ -22,7 +22,7 @@ public class RidesResponse {
     private LocalDateTime endTime;
 
     public RidesResponse(Rides ride){
-        this.driverId = ride.getId();
+        this.driverId = ride.getDriverId().getId();
         this.riderId = ride.getRiderId().getId();
         this.rideRequestId = ride.getRideRequestId().getId();
         this.fare = ride.getFare();

@@ -31,8 +31,9 @@ public class RidesServiceImpl implements RidesService {
     private final RideRequestsRepository rideRequestsRepository;
     private final RiderRepository riderRepository;
     private final RideHistoryServiceImpl rideHistoryService;
+    private final PaymentRepository paymentRepository;
 
-    public RidesServiceImpl(RideRepository rideRepository, OneTimePasswordServiceImpl oneTimePasswordService, OneTimePasswordRepository oneTimePasswordRepository, DriverRepository driverRepository, RideRequestsRepository rideRequestsRepository, RiderRepository riderRepository, RideHistoryServiceImpl rideHistoryService) {
+    public RidesServiceImpl(RideRepository rideRepository, OneTimePasswordServiceImpl oneTimePasswordService, OneTimePasswordRepository oneTimePasswordRepository, DriverRepository driverRepository, RideRequestsRepository rideRequestsRepository, RiderRepository riderRepository, RideHistoryServiceImpl rideHistoryService, PaymentRepository paymentRepository) {
         this.rideRepository = rideRepository;
         this.oneTimePasswordService = oneTimePasswordService;
         this.oneTimePasswordRepository = oneTimePasswordRepository;
@@ -40,6 +41,7 @@ public class RidesServiceImpl implements RidesService {
         this.rideRequestsRepository = rideRequestsRepository;
         this.riderRepository = riderRepository;
         this.rideHistoryService = rideHistoryService;
+        this.paymentRepository = paymentRepository;
     }
 
     /**
@@ -94,6 +96,16 @@ public class RidesServiceImpl implements RidesService {
                 .startTime(LocalDateTime.now())
                 .build();
 
+        // CREATE PAYMENT (PENDING)
+        Payment payment = Payment.builder()
+                .rideId(ride)
+                .amount(fare)
+                .paymentMethod(PaymentMethod.ONLINE)
+                .paymentStatus(PaymentStatus.PENDING)
+                .build();
+
+        ride.setPayment(payment);
+
         Rides save = rideRepository.save(ride);
 
         RidesResponse ridesResponse = new RidesResponse(save);
@@ -102,6 +114,7 @@ public class RidesServiceImpl implements RidesService {
                 "message", "Ride Started. Ride created successfully",
                 "ride", ridesResponse,
                 "currentRideStatus", ridesResponse.getStatus(),
+                "currentPaymentStatus",payment.getPaymentStatus().name(),
                 "success", true
         ));
     }
@@ -140,6 +153,17 @@ public class RidesServiceImpl implements RidesService {
                            "success",false
                    ));
         }
+
+        Payment payment = paymentRepository.findByRideId_Id(ride.getId());
+        if (payment == null) throw new PaymentNotFoundException("Payment Not Found");
+
+        if (payment.getPaymentStatus() != PaymentStatus.SUCCESS)
+            return ResponseEntity.status(HttpStatus.PAYMENT_REQUIRED).body(Map.of(
+                    "success", false,
+                    "message", "Payment not completed!",
+                    "paymentStatus", payment.getPaymentStatus()
+            ));
+
         ride.setStatus(RideStatus.COMPLETED);
         ride.setEndTime(LocalDateTime.now());
 

@@ -1,3 +1,4 @@
+
 package com.mecaps.ridingBookingSystem.security.model;
 
 import lombok.*;
@@ -5,7 +6,6 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
 import java.util.Collection;
-import java.util.List;
 
 @Getter
 @Builder

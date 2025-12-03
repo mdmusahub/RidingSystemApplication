@@ -48,4 +48,3 @@ public class RideRequests {
     @OneToOne(mappedBy = "rideRequestId", cascade = CascadeType.ALL, orphanRemoval = true)
     private Rides ride;
 }
-

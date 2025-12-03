@@ -60,4 +60,7 @@ public class Rides {
     @OneToMany(mappedBy = "rideId")
     private List<Review> reviews;
 
+    @OneToOne(mappedBy = "rideId",cascade = CascadeType.ALL, orphanRemoval = true)
+    private Payment payment;
+
 }

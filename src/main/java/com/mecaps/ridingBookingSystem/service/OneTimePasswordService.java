@@ -8,4 +8,10 @@ public interface OneTimePasswordService {
     OneTimePassword createOtp(RideRequests rideRequest);
 
     boolean validateOtp(String enteredOtp, OneTimePassword otp);
+
+
+    void deleteOtp(Long id);
+
+
 }
+

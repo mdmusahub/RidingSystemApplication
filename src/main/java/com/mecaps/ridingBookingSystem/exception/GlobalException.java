@@ -61,4 +61,24 @@ public class GlobalException {
 
         return new ResponseEntity<>(errorResponse,HttpStatusCode.valueOf(404));
     }
+
+    @ExceptionHandler(PaymentVerificationException.class)
+    public ResponseEntity<ErrorResponse> handlePaymentVerificationException
+            (PaymentVerificationException exception, HttpServletRequest request){
+        ErrorResponse errorResponse = new ErrorResponse(LocalDateTime.now(),HttpStatus.BAD_REQUEST.value(),
+                exception.getMessage(), request.getRequestURI());
+
+        return ResponseEntity
+                .status(HttpStatus.UNPROCESSABLE_ENTITY)
+                .body(errorResponse);
+    }
+
+    @ExceptionHandler (PaymentNotFoundException.class)
+    public ResponseEntity<ErrorResponse> paymentNotFoundException
+            (PaymentNotFoundException exception, HttpServletRequest request){
+        ErrorResponse errorResponse = new ErrorResponse(LocalDateTime.now(),HttpStatus.NOT_FOUND.value(),
+                exception.getMessage(), request.getRequestURI());
+
+        return new ResponseEntity<>(errorResponse,HttpStatusCode.valueOf(404));
+    }
 }

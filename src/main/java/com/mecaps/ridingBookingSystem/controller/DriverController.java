@@ -6,6 +6,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.Map;
+
 @RestController
 @RequestMapping("/driver")
 public class DriverController {
@@ -47,6 +49,8 @@ public class DriverController {
     public ResponseEntity<?> deleteDriver(@PathVariable Long id) {
         return driverService.deleteDriver(id);
     }
+
+    // DRIVER RESPONSES ON RIDE REQUEST
 
     @PostMapping("/accept-ride-request")
     public ResponseEntity<?> acceptRideRequest(@RequestBody RideAcceptanceRequestDTO rideAcceptanceRequestDTO) {

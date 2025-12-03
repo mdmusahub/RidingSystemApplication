@@ -8,4 +8,6 @@ import lombok.Setter;
 public class OtpGenerateRequest {
     private Long riderId;
     private Long rideRequestId;
+
 }
+
