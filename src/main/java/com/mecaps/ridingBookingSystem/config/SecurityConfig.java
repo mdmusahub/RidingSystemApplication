@@ -43,7 +43,8 @@ public class SecurityConfig {
                                 "/auth/forgot-password",
                                 "/auth/reset-password",
                                 "/auth/refresh",
-                                "/user/create"
+                                "/user/create",
+                                "/map/*"
                         ).permitAll()
 
                         // ---------------- PAYMENT UI PAGES (Browser Pages) --------------
