@@ -31,7 +31,8 @@ public class PaymentServiceImpl implements PaymentService {
 
     private final PaymentRepository paymentRepository;
     private final RideRepository rideRepository;
-    private final RazorpayClient razorpayClient;
+    private final RazorpayClient razorpayClient;  // RazorpayClint razorpay inbuilt class
+                                                    // help to use payment API
 
     public PaymentServiceImpl(PaymentRepository paymentRepository,
                               RideRepository rideRepository,
@@ -46,12 +47,13 @@ public class PaymentServiceImpl implements PaymentService {
         Rides ride = rideRepository.findById(rideId)
                 .orElseThrow(() -> new RideNotFoundException("Ride not found with id " + rideId));
 
+        // For payment initiation payment record must be created on starting time of ride
         Payment payment = paymentRepository.findByRideId_Id(rideId);
         if (payment == null) {
             throw new PaymentNotFoundException("Payment record not found for ride " + rideId);
         }
 
-        try {
+        try {  //JSONObject stores in key-value pare
             JSONObject options = new JSONObject();
             int amountPaise = (int) Math.round(ride.getFare() * 100);
             options.put("amount", amountPaise);
@@ -108,7 +110,6 @@ public class PaymentServiceImpl implements PaymentService {
         }
 
         try {
-            // Use Razorpay SDK helper for signature verification (recommended)
             JSONObject attributes = new JSONObject();
             attributes.put("razorpay_order_id", razorpayOrderId);
             attributes.put("razorpay_payment_id", razorpayPaymentId);

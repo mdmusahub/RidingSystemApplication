@@ -27,7 +27,7 @@ public class PaymentRestController {
         return ResponseEntity.ok(razorpayOrderId);
     }
 
-    // Optional: complete by cash
+    // complete by cash
     @PostMapping("/completePayment")
     public ResponseEntity<String> completePayment(@RequestParam Long rideId, @RequestParam String paymentMethod) {
         String response = paymentService.completePayment(rideId, paymentMethod);
