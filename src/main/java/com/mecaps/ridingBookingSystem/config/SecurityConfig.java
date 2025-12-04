@@ -59,6 +59,13 @@ public class SecurityConfig {
                                 "/api/payment/completePayment",
                                 "/api/payment/get-ride/**"
                         ).permitAll()
+                        // ---- MAP ----
+                                .requestMatchers(
+                                        "/map",
+                                        "/map-api/get-fare-distance",
+                                        "/map-api/nearby-drivers/**",
+                                        "/map-api/request-ride"
+                ).permitAll()
 
                         // ---------------- STATIC CONTENT ----------------
                         .requestMatchers("/js/**", "/css/**", "/images/**", "/webjars/**").permitAll()

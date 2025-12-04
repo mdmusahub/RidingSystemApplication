@@ -1,0 +1,258 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8"/>
+    <title>Ride Map — OpenStreetMap + Leaflet</title>
+
+    <!-- Bootstrap 5 -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+
+    <!-- Leaflet CSS -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css"/>
+
+    <style>
+        body {
+            background: linear-gradient(135deg, #4b79a1, #283e51);
+        }
+        #map {
+             height: 500px;
+            width: 100%;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0,0,0,0.15);
+        }
+        .side-card {
+            background: #fff;
+            border-radius: 12px;
+            padding: 20px;
+            box-shadow: 0 0 12px rgba(0,0,0,0.08);
+        }
+        .marker-label {
+            font-weight: 600;
+            color: #0d6efd;
+        }
+        pre {
+            background: #f8f9fa;
+            padding: 12px;
+            border-radius: 6px;
+            border: 1px solid #dee2e6;
+        }
+        .list-group-item {
+            border: none;
+            border-bottom: 1px solid #f1f1f1;
+        }
+    </style>
+</head>
+<body>
+
+<!-- TOP NAVBAR -->
+<nav class="navbar navbar-light bg-white shadow-sm px-3 py-2">
+    <span class="navbar-brand mb-0 h5">🚕 Welcome to Ride booking application - Select your locations on OpenStreetMap</span>
+
+    <div class="d-flex align-items-center">
+        <label class="me-2 fw-semibold">Rider Id:</label>
+        <input type="number" id="riderId" value="1" class="form-control form-control-sm" style="width: 80px;">
+    </div>
+</nav>
+
+<div class="container-fluid mt-3">
+    <div class="row">
+
+        <!-- MAP SECTION -->
+        <div class="col-lg-8 mb-3">
+            <div id="map"></div>
+        </div>
+
+        <!-- SIDEBAR -->
+        <div class="col-lg-4">
+            <div class="side-card">
+
+                <h4 class="mb-3">🧭 Select Locations</h4>
+                <p class="text-muted">Click map once for <span class="marker-label">Pickup</span>.
+                    Click again for <span class="marker-label">Drop</span>.
+                </p>
+
+                <div class="mb-3">
+                    <div><strong>Pickup:</strong> <span id="pickupCoords" class="text-primary">not set</span></div>
+                    <div><strong>Drop:</strong> <span id="dropCoords" class="text-primary">not set</span></div>
+                </div>
+
+                <div class="d-flex gap-2 mb-3">
+                    <button id="btnGetFare" class="btn btn-primary w-50">Get Fare</button>
+                    <button id="btnRequestRide" class="btn btn-success w-50">Request Ride</button>
+                </div>
+
+                <hr>
+
+                <h5>📊 Fare Estimate</h5>
+                <div class="mt-2">
+                    <div>Distance (KM): <strong><span id="distance">-</span></strong></div>
+                    <div>Estimated Fare: <strong>₹ <span id="fare">-</span></strong></div>
+                    <div>Drivers Nearby: <strong><span id="driversCount">-</span></strong></div>
+                </div>
+
+                <hr>
+
+                <h5>🚗 Nearest Drivers</h5>
+                <ul id="driversList" class="list-group mb-3"></ul>
+
+                <h5>📥 API Response</h5>
+                <pre id="requestResult" style="min-height:90px"></pre>
+
+            </div>
+        </div>
+
+    </div>
+</div>
+
+<!-- Leaflet JS -->
+<script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+
+<!-- BOOTSTRAP JS -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+
+<script>
+
+    const map = L.map('map').setView([23.2554496,77.4275072], 13); // by default bhopal
+
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+        maxZoom: 19,
+        attribution: '&copy; OpenStreetMap contributors'
+    }).addTo(map);
+
+    let pickupMarker = null;
+    let dropMarker = null;
+    let driverMarkers = [];
+    let pickup = null;
+    let drop = null;
+
+    map.on('click', (e) => {
+        if (!pickup) {
+            pickup = e.latlng;
+            if (pickupMarker) map.removeLayer(pickupMarker);
+            pickupMarker = L.marker([pickup.lat, pickup.lng]).addTo(map).bindPopup("Pickup").openPopup();
+            document.getElementById('pickupCoords').innerText = pickup.lat.toFixed(6) + ", " + pickup.lng.toFixed(6);
+        } else if (!drop) {
+            drop = e.latlng;
+            if (dropMarker) map.removeLayer(dropMarker);
+            dropMarker = L.marker([drop.lat, drop.lng]).addAddTo(map).bindPopup("Drop").openPopup();
+            document.getElementById('dropCoords').innerText = drop.lat.toFixed(6) + ", " + drop.lng.toFixed(6);
+        } else {
+            if (dropMarker) map.removeLayer(dropMarker);
+            drop = e.latlng;
+            dropMarker = L.marker([drop.lat, drop.lng]).addTo(map).bindPopup("Drop").openPopup();
+            document.getElementById('dropCoords').innerText = drop.lat.toFixed(6) + ", " + drop.lng.toFixed(6);
+        }
+    });
+
+    function clearDriverMarkers() {
+        driverMarkers.forEach(m => map.removeLayer(m));
+        driverMarkers = [];
+        document.getElementById('driversList').innerHTML = '';
+    }
+
+    async function showNearbyDrivers(lat, lng, limit = 3) {
+        clearDriverMarkers();
+
+        const API_BASE = 'http://localhost:8080';
+
+        try {
+            const url = `${API_BASE}/map-api/nearby-drivers?lat=${lat}&lng=${lng}&limit=${limit}`;
+            const res = await fetch(url);
+
+            if (!res.ok) return;
+
+            const drivers = await res.json();
+            document.getElementById('driversCount').innerText = drivers.length;
+
+            const ul = document.getElementById('driversList');
+
+            drivers.forEach((d, i) => {
+                const name = d?.name || ('Driver ' + (d?.driverId || i + 1));
+
+                let latD, lngD;
+                if (d.location) {
+                    latD = d.location.latitude;
+                    lngD = d.location.longitude;
+                } else if (d.latitude && d.longitude) {
+                    latD = d.latitude;
+                    lngD = d.longitude;
+                }
+
+                const li = document.createElement('li');
+                li.className = "list-group-item";
+                li.innerText = `${name} (id: ${d.driverId})`;
+                ul.appendChild(li);
+
+                if (latD && lngD) {
+                    const marker = L.marker([latD, lngD]).addTo(map).bindPopup(name);
+                    driverMarkers.push(marker);
+                }
+            });
+
+        } catch (err) { console.error(err); }
+    }
+
+    document.getElementById('btnGetFare').addEventListener('click', async () => {
+        if (!pickup || !drop) return alert('Please set pickup & drop.');
+
+        const dto = {
+            pickupLat: pickup.lat, pickupLng: pickup.lng,
+            dropLat: drop.lat, dropLng: drop.lng
+        };
+
+        try {
+            const API_BASE = 'http://localhost:8080';
+
+            const res = await fetch(API_BASE + '/map-api/get-fare-distance', {
+                method: 'POST',
+                headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify(dto)
+            });
+
+            if (!res.ok) {
+                alert('Failed to get fare');
+                return;
+            }
+
+            const data = await res.json();
+
+            document.getElementById('distance').innerText = data.distanceInKM || "-";
+            document.getElementById('fare').innerText = data.estimatedFare || "-";
+
+            await showNearbyDrivers(pickup.lat, pickup.lng, 5);
+
+        } catch (err) {
+            console.error(err);
+        }
+    });
+
+    document.getElementById('btnRequestRide').addEventListener('click', async () => {
+        const riderId = Number(document.getElementById('riderId').value || 0);
+        if (!riderId) return alert('Set rider ID');
+
+        if (!pickup || !drop) return alert('Set pickup & drop');
+
+        const dto = {
+            riderId, pickupLat: pickup.lat, pickupLng: pickup.lng,
+            dropLat: drop.lat, dropLng: drop.lng
+        };
+
+        try {
+            const API_BASE = 'http://localhost:8080';
+
+            const res = await fetch(API_BASE + '/map-api/request-ride', {
+                method: 'POST',
+                headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify(dto)
+            });
+
+            document.getElementById('requestResult').innerText = await res.text();
+
+        } catch (err) {
+            console.error(err);
+        }
+    });
+</script>
+
+</body>
+</html>
