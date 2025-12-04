@@ -2,7 +2,6 @@ package com.mecaps.ridingBookingSystem.serviceImpl;
 
 import com.mecaps.ridingBookingSystem.entity.*;
 import com.mecaps.ridingBookingSystem.exception.PaymentNotFoundException;
-import com.mecaps.ridingBookingSystem.exception.PaymentVerificationException;
 import com.mecaps.ridingBookingSystem.exception.RideNotFoundException;
 import com.mecaps.ridingBookingSystem.repository.PaymentRepository;
 import com.mecaps.ridingBookingSystem.repository.RideRepository;
@@ -17,10 +16,6 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import javax.crypto.Mac;
-import javax.crypto.spec.SecretKeySpec;
-import java.util.HashMap;
-import java.util.Map;
 import java.util.UUID;
 
 @Service

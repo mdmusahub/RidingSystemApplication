@@ -33,8 +33,7 @@ public class SecurityConfig {
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
 
         http
-                .csrf(AbstractHttpConfigurer::disable) // CSRF disabled for easier API testing & Razorpay callbacks
-
+                .csrf(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests(auth -> auth
 
                         // ---------------- PUBLIC AUTH APIS ----------------
