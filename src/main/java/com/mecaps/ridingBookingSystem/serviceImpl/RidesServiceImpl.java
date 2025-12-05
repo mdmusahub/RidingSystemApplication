@@ -149,11 +149,11 @@ public class RidesServiceImpl implements RidesService {
                 .orElseThrow(() -> new DriverNotFoundException("Driver not found for the given ID: " + completeRideRequest.getDriverId()));
 
         if(!ride.getDriverId().equals(driver)){
-           return ResponseEntity.status(HttpStatus.FORBIDDEN)
-                   .body(Map.of(
-                           "message","Driver is not assigned to this ride",
-                           "success",false
-                   ));
+            return ResponseEntity.status(HttpStatus.FORBIDDEN)
+                    .body(Map.of(
+                            "message","Driver is not assigned to this ride",
+                            "success",false
+                    ));
         }
 
         Payment payment = paymentRepository.findByRideId_Id(ride.getId());

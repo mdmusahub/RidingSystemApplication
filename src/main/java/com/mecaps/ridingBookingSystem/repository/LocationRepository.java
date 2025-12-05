@@ -11,6 +11,6 @@ import java.util.Optional;
 @Repository
 public interface LocationRepository extends JpaRepository<Location, Long> {
 
-
     Optional<Location> findByDriverId(Driver driver);
+
 }

@@ -2,8 +2,6 @@ package com.mecaps.ridingBookingSystem.controller;
 
 import com.mecaps.ridingBookingSystem.entity.Payment;
 import com.mecaps.ridingBookingSystem.entity.PaymentStatus;
-import com.mecaps.ridingBookingSystem.entity.Rides;
-import com.mecaps.ridingBookingSystem.response.RidesResponse;
 import com.mecaps.ridingBookingSystem.service.PaymentService;
 import com.razorpay.RazorpayException;
 import org.springframework.http.ResponseEntity;
@@ -29,7 +27,7 @@ public class PaymentRestController {
         return ResponseEntity.ok(razorpayOrderId);
     }
 
-    // Optional: complete by cash
+    // complete by cash
     @PostMapping("/completePayment")
     public ResponseEntity<String> completePayment(@RequestParam Long rideId, @RequestParam String paymentMethod) {
         String response = paymentService.completePayment(rideId, paymentMethod);

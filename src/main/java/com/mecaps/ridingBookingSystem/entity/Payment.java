@@ -41,14 +41,12 @@ public class Payment {
     @CreationTimestamp
     private LocalDateTime createdAt;
 
-    // optional legacy field if you used transactionId earlier
     private String transactionId;
 
-
-    // store razorpay order id (created when order is created) - DO NOT overwrite
+    // store razorpay order id (created when order is created)
     private String razorpayOrderId;
 
-    // store razorpay payment id (set after successful payment/verification)
+    // store razorpay payment id (sets after successful payment/verification)
     private String razorpayPaymentId;
 
 

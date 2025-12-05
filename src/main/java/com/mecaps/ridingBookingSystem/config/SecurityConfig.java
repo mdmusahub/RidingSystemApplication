@@ -33,8 +33,7 @@ public class SecurityConfig {
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
 
         http
-                .csrf(AbstractHttpConfigurer::disable) // CSRF disabled for easier API testing & Razorpay callbacks
-
+                .csrf(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests(auth -> auth
 
                         // ---------------- PUBLIC AUTH APIS ----------------
@@ -61,6 +60,13 @@ public class SecurityConfig {
                                 "/api/payment/completePayment",
                                 "/api/payment/get-ride/**"
                         ).permitAll()
+                        // ---- MAP ----
+                                .requestMatchers(
+                                        "/map",
+                                        "/map-api/get-fare-distance",
+                                        "/map-api/nearby-drivers/**",
+                                        "/map-api/request-ride"
+                ).permitAll()
 
                         // ---------------- STATIC CONTENT ----------------
                         .requestMatchers("/js/**", "/css/**", "/images/**", "/webjars/**").permitAll()

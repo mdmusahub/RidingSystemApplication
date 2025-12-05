@@ -2,7 +2,6 @@ package com.mecaps.ridingBookingSystem.serviceImpl;
 
 import com.mecaps.ridingBookingSystem.entity.*;
 import com.mecaps.ridingBookingSystem.exception.PaymentNotFoundException;
-import com.mecaps.ridingBookingSystem.exception.PaymentVerificationException;
 import com.mecaps.ridingBookingSystem.exception.RideNotFoundException;
 import com.mecaps.ridingBookingSystem.repository.PaymentRepository;
 import com.mecaps.ridingBookingSystem.repository.RideRepository;
@@ -17,10 +16,6 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import javax.crypto.Mac;
-import javax.crypto.spec.SecretKeySpec;
-import java.util.HashMap;
-import java.util.Map;
 import java.util.UUID;
 
 @Service
@@ -36,7 +31,8 @@ public class PaymentServiceImpl implements PaymentService {
 
     private final PaymentRepository paymentRepository;
     private final RideRepository rideRepository;
-    private final RazorpayClient razorpayClient;
+    private final RazorpayClient razorpayClient;  // RazorpayClint razorpay inbuilt class
+                                                    // help to use payment API
 
     public PaymentServiceImpl(PaymentRepository paymentRepository,
                               RideRepository rideRepository,
@@ -51,12 +47,13 @@ public class PaymentServiceImpl implements PaymentService {
         Rides ride = rideRepository.findById(rideId)
                 .orElseThrow(() -> new RideNotFoundException("Ride not found with id " + rideId));
 
+        // For payment initiation payment record must be created on starting time of ride
         Payment payment = paymentRepository.findByRideId_Id(rideId);
         if (payment == null) {
             throw new PaymentNotFoundException("Payment record not found for ride " + rideId);
         }
 
-        try {
+        try {  //JSONObject stores in key-value pare
             JSONObject options = new JSONObject();
             int amountPaise = (int) Math.round(ride.getFare() * 100);
             options.put("amount", amountPaise);
@@ -113,7 +110,6 @@ public class PaymentServiceImpl implements PaymentService {
         }
 
         try {
-            // Use Razorpay SDK helper for signature verification (recommended)
             JSONObject attributes = new JSONObject();
             attributes.put("razorpay_order_id", razorpayOrderId);
             attributes.put("razorpay_payment_id", razorpayPaymentId);
@@ -142,20 +138,6 @@ public class PaymentServiceImpl implements PaymentService {
             log.error("Signature verify error", e);
             throw new RuntimeException("Signature verification failed: " + e.getMessage());
         }
-    }
-    private String hmacSHA256(String data, String secret) throws Exception {
-        Mac sha256 = Mac.getInstance("HmacSHA256");
-        SecretKeySpec secretKeySpec = new SecretKeySpec(secret.getBytes(), "HmacSHA256");
-        sha256.init(secretKeySpec);
-
-        byte[] hash = sha256.doFinal(data.getBytes());
-        StringBuilder hexString = new StringBuilder();
-        for (byte b : hash) {
-            String hex = Integer.toHexString(0xff & b);
-            if (hex.length() == 1) hexString.append('0');
-            hexString.append(hex);
-        }
-        return hexString.toString();
     }
 
 
