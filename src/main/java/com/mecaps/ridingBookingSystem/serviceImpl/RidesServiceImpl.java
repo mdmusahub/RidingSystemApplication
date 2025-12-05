@@ -163,9 +163,11 @@ public class RidesServiceImpl implements RidesService {
                     "paymentStatus", payment.getPaymentStatus()
             ));
 
+        // PAYMENT DONE -> FINISH RIDE
         ride.setStatus(RideStatus.COMPLETED);
         ride.setEndTime(LocalDateTime.now());
 
+        // SET DRIVER AVAILABLE AGAIN
         DriverStatus driverStatus = driver.getDriverStatus();
         driverStatus.setIsAvailable(true);
 
