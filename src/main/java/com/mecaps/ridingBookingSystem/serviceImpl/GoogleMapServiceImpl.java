@@ -16,7 +16,7 @@ import java.util.Map;
 @Slf4j
 public class GoogleMapServiceImpl {
     @Value("${google.api.key}")
-     private String googleApiKey;
+    private String googleApiKey;
 
     /**
      * RestTemplate used for making HTTP requests to Google APIs.
@@ -65,11 +65,10 @@ public class GoogleMapServiceImpl {
      * @return final fare amount
      */
 
-public double calculateFare(String origin, String destination){
-double distanceInKm = getDistanceInKm(origin, destination);
-double farePerKm  = distanceInKm * 10.0;
-return farePerKm;
+    public double calculateFare(String origin, String destination){
+        double distanceInKm = getDistanceInKm(origin, destination);
+        double farePerKm  = distanceInKm * 10.0;
+        return farePerKm;
 
-}
     }
-
+}

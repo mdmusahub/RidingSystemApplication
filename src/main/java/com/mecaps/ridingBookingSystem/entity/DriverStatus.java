@@ -33,4 +33,3 @@ public class DriverStatus {
     @DateTimeFormat
     private LocalDateTime lastActive;
 }
-
