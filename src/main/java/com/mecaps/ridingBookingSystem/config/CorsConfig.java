@@ -15,7 +15,8 @@ public class CorsConfig {
             public void addCorsMappings(CorsRegistry registry) {
                 registry.addMapping("/**")
                         .allowedOrigins(
-                                "http://localhost:63342",  // where your HTML runs
+                                "http://localhost:63342",// where your HTML runs
+                                "https://mandie-uncontroversial-relaxedly.ngrok-free.dev",
                                 "http://127.0.0.1:63342",
                                 "http://localhost:8080"    // UI may also be served here later
                         )

@@ -60,7 +60,8 @@ public class RidesServiceImpl implements RidesService {
      * @throws RideRequestNotFoundException  if the ride request is not found
      */
     @Override
-    @PreAuthorize("hasRole('ADMIN') or (#startRideRequest.getDriverId() == authentication.principal.id and hasRole('DRIVER'))")    public ResponseEntity<?> startRide(StartRideRequest startRideRequest) {
+    @PreAuthorize("hasRole('ADMIN') or (#startRideRequest.getDriverId() == authentication.principal.id and hasRole('DRIVER'))")
+    public ResponseEntity<?> startRide(StartRideRequest startRideRequest) {
         Driver driver = driverRepository.findById(startRideRequest.getDriverId())
                 .orElseThrow(() -> new DriverNotFoundException("Driver Not Found"));
 
@@ -136,7 +137,8 @@ public class RidesServiceImpl implements RidesService {
      * @throws DriverNotFoundException       if the driver is not found
      */
     @Override
-    @PreAuthorize("hasRole('ADMIN') or (#completeRideRequest.getDriverId() == authentication.principal.id and hasRole('DRIVER'))")    public ResponseEntity<?> completeRide(CompleteRideRequest completeRideRequest){
+    @PreAuthorize("hasRole('ADMIN') or (#completeRideRequest.getDriverId() == authentication.principal.id and hasRole('DRIVER'))")
+    public ResponseEntity<?> completeRide(CompleteRideRequest completeRideRequest){
         Rides ride = rideRepository.findById(completeRideRequest.getRideId())
                 .orElseThrow(() -> new RideNotFoundException("Ride not found for the given ID: " + completeRideRequest.getRideId()));
 
