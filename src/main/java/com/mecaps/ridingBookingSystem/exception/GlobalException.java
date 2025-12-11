@@ -1,6 +1,7 @@
 package com.mecaps.ridingBookingSystem.exception;
 
 import jakarta.servlet.http.HttpServletRequest;
+import org.apache.coyote.Response;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;
@@ -48,6 +49,35 @@ public class GlobalException {
             (OneTimePasswordNotFoundException exception, HttpServletRequest request){
         ErrorResponse errorResponse = new ErrorResponse(LocalDateTime.now(),HttpStatus.NOT_FOUND.value(),
                 exception.getMessage(),request.getRequestURI());
+
+        return new ResponseEntity<>(errorResponse,HttpStatusCode.valueOf(404));
+    }
+
+    @ExceptionHandler (RideCancellationNotFound.class)
+    public ResponseEntity<ErrorResponse> handleRideCancellationNotFoundException
+            (RideCancellationNotFound exception, HttpServletRequest request){
+        ErrorResponse errorResponse = new ErrorResponse(LocalDateTime.now(),HttpStatus.NOT_FOUND.value(),
+                exception.getMessage(), request.getRequestURI());
+
+        return new ResponseEntity<>(errorResponse,HttpStatusCode.valueOf(404));
+    }
+
+    @ExceptionHandler(PaymentVerificationException.class)
+    public ResponseEntity<ErrorResponse> handlePaymentVerificationException
+            (PaymentVerificationException exception, HttpServletRequest request){
+        ErrorResponse errorResponse = new ErrorResponse(LocalDateTime.now(),HttpStatus.BAD_REQUEST.value(),
+                exception.getMessage(), request.getRequestURI());
+
+        return ResponseEntity
+                .status(HttpStatus.UNPROCESSABLE_ENTITY)
+                .body(errorResponse);
+    }
+
+    @ExceptionHandler (PaymentNotFoundException.class)
+    public ResponseEntity<ErrorResponse> paymentNotFoundException
+            (PaymentNotFoundException exception, HttpServletRequest request){
+        ErrorResponse errorResponse = new ErrorResponse(LocalDateTime.now(),HttpStatus.NOT_FOUND.value(),
+                exception.getMessage(), request.getRequestURI());
 
         return new ResponseEntity<>(errorResponse,HttpStatusCode.valueOf(404));
     }

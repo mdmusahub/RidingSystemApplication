@@ -38,3 +38,6 @@ build/
 # Ignore all log files
 *.log
 /logs/
+
+#Generated JavaDoc
+/docs/

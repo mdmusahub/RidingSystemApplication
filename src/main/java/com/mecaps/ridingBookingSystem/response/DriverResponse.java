@@ -14,7 +14,6 @@ public class DriverResponse {
     private String vehicleModel;
     private UserResponse userResponse;
     private Float rating;
-    private Boolean isAvailable;
 
     public DriverResponse(Driver driver) {
         this.id = driver.getId();
@@ -22,6 +21,5 @@ public class DriverResponse {
         this.vehicleModel = driver.getVehicleModel();
         this.userResponse = new UserResponse(driver.getUserId());
         this.rating = driver.getRating();
-        this.isAvailable = driver.getIsAvailable();
     }
 }

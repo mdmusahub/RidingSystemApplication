@@ -22,4 +22,6 @@ public interface DriverService {
     ResponseEntity<?> deleteDriver(Long id);
 
     List<DriverResponse> findNearestAvailableDrivers(RideRequestsDTO request, Integer limit);
+
 }
+
