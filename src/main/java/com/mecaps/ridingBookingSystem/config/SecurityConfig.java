@@ -39,6 +39,7 @@ public class SecurityConfig {
                         // ---------------- PUBLIC AUTH APIS ----------------
                         .requestMatchers(
                                 "/",
+//                                "/api/redis/**",
                                 "/error",
                                 "/auth/login",
                                 "/auth/forgot-password",
